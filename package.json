@@ -1,0 +1,23 @@
+{
+  "name": "clienteyoutubeapi",
+  "version": "1.0.0",
+  "description": "La plataforma de Youtube tiene mucho tipo de información representada en videos pero no tiene un buen servicio que ayude de manera organizada para algún proceso de investigación o de estudio siendo un poco tedioso para investigadores buscar material para sus proyectos.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alejo9806/ClienteYoutubeAPI.git"
+  },
+  "keywords": [],
+  "author": "ALMAVI",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alejo9806/ClienteYoutubeAPI/issues"
+  },
+  "homepage": "https://github.com/Alejo9806/ClienteYoutubeAPI#readme",
+  "dependencies": {
+    "electron": "^12.0.2"
+  }
+}
