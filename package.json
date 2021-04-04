@@ -25,7 +25,7 @@
     "electron": "^12.0.2",
     "electron-reload": "^1.5.0",
     "jquery": "^3.6.0",
-    "passport": "^0.4.1",
-    "passport-google-oauth": "^2.0.0"
+    "jwt-decode": "^3.1.2",
+    "keytar": "^7.6.0"
   }
 }
