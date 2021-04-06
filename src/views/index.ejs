@@ -1,29 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Ciente Youtube Playlist</title>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/js/bootstrap.min.js">
-    <link rel="stylesheet" href="../../node_modules//@popperjs/core/dist/cjs/popper.js">
-    <link rel="stylesheet" href="../../node_modules/jquery/dist/jquery.min.js">
-    <link rel="stylesheet" href="../assets/css/layout.css">
-
-</head>
-<body>
-    <p>
-       
-        <%- include('./layouts/login.ejs') %>
-
-    
-    </p>
-    <script>
-        const {ipcRenderer}= require("electron")
-        ipcRenderer.on('token',(e)=>{
-            console.log(e.token)
-        })
-    </script>
-</body>
-  
-</html>
+    <%-include('./layouts/main.ejs')%>
+  <body class="img-bg">
+            <div class="container mt-5">
+                <img src="src/../../assets/img/YoutubeLogos.png" class="img-fluid" alt="...">
+                <div class="container">
+                  <h5 class="mt-5 text-center">Card title</h5>
+                  <p class="card-text mt-4 text-center">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  <div class="row">
+                    <div class="col-md-12"> <a class="btn btn-lg btn-google btn-block text-uppercase btn-outline line" id="logginbtn" href="#" ><img src="src/../../assets/img/google-icon.svg" class="img-fluid" width="25px" height="25px"> INGRESA USANDO GOOGLE</a> </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <a href="./home.ejs" class="btn btn-danger">Cambiar</a> -->
+  </body>
+    <script src="../assets/js/auth.js"></script>

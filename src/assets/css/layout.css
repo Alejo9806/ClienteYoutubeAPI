@@ -5,3 +5,10 @@
     border:solid 1px ;
     border-color: #4DB7FE;
 }
+.img-bg{
+    background-image: url('../img/depositphotos_23582727-stock-photo-white-studio.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+}
