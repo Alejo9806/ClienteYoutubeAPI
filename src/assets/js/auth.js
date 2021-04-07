@@ -5,7 +5,11 @@ login.addEventListener('click',e=>{
     ipcRenderer.send('login');
 });
 
-ipcRenderer.on('isLogged',(e,succes)=>{
+ipcRenderer.on('isLogged',(succes)=>{
     console.log(succes);
-    window.location.href = "./home.ejs";
+  //  window.location.href = "./home.ejs";
 });
+
+ipcRenderer.on('userInfor',(event,userInfo)=>{
+    console.log(userInfo)
+})
