@@ -52,7 +52,7 @@ ipcMain.on('login',(e)=>{
       else{
         const succes ="Hay un error no te pudiste logear"
         console.log(succes);
-        e.reply('isLogged',succes);
+        e.reply('isNotLogged',succes);
       }
     });
   

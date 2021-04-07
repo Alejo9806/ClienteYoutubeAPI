@@ -9,3 +9,6 @@ ipcRenderer.on('isLogged',(e,succes)=>{
     console.log(succes);
     window.location.href = "./home.ejs";
 });
+ipcRenderer.on('isNotLogged',(e,succes)=>{
+    console.log(succes);
+});
