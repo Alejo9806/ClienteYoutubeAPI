@@ -11,7 +11,6 @@ const ejse = require('ejs-electron');
 let userToken;
 let userInfo;
 let mainWindow;
-let homeWindow;
 
 
 
