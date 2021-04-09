@@ -1,6 +1,6 @@
 require('dotenv').config({path:'.env'});
 'use strict';
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT } = process.env;
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT, YOUTUBE_API_KEY } = process.env;
 const ElectronGoogleOAuth2 = require('@getstation/electron-google-oauth2').default;
 let account= new ElectronGoogleOAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, [GOOGLE_REDIRECT]);
 const { app, BrowserWindow,ipcMain} = require('electron');
@@ -42,27 +42,6 @@ app.on('ready', () => {
   })
 });
 
-function createHomeWindow() {
-  homeWindow = new BrowserWindow({
-      width: 1000,
-      height: 700,
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false,
-      }
-    });
-    homeWindow.loadURL(url.format({
-      pathname:path.join(__dirname,'views/home.ejs'),
-      protocol:'file',
-      slashes:true
-    })); 
-    mainWindow.setMenuBarVisibility(true);
-  
-
-    mainWindow.on('closed',()=>{
-      app.quit();
-    }); 
-}
 
 
 ipcMain.on('login',(e)=>{
@@ -70,11 +49,12 @@ ipcMain.on('login',(e)=>{
     .then(token => {
       if(token){
         userToken = token;       
+        console.log(token);
         Axios.get('https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token='+userToken.access_token)
         .then((res)=>{
             userInfo = res.data;
             const succes = "Te has logeado correctamente amor <3";
-            console.log(succes);
+            
             console.log(res.data);
             e.reply('logged', userInfo,succes);
         })     
@@ -87,8 +67,27 @@ ipcMain.on('login',(e)=>{
     });
 });
 
+ipcMain.on('searchVideo',(e,data)=>{
+    console.log(data)
+})
+
+
+
 ipcMain.on('userInfo',(e)=>{
-  e.reply('userInfo', userInfo);
+  let apicall= "https://youtube.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=30&key="
+ 
+  let listVideos=[];
+  Axios.get(apicall+YOUTUBE_API_KEY).then((res)=>{
+    let data =res.data.items
+    for (let i = 0; i < data.length; i++) {
+      listVideos[i]={title:data[i].snippet.title, image:data[i].snippet.thumbnails.medium,channelTitle:data[i].snippet.channelTitle, videoId:data[i].id }   
+ 
+    }
+    e.reply('userInfo', userInfo,listVideos );
+  })
+  console.log(listVideos)
+  
+
 });   
 
 app.on('window-all-closed', () => {
