@@ -1,5 +1,8 @@
-<div class="container">
-    <p class="dysplay-6">Video</p>
-    <iframe width="560" height="315" src="" id="video" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-<script src="../assets/js/video.js"></script>
+<%-include('./layouts/main.ejs')%>
+    <%-include('./layouts/nav-bar.ejs')%>
+        <div class="container">
+            <h1 class="dysplay-6">Video</h1>
+            <iframe width="560" height="315" src="" id="video" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <a href="./home.ejs" class="btn btn-dark"> Volver </a>
+        </div>
+        <script src="../assets/js/video.js"></script>

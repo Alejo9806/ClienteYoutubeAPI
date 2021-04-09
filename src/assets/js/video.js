@@ -1,10 +1,8 @@
-const { ipcRenderer } = require("electron")
-
-document.addEventListener('DOMContentLoaded',e=>{
-        ipcRenderer.send('getVideo');
+document.addEventListener('DOMContentLoaded', e => {
+    ipcRenderer.send('getVideo');
 });
 
-ipcRenderer.on('getVideo',(e,idVideo)=>{
+ipcRenderer.on('getVideo', (e, idVideo) => {
     console.log(idVideo);
-    document.getElementById("video").setAttribute("src","https://www.youtube.com/embed/"+idVideo)
+    document.getElementById("video").setAttribute("src", "https://www.youtube.com/embed/" + idVideo)
 })
