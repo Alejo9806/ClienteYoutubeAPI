@@ -10,4 +10,3 @@ ipcRenderer.on('logged',(e,userInfo,succes)=>{
     console.log(userInfo.picture);
     window.location.href = "./home.ejs";
 });
-
