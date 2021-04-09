@@ -11,3 +11,4 @@ ipcRenderer.on('logged',(e,userInfo,succes)=>{
     window.location.href = "./home.ejs";
 });
 
+
