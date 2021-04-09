@@ -11,6 +11,7 @@ const ejse = require('ejs-electron');
 let userToken;
 let userInfo;
 let mainWindow;
+let idVideo;
 
 
 
@@ -74,21 +75,28 @@ ipcMain.on('searchVideo',(e,data)=>{
 
 
 ipcMain.on('userInfo',(e)=>{
-  let apicall= "https://youtube.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=30&key="
- 
-  let listVideos=[];
-  Axios.get(apicall+YOUTUBE_API_KEY).then((res)=>{
-    let data =res.data.items
-    for (let i = 0; i < data.length; i++) {
-      listVideos[i]={title:data[i].snippet.title, image:data[i].snippet.thumbnails.medium,channelTitle:data[i].snippet.channelTitle, videoId:data[i].id }   
- 
-    }
-    e.reply('userInfo', userInfo,listVideos );
-  })
-  console.log(listVideos)
-  
+  e.reply('userInfo', userInfo);
+});  
 
-});   
+ipcMain.on('listVideos', (e)=>{
+    let apicall= "https://youtube.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=30&key="
+    let listVideos=[];
+    Axios.get(apicall+YOUTUBE_API_KEY).then((res)=>{
+      let data =res.data.items
+      for (let i = 0; i < data.length; i++) {
+        listVideos[i]={title:data[i].snippet.title, image:data[i].snippet.thumbnails.medium,channelTitle:data[i].snippet.channelTitle, videoId:data[i].id, date:data[i].snippet.publishedAt }   
+      }
+      e.reply('listVideos',listVideos);
+    });
+});
+
+ipcMain.on('video',(e,id)=>{
+  idVideo = id;
+  e.reply('video',id);
+})
+ipcMain.on('getVideo',(e)=>{
+  e.reply('getVideo',idVideo);
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

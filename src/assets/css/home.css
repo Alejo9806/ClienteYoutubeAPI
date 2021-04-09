@@ -1,0 +1,13 @@
+.bg-card{
+    background-color:  transparent  !important;
+}
+.channel-color{
+    color: #AAAAAA;
+}
+.overflow{
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
