@@ -3,7 +3,7 @@ const {ipcRenderer} = require('electron');
 let searchVideo= document.getElementById("search-video")
 let searchbutton= document.getElementById("search-button")
 
-document.addEventListener('DOMContentLoaded',e=>{
+document.addEventListener('DOMContentLoaded',(e)=>{
     ipcRenderer.send('userInfo');
 });
 
@@ -26,7 +26,8 @@ searchbutton.addEventListener('click',(e)=>{
 
 function search(e){
     if (e.key=='Enter' || e.type=='click' ){
-        ipcRenderer.sendSync('searchVideo',searchVideo.value);
+        ipcRenderer.send('searchVideo',searchVideo.value);
+        window.location.href = "./search.ejs";
     }
 }
 
