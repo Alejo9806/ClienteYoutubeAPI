@@ -28,6 +28,7 @@
     "jquery": "^3.6.0",
     "jwt-decode": "^3.1.2",
     "keytar": "^7.6.0",
+    "mongoose": "^5.12.5",
     "popper.js": "^1.16.1"
   }
 }
