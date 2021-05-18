@@ -24,6 +24,7 @@ require('./controllers/auth.controller');//Authenticate
 require('./controllers/search.controller');//Search Videos
 require('./controllers/playlist.controller');//PlayList and items of each of the playlists
 require('./controllers/video.controller');//Home video list and specific video for the reporter window
+require('./controllers/collection.controller');//
 
 //Init mainWindow 
 app.on('ready', () => {
@@ -51,7 +52,6 @@ app.on('ready', () => {
 //get user information and token
 ipcMain.on('user',(e,token,info)=>{
     userInfo = info;
-    console.log(userInfo);
  
 });
 

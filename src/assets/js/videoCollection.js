@@ -1,4 +1,4 @@
-const newPlayListCollection = document.getElementById("newPlayListCollection");
+const newVideoCollection = document.getElementById("newVideoCollection");
 const tagInput = document.getElementById("tag");
 const saveTag = document.getElementById("saveTag");
 const save = document.getElementById("save");
@@ -6,47 +6,18 @@ const noSave = document.getElementById("noSave");
 const labelTags = document.getElementById("labelTags");
 const slectTag = document.getElementById("slectTag");
 let chosenTags =[];
-let playListId;
-let playListDate;
-
+let videoId;
+let videoDate;
 
 document.addEventListener('DOMContentLoaded',(e)=>{
-    ipcRenderer.send('playList');
     ipcRenderer.send('collection');
+
 })
 
-ipcRenderer.on('playList',(e,playList)=>{
-    let listOfPlaylist=document.getElementById("playList"); 
-    listOfPlaylist.innerHTML=''
-    for(let i=0; i< playList.length;i++){
-        listOfPlaylist.innerHTML += `<div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4"> 
-        <img class="card-img-top img-fluid border border-secondary" src="${playList[i].image.url}" alt="Card image cap" onClick="getItems('${playList[i].id}')">
-        <div class="card-body border  border-secondary"  onClick="getItems('${playList[i].id}')"> 
-            <h6 class="card-title text-dark overflow" title="${playList[i].title}">${playList[i].title}</h6> 
-            <p class="channel-color">${playList[i].channelTitle}</p>
-           
-        </div>  
-        <div class="card-footer border  border-secondary">
-            <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalCollectionPlaylist" onClick="playListCollectionModal('${playList[i].id}','${playList[i].date}')">Agregar a coleccion</button>
-        </div>  
-    </div>`
-    }
-});
-
-function getItems(string) {
-    console.log("hola");
-    ipcRenderer.send('playlisId',string);
-    window.location.href = "./playListItems.ejs";
-  
-}
-
-function playListCollectionModal(id,date) {
-    ipcRenderer.send('playList-collection-modal',id,date);
-}
 
 ipcRenderer.on('collection',(e,collections)=>{
     console.log(collections);
-    let selectedCollection = document.getElementById("selectedCollectionPlaylist");
+    let selectedCollection = document.getElementById("selectedCollection");
     selectedCollection.innerHTML ='<option selected>Open this select menu</option>';
     collections.forEach( (collection) => {
         selectedCollection.innerHTML+=`
@@ -55,25 +26,25 @@ ipcRenderer.on('collection',(e,collections)=>{
     });
 });
 
-ipcRenderer.on('playList-collection-modal',(e,id,date)=>{
+ipcRenderer.on('video-collection-modal',(e,id,date)=>{
     console.log(id,date)
-    playListId = id;
-    playListDate = date;
+    videoId = id;
+    videoDate = date;
 });
 
-
-newPlayListCollection.addEventListener('submit',(e)=>{
-    e.preventDefault();
-    let collection = document.getElementById("selectedCollectionPlaylist").value;
-    const playList= {
-        type:'PLAYLIST',
-        date:playListDate,
-        id:playListId,
+newVideoCollection.addEventListener('submit',(e)=>{
+    let collection = document.getElementById("selectedCollection").value;
+    const video= {
+        type:'VIDEO',
+        startAt: document.getElementById("startAt").value,
+        endAt: document.getElementById("endAt").value,
+        date:videoDate,
+        id:videoId,
         comment:document.getElementById("comment").value
     };
-    console.log(collection,playList,chosenTags)
-    ipcRenderer.send('new-playList-collection',playList,collection,chosenTags);
-    newPlayListCollection.reset();
+    console.log(collection,video)
+    ipcRenderer.send('new-video-collection',video,collection,chosenTags);
+    newVideoCollection.reset();
 });
 
 function keyPressValue(){
@@ -147,3 +118,7 @@ function deletedTag(tag) {
         });
     }
 }
+
+ipcRenderer.on('new-video-collection',(e,mss)=>{
+
+})

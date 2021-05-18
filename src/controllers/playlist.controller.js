@@ -35,7 +35,8 @@ ipcMain.on('playList',(e)=>{
                 image:data[i].snippet.thumbnails.medium,
                 id:data[i].id,
                 channelId:data[i].snippet.channelId,
-                channelTitle:data[i].snippet.channelTitle
+                channelTitle:data[i].snippet.channelTitle,
+                date:data[i].snippet.publishedAt
             }
         }
         e.reply('playList', playList);

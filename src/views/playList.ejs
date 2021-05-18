@@ -1,6 +1,5 @@
 <%-include('./layouts/main.ejs')%>
 <%-include('./layouts/nav-bar.ejs')%>
-<%-include('./layouts/modalLibrary.ejs')%>
 <body style="background-color: #F9F9F9;" >
     <div class="container mt-5">
         <div class="row" id="playList">
@@ -9,5 +8,50 @@
 
     </div>
 </body>
+
+
+
+<!-- Modal Collection playList-->
+<div class="modal fade" id="modalCollectionPlaylist" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Guardar playList en coleccion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="newPlayListCollection">
+        <div class="modal-body">
+          <div class="form-group">
+            <select class="browser-default custom-select custom-select-lg mb-3" id="selectedCollectionPlaylist">
+            </select>        
+          </div>      
+          <div class="form-group">
+            <label for="comment">Comentario para la playList</label>
+            <input type="text" class="form-control" id="comment" placeholder="Deja un comentario sobre el video" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Selecciona o agrega nuevos tags a tu video</label>
+            <input type="text" class="form-control" id="tag" placeholder="Escriba tag" onInput="keyPressValue()">
+            <a class="btn btn-primary" id="saveTag">Guardar nuevo tag</a>
+            <h6 class="text-danger" id="noSave"></h6>
+            <h6 class="text-success" id="save"></h6>
+            <section id="slectTag" class="form-group">
+
+            </section>
+            <div id="labelTags">
+
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-dark">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 <script src="../assets/js/playList.js"></script>

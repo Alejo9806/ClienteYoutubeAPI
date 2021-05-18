@@ -18,7 +18,7 @@ ipcRenderer.on('listVideos',(e,listVideos)=>{
                 <p class="channel-color">Publicacion: ${listVideos[i].date.slice(0,10)}</p>           
             </div>  
             <div class="card-footer border  border-secondary">
-            <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalLibrary">Agregar</button>
+            <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${listVideos[i].videoId}','${listVideos[i].date}')">Agregar a colección</button>
             <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist">Agregar a playlist </button>
             </div> 
         </div>` 
@@ -30,4 +30,7 @@ function video(string) {
     ipcRenderer.send('video',string);
     window.location.href = "./video.ejs";
   
+}
+function videoCollectionModal(id,date) {
+    ipcRenderer.send('video-collection-modal',id,date);
 }

@@ -16,7 +16,7 @@ ipcRenderer.on('search',(e,results)=>{
             <p class="channel-color">Publicacion: ${results[i].date.slice(0,10)}</p>
         </div>  
         <div class="card-footer border  border-secondary">
-            <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalLibrary">Agregar</button>
+            <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection">Agregar</button>
             <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist">Agregar a playlist </button>
         </div>  
     </div>`

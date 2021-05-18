@@ -14,7 +14,7 @@ ipcRenderer.on('playListItems',(e,playListItems)=>{
             <p class="channel-color">${playListItems[i].channelVideoTittle}</p>
         </div>  
         <div class="card-footer border  border-secondary">
-            <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalLibrary">Agregar</button>
+            <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection">Agregar a coleccion</button>
         </div>  
     </div>`
     }
