@@ -63,7 +63,6 @@ ipcRenderer.on('playList-collection-modal',(e,id,date)=>{
 
 
 newPlayListCollection.addEventListener('submit',(e)=>{
-    e.preventDefault();
     let collection = document.getElementById("selectedCollectionPlaylist").value;
     const playList= {
         type:'PLAYLIST',

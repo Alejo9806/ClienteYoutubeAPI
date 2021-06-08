@@ -8,7 +8,7 @@ ipcRenderer.on('search',(e,results)=>{
     listResult.innerHTML='';
     for(let i=0; i< results.length;i++){
         listResult.innerHTML += `<div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4" > 
-        <img class="card-img-top img-fluid border border-secondary" src="${results[i].image.url}" alt="Card image cap" onClick="video('${results[i].videoId}')">
+        <img class="card-img-top img-fluid border border-secondary" src="${results[i].image.url}" alt="Card image cap" onClick="video('${results[i].videoId}','${results[i].date}')">
         <div class="card-body border  border-secondary" onClick="video('${results[i].videoId}')"> 
             <h6 class="card-title text-dark overflow" title="${results[i].title}">${results[i].title}</h6> 
             <p class="channel-color">${results[i].description}</p>
@@ -16,16 +16,20 @@ ipcRenderer.on('search',(e,results)=>{
             <p class="channel-color">Publicacion: ${results[i].date.slice(0,10)}</p>
         </div>  
         <div class="card-footer border  border-secondary">
-            <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection">Agregar</button>
+            <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${results[i].videoId}','${results[i].date}')">Agregar a colección</button>
             <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist">Agregar a playlist </button>
         </div>  
     </div>`
     }
 });
 
-function video(string) {
+function video(string,date) {
     console.log("hola");
-    ipcRenderer.send('video',string);
+    ipcRenderer.send('video',string, null, null, date);
     window.location.href = "./video.ejs";
   
+}
+
+function videoCollectionModal(id,date) {
+    ipcRenderer.send('video-collection-modal',id,date);
 }

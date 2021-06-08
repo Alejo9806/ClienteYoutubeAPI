@@ -4,11 +4,14 @@ const Collection = require('../model/collection');
 const Tag = require('../model/tag');
 const User = require('../model/user');
 const { ipcMain } = require('electron');
+const { YOUTUBE_API_KEY } = process.env;
+const Axios = require('axios');
+
 
 //global variables
-let userToken;
+let titleCollection;
 let userInfo;
-
+let userToken;
 
 //get user information and token
 ipcMain.on('user',(e,token,info)=>{
@@ -79,7 +82,7 @@ ipcMain.on('new-video-collection',async (e,video,collectionTitle,chosenTags)=>{
     let collection = await Collection.findOne({title:collectionTitle});  
     collection.resource.push({ 
         type:video.type,
-        snnipet:{ 
+        snippet:{ 
             date : video.date,
             id: video.id,
             startAt: video.startAt,
@@ -94,7 +97,7 @@ ipcMain.on('new-video-collection',async (e,video,collectionTitle,chosenTags)=>{
         collection = await collection.save();
         index = collection.resource.length-1;
         chosenTags.forEach(chosenTag=>{
-            collection.resource[index].snnipet.tags.push(chosenTag);
+            collection.resource[index].snippet.tags.push(chosenTag);
         })
         try {
             collection = await collection.save();
@@ -119,7 +122,7 @@ ipcMain.on('new-playList-collection', async (e,playList,collectionTitle,chosenTa
     let collection = await Collection.findOne({title:collectionTitle}); 
     collection.resource.push({ 
         type:playList.type,
-        snnipet:{ 
+        snippet:{ 
             date : playList.date,
             id: playList.id,
             comment: playList.comment,
@@ -131,7 +134,7 @@ ipcMain.on('new-playList-collection', async (e,playList,collectionTitle,chosenTa
         collection = await collection.save();
         index = collection.resource.length-1;
         chosenTags.forEach(chosenTag=>{
-            collection.resource[index].snnipet.tags.push(chosenTag);
+            collection.resource[index].snippet.tags.push(chosenTag);
         })
         try {
             collection = await collection.save();
@@ -146,4 +149,144 @@ ipcMain.on('new-playList-collection', async (e,playList,collectionTitle,chosenTa
         mss = "Ocurrio un error no se pudo guardar la playList"
         e.reply('new-playList-collection',mss);
     }
+})
+
+
+ipcMain.on('get-edit-collection', async (e,title)=>{
+    const getCollection = await Collection.findOne({title: title},{'title':1,'tags':1,'description':1,'_id':1}); 
+    console.log(getCollection);
+    e.reply('get-edit-collection',getCollection);
+})
+
+ipcMain.on('get-collection', (e,title)=>{
+    titleCollection = title;
+
+});
+
+ipcMain.on('edit-collection',async (e,editCollection,chosenTagsEdit)=>{
+    console.log(editCollection,chosenTagsEdit)
+    let collection = await Collection.findOne({title: titleCollection});
+    collection.title = editCollection.title;
+    collection.description = editCollection.description;
+    collection.tags = chosenTagsEdit;
+    try {
+        collection = await collection.save();
+    } catch (error) {
+        console.log(error)
+    }
+});
+
+ipcMain.on('get-collection-select', async (e) =>{
+    let videos =[];
+    let playList=[];
+    console.log(titleCollection);
+    const getCollection = await Collection.findOne({title: titleCollection}); 
+    getCollection.resource.forEach((element) =>{
+        if (element.type == 'VIDEO') {
+            let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet&id='+element.snippet.id+'&maxResults=1&key=';
+            Axios.get(apiCallVideo + YOUTUBE_API_KEY,{
+                headers: {
+                    Host:'www.googleapis.com',
+                    Authorization: 'Bearer '+userToken.access_token,
+                    Accept:'application/json'
+                } 
+            }).then( async (res)=>{
+                let data = await res.data.items;
+                for (let i = 0; i < data.length; i++) {
+                        videos.push({
+                        startAt:element.snippet.startAt,
+                        endAt:element.snippet.endAt,
+                        tags:element.snippet.tags,
+                        comment:element.snippet.comment,
+                        title: data[i].snippet.title,
+                        image: data[i].snippet.thumbnails.medium, 
+                        channelTitle: data[i].snippet.channelTitle, 
+                        videoId: data[i].id, 
+                        date: data[i].snippet.publishedAt,
+                    })
+                    e.reply('get-collection-select',videos,playList)
+                }
+            }).catch((error) =>{
+                console.log(error);
+            })
+        }
+        else if (element.type == 'PLAYLIST') {
+            let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet&id='+element.snippet.id+'&maxResults=1&key='
+            Axios.get( apiCallPlayList + YOUTUBE_API_KEY,{
+                headers: {
+                    Host:'www.googleapis.com',
+                    Authorization: 'Bearer '+userToken.access_token,
+                    Accept:'application/json'
+                } 
+            }).then(async(res)=>{
+                let data = await res.data.items;
+                for (let i = 0; i < data.length; i++) {
+                        playList.push({
+                        tags:element.snippet.tags,
+                        comment:element.snippet.comment,
+                        title: data[i].snippet.title,
+                        image: data[i].snippet.thumbnails.medium, 
+                        channelTitle: data[i].snippet.channelTitle, 
+                        channelId:data[i].snippet.channelId,
+                        id:data[i].id,
+                        date: data[i].snippet.publishedAt,
+                    })
+                }     
+                e.reply('get-collection-select',videos,playList)
+            }).catch((error) =>{
+                console.log(error);
+            })
+            
+        }
+    
+    })
+
+})
+
+ipcMain.on('delete-video-playList',async (e,id)=>{
+    const collection = await Collection.findOne({title: titleCollection}); 
+    console.log(collection.resource[0].snippet);
+    collection.resource.map((element,i) => { 
+        if(element.snippet.id == id ){
+            collection.resource.splice(i,1);
+        }
+    })
+    await collection.save();
+    e.reply('delete-video-playList');
+})
+
+ipcMain.on('edit-video-collection', async (e,id,VideoCollection,chosenTags)=>{
+    console.log(chosenTags);
+    const collection = await Collection.findOne({title: titleCollection}); 
+    collection.resource.map((element,i) => { 
+        if(element.snippet.id == id ){
+            collection.resource[i].snippet.comment = VideoCollection.comment;
+            if(VideoCollection.startAt != null){
+                collection.resource[i].snippet.startAt = VideoCollection.startAt;
+            }
+            if(VideoCollection.endAt != null){
+                collection.resource[i].snippet.endAt = VideoCollection.endAt;
+            }
+            collection.resource[i].snippet.tags = chosenTags;         
+            console.log(collection.resource[i].snippet.tags)
+        }
+           
+    })
+    await collection.save();
+    e.reply('edit-video-playlist-collection');
+})
+
+ipcMain.on('edit-playlist-collection', async (e,id,playListCollection,chosenTagsEditPlaylist)=>{
+    console.log(chosenTagsEditPlaylist);
+    const collection = await Collection.findOne({title: titleCollection}); 
+    collection.resource.map((element,i) => { 
+        if(element.snippet.id == id ){
+            collection.resource[i].snippet.comment = playListCollection.comment;
+            collection.resource[i].snippet.tags = chosenTagsEditPlaylist;         
+            console.log(collection.resource[i].snippet.tags)
+        }
+           
+    })
+    await collection.save();
+    e.reply('edit-video-playlist-collection');
 })

@@ -11,10 +11,10 @@ ipcRenderer.on('listVideos',(e,listVideos)=>{
     for(let i=0; i< listVideos.length;i++){
         listOfVideos.innerHTML+= `
         <div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4" > 
-            <img class="card-img-top img-fluid border border-secondary" src="${listVideos[i].image.url}" alt="Card image cap" onClick="video('${listVideos[i].videoId}')">
+            <img class="card-img-top img-fluid border border-secondary" src="${listVideos[i].image.url}" alt="Card image cap" onClick="video('${listVideos[i].videoId}','${listVideos[i].date}')">
             <div class="card-body border  border-secondary" onClick="video('${listVideos[i].videoId}')"> 
                 <h6 class="card-title text-dark overflow" title="${listVideos[i].title}">${listVideos[i].title}</h6> 
-                <p class="channel-color">${listVideos[i].channelTitle}</p>
+                <p class="channel-color" onClick="getChannel('${listVideos[i].channelTitle}')">${listVideos[i].channelTitle}</p>
                 <p class="channel-color">Publicacion: ${listVideos[i].date.slice(0,10)}</p>           
             </div>  
             <div class="card-footer border  border-secondary">
@@ -25,12 +25,16 @@ ipcRenderer.on('listVideos',(e,listVideos)=>{
     }
 });
 
-function video(string) {
+function video(string,date) {
     console.log("hola");
-    ipcRenderer.send('video',string);
+    ipcRenderer.send('video',string,null, null, date);
     window.location.href = "./video.ejs";
   
 }
 function videoCollectionModal(id,date) {
     ipcRenderer.send('video-collection-modal',id,date);
+}
+
+function name(params) {
+    
 }

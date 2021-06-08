@@ -1,0 +1,107 @@
+<%-include('./layouts/main.ejs')%>
+<%-include('./layouts/nav-bar.ejs')%>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h5>Videos</h5>
+            <div class="container" id="videosCollection">
+
+            </div>
+        </div>
+        <div class="col-6">
+            <h5>PlayList</h5>
+            <div class="container" id="playListCollection">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Collection -->
+<div class="modal fade" id="modalCollectionEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Guardar video en coleccion</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="editVideoCollection">
+          <div class="modal-body">  
+            <div class="form-group">
+              <h6>Puedes elegir el momento donde quieres que empiece y termine el video</h6>
+              <label for="startAt">Inicio</label>
+              <input type="number" class="form-control" id="startAt" placeholder="Por favor copie el segundo">
+              <label for="endA">Fin</label>
+              <input type="number" class="form-control" id="endAt" placeholder="Por favor copie el segundo ">
+            </div>
+            <div class="form-group">
+              <label for="comment">Comentario</label>
+              <input type="text" class="form-control" id="comment" placeholder="Deja un comentario sobre el video" required>
+            </div>
+            <div class="form-group">
+              <label for="description">Selecciona o agrega nuevos tags a tu video</label>
+              <input type="text" class="form-control" id="tag" placeholder="Escriba tag" onInput="keyPressValue()">
+              <a class="btn btn-primary" id="saveTag">Guardar nuevo tag</a>
+              <h6 class="text-danger" id="noSave"></h6>
+              <h6 class="text-success" id="save"></h6>
+              <section id="slectTag" class="form-group">
+
+              </section>
+              <div id="labelTags">
+
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-dark">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+
+<!-- Modal Collection playList-->
+<div class="modal fade" id="modalCollectionPlaylistEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Guardar playList en coleccion</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="editPlayListCollection">
+          <div class="modal-body">   
+            <div class="form-group">
+              <label for="comment">Comentario para la playList</label>
+              <input type="text" class="form-control" id="commentPlaylist" placeholder="Deja un comentario sobre el video" required>
+            </div>
+            <div class="form-group">
+              <label for="description">Selecciona o agrega nuevos tags a tu  playList</label>
+              <input type="text" class="form-control" id="tagEditPlaylist" placeholder="Escriba tag" onInput="keyPressValueEditPlaylist()">
+              <a class="btn btn-primary" id="saveTagEditPlaylist">Guardar nuevo tag</a>
+              <h6 class="text-danger" id="noSaveEditPlaylist"></h6>
+              <h6 class="text-success" id="saveEditPlaylist"></h6>
+              <section id="slectTagEditPlaylist" class="form-group">
+  
+              </section>
+              <div id="labelTagsEditPlaylist">
+  
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-dark">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script src="../assets/js/collectionResource.js"></script>

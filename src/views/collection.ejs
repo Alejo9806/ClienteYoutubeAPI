@@ -18,7 +18,7 @@
       </table>
 </div>
 
-<!-- Modal Collection-->
+<!-- Modal New Collection-->
 <div class="modal fade" id="modalNewCollection" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -48,6 +48,49 @@
 
               </section>
               <div id="labelTags">
+
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-dark">Guardar</button>
+          </div>
+      </form>  
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal Edit Collection-->
+<div class="modal fade" id="modalEditCollection" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Editar colección</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <form id="editCollection">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="titleCollection">Nombre *</label>
+              <input type="text" class="form-control" id="titleCollectionEdit" placeholder="Ingresar Nombre *" required>
+            </div>
+            <div class="form-group">
+              <label for="description">Descripción</label>
+              <input type="text" class="form-control" id="descriptionEdit" placeholder="Ingrese descripcion">
+            </div>
+            <div class="form-group">
+              <label for="description">Selecciona o agrega nuevos tags a tu colección</label>
+              <input type="text" class="form-control" id="tagEdit" placeholder="Escriba tag" onInput="keyPressValueEdit()">
+              <a class="btn btn-primary" id="saveTagEdit">Guardar nuevo tag</a>
+              <h6 class="text-danger" id="noSaveEdit"></h6>
+              <h6 class="text-success" id="saveEdit"></h6>
+              <section id="slectTagEdit" class="form-group">
+
+              </section>
+              <div id="labelTagsEdit">
 
               </div>
             </div>

@@ -9,6 +9,9 @@ const Axios = require('axios');
 
 //global variables
 let idVideo;
+let starAtVideo;
+let endAtVideo;
+let date;
 
 //Use api to get list of most popular videos
 ipcMain.on('listVideos', (e) => {
@@ -22,7 +25,8 @@ ipcMain.on('listVideos', (e) => {
                 image: data[i].snippet.thumbnails.medium, 
                 channelTitle: data[i].snippet.channelTitle, 
                 videoId: data[i].id, 
-                date: data[i].snippet.publishedAt 
+                date: data[i].snippet.publishedAt, 
+                channelId: data[i].snippet.channelId
             }
         }
         e.reply('listVideos', listVideos);
@@ -31,11 +35,15 @@ ipcMain.on('listVideos', (e) => {
 
 
 //Get id of the specific video
-ipcMain.on('video', (e, id) => {
+ipcMain.on('video', (e, id , starAt, endAt, dates) => {
+    console.log(id , starAt, endAt, dates)
     idVideo = id;
+    starAtVideo = starAt;
+    endAtVideo = endAt;
+    date = dates;
 });
 
 //Send the id of the specific video to the customer
 ipcMain.on('getVideo', (e) => {
-    e.reply('getVideo', idVideo);
+    e.reply('getVideo', idVideo,starAtVideo,endAtVideo,date);
 });

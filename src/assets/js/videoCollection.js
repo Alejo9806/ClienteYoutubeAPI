@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded',(e)=>{
 ipcRenderer.on('collection',(e,collections)=>{
     console.log(collections);
     let selectedCollection = document.getElementById("selectedCollection");
-    selectedCollection.innerHTML ='<option selected>Open this select menu</option>';
+    selectedCollection.innerHTML ='<option selected value="" >Open this select menu</option>';
     collections.forEach( (collection) => {
         selectedCollection.innerHTML+=`
         <option value="${collection.title}">${collection.title}</option>

@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const resourceSchema = new Schema ({
         type:String,
-        snnipet:{
+        snippet:{
             date:String,
             id:String,
             startAt:Number,
