@@ -3,14 +3,20 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-6">
+        <div class="col-4">
             <h5>Videos</h5>
             <div class="container" id="videosCollection">
 
             </div>
         </div>
-        <div class="col-6">
-            <h5>PlayList</h5>
+        <div class="col-4">
+          <h5>Canales</h5>
+          <div class="container" id="channelsCollection">
+
+          </div>
+      </div>
+        <div class="col-4">
+            <h5>PlayLists</h5>
             <div class="container" id="playListCollection">
 
             </div>
@@ -24,7 +30,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Guardar video en coleccion</h5>
+          <h5 class="modal-title" id="exampleModalLongTitle">Editar metadatos del video</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -71,7 +77,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Guardar playList en coleccion</h5>
+          <h5 class="modal-title" id="exampleModalLongTitle">Editar metadatos del playList</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -103,5 +109,45 @@
       </div>
     </div>
   </div>
+
+  
+<!-- Modal Collection channel-->
+<div class="modal fade" id="modalCollectionChannelEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Editar metadatos del canal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="editChannelCollection">
+        <div class="modal-body">   
+          <div class="form-group">
+            <label for="comment">Comentario para el canal</label>
+            <input type="text" class="form-control" id="commentChannel" placeholder="Deja un comentario sobre el video" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Selecciona o agrega nuevos tags a tu  playList</label>
+            <input type="text" class="form-control" id="tagEditChannel" placeholder="Escriba tag" onInput="keyPressValueEditChannel()">
+            <a class="btn btn-primary" id="saveTagEditChannel">Guardar nuevo tag</a>
+            <h6 class="text-danger" id="noSaveEditChannel"></h6>
+            <h6 class="text-success" id="saveEditChannel"></h6>
+            <section id="slectTagEditChannel" class="form-group">
+
+            </section>
+            <div id="labelTagsEditChannel">
+
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-dark">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 <script src="../assets/js/collectionResource.js"></script>

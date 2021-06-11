@@ -62,7 +62,7 @@ ipcMain.on('playListItems',(e,id)=>{
         } 
     }).then((res)=>{
         let data = res.data.items
-        
+        console.log(data[0].snippet)
         for(let i =0; i<data.length;i++){
             playListItems[i] = {
                 title: data[i].snippet.title, 
@@ -72,7 +72,9 @@ ipcMain.on('playListItems',(e,id)=>{
                 date: data[i].snippet.publishedAt,
                 playListId:data[i].snippet.playlistId,
                 channelVideoTittle: data[i].snippet.videoOwnerChannelTitle,
-                videoId:data[i].snippet.resourceId.videoId
+                videoId:data[i].snippet.resourceId.videoId,
+                videoOwnerChannelId: data[i].snippet.videoOwnerChannelId,
+                channelId:data[i].snippet.channelId
             }
             console.log(data[i].contentDetails);
         }

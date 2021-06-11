@@ -9,10 +9,10 @@ ipcRenderer.on('search',(e,results)=>{
     for(let i=0; i< results.length;i++){
         listResult.innerHTML += `<div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4" > 
         <img class="card-img-top img-fluid border border-secondary" src="${results[i].image.url}" alt="Card image cap" onClick="video('${results[i].videoId}','${results[i].date}')">
-        <div class="card-body border  border-secondary" onClick="video('${results[i].videoId}')"> 
-            <h6 class="card-title text-dark overflow" title="${results[i].title}">${results[i].title}</h6> 
+        <div class="card-body border  border-secondary"> 
+            <h6 class="card-title text-dark overflow" title="${results[i].title}"  onClick="video('${results[i].videoId}')">${results[i].title}</h6> 
             <p class="channel-color">${results[i].description}</p>
-            <p class="channel-color">${results[i].channelTitle}</p>
+            <p class="channel-color"  onClick="getChannel('${results[i].channelId}')">${results[i].channelTitle}</p>
             <p class="channel-color">Publicacion: ${results[i].date.slice(0,10)}</p>
         </div>  
         <div class="card-footer border  border-secondary">
@@ -29,6 +29,14 @@ function video(string,date) {
     window.location.href = "./video.ejs";
   
 }
+
+//* Get channel
+function getChannel(channelId) {
+    console.log("hola");
+    ipcRenderer.send('channel',channelId);
+    window.location.href = "./channel.ejs";
+}
+
 
 function videoCollectionModal(id,date) {
     ipcRenderer.send('video-collection-modal',id,date);

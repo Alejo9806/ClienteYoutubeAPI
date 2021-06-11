@@ -1,4 +1,5 @@
-const newPlayListCollection = document.getElementById("newPlayListCollection");
+let channel = document.getElementById("channel");
+let newChannelCollection = document.getElementById("newChannelCollection");
 const tagInput = document.getElementById("tag");
 const saveTag = document.getElementById("saveTag");
 const save = document.getElementById("save");
@@ -6,54 +7,44 @@ const noSave = document.getElementById("noSave");
 const labelTags = document.getElementById("labelTags");
 const slectTag = document.getElementById("slectTag");
 let chosenTags =[];
-let playListId;
-let playListDate;
+let idChannel;
+let dateChannel;
 
 
-document.addEventListener('DOMContentLoaded',(e)=>{
-    ipcRenderer.send('playList');
+document.addEventListener('DOMContentLoaded', (e) => {
+    ipcRenderer.send('getChannel');
     ipcRenderer.send('collection');
-})
-
-ipcRenderer.on('playList',(e,playList)=>{
-    let listOfPlaylist=document.getElementById("playList"); 
-    listOfPlaylist.innerHTML=''
-    for(let i=0; i< playList.length;i++){
-        listOfPlaylist.innerHTML += `<div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4"> 
-        <img class="card-img-top img-fluid border border-secondary" src="${playList[i].image.url}" alt="Card image cap" onClick="getItems('${playList[i].id}')">
-        <div class="card-body border  border-secondary"  > 
-            <h6 class="card-title text-dark overflow" title="${playList[i].title}" onClick="getItems('${playList[i].id}')">${playList[i].title}</h6> 
-            <p class="channel-color" onClick="getChannel('${playList[i].channelId}')">${playList[i].channelTitle}</p>
-           
-        </div>  
-        <div class="card-footer border  border-secondary">
-            <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalCollectionPlaylist" onClick="playListCollectionModal('${playList[i].id}','${playList[i].date}')">Agregar a coleccion</button>
-        </div>  
-    </div>`
-    }
 });
 
-function getItems(string) {
-    console.log("hola");
-    ipcRenderer.send('playlisId',string);
-    window.location.href = "./playListItems.ejs";
-  
-}
-//* Get channel
-function getChannel(channelId) {
-    console.log("hola");
-    ipcRenderer.send('channel',channelId);
-    window.location.href = "./channel.ejs";
-}
 
-function playListCollectionModal(id,date) {
-    ipcRenderer.send('playList-collection-modal',id,date);
+ipcRenderer.on('getChannel',(e,channelDetails)=>{
+    console.log(channelDetails);
+    channel.innerHTML =  ` 
+    <div class="container" style="background-image: url('${channelDetails.imageBanner}'); height:400px;background-repeat: no-repeat;background-size: 100% 100%; background-position: center center;">
+    </div>
+    <div class="container mt-4">
+        <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
+        <div class="d-inline">
+            <h3 class="text-dark ml-2 d-inline">${channelDetails.title}</h3>
+            <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
+        </div>
+        <div class="float-right">
+            <a class="btn btn-dark">SUSCRITO</a>
+            <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${channelDetails.id}','${channelDetails.publishedAt}')">COLECCIÓN</a>
+        </div>
+    </div>
+    ` 
+});
+
+function channelCollectionModal(id,date) {
+    idChannel= id;
+    dateChannel= date;
 }
 
 ipcRenderer.on('collection',(e,collections)=>{
     console.log(collections);
-    let selectedCollection = document.getElementById("selectedCollectionPlaylist");
-    selectedCollection.innerHTML ='<option selected>Open this select menu</option>';
+    let selectedCollection = document.getElementById("selectedCollectionChannel");
+    selectedCollection.innerHTML ='<option selected value="" >Open this select menu</option>';
     collections.forEach( (collection) => {
         selectedCollection.innerHTML+=`
         <option value="${collection.title}">${collection.title}</option>
@@ -61,24 +52,17 @@ ipcRenderer.on('collection',(e,collections)=>{
     });
 });
 
-ipcRenderer.on('playList-collection-modal',(e,id,date)=>{
-    console.log(id,date)
-    playListId = id;
-    playListDate = date;
-});
-
-
-newPlayListCollection.addEventListener('submit',(e)=>{
-    let collection = document.getElementById("selectedCollectionPlaylist").value;
-    const playList= {
-        type:'PLAYLIST',
-        date:playListDate,
-        id:playListId,
+newChannelCollection.addEventListener('submit',(e)=>{
+    let collection = document.getElementById("selectedCollectionChannel").value;
+    const channel= {
+        type:'CHANNEL',
+        date:dateChannel,
+        id:idChannel,
         comment:document.getElementById("comment").value
     };
-    console.log(collection,playList,chosenTags)
-    ipcRenderer.send('new-playList-collection',playList,collection,chosenTags);
-    newPlayListCollection.reset();
+    console.log(collection,channel)
+    ipcRenderer.send('new-channel-collection',channel,collection,chosenTags);
+    newChannelCollection.reset();
 });
 
 function keyPressValue(){

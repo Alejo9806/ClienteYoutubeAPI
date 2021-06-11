@@ -25,6 +25,7 @@ require('./controllers/search.controller');//Search Videos
 require('./controllers/playlist.controller');//PlayList and items of each of the playlists
 require('./controllers/video.controller');//Home video list and specific video for the reporter window
 require('./controllers/collection.controller');//
+require('./controllers/channel.controller')//
 
 //Init mainWindow 
 app.on('ready', () => {

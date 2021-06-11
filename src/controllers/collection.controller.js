@@ -88,6 +88,7 @@ ipcMain.on('new-video-collection',async (e,video,collectionTitle,chosenTags)=>{
             startAt: video.startAt,
             endAt:video.endAt,
             comment:video.comment,
+            tags:chosenTags
         }
     });
 
@@ -95,24 +96,40 @@ ipcMain.on('new-video-collection',async (e,video,collectionTitle,chosenTags)=>{
     try {
         mss = "Video guardado correctamente"
         collection = await collection.save();
-        index = collection.resource.length-1;
-        chosenTags.forEach(chosenTag=>{
-            collection.resource[index].snippet.tags.push(chosenTag);
-        })
-        try {
-            collection = await collection.save();
-            console.log(collection);
-            e.reply('new-video-collection',mss);
-        } catch (error) {
-            mss = "Ocurrio un error no se pudo guardar el video"
-            e.reply('new-video-collection',mss);
-        }
-        
+        console.log(collection);
+        e.reply('new-video-collection',mss);
     } catch (error) {
         mss = "Ocurrio un error no se pudo guardar el video"
         e.reply('new-video-collection',mss);
     }
+})
 
+
+ipcMain.on('new-channel-collection',async (e,channel,collectionTitle,chosenTags)=>{
+    console.log(channel);
+    console.log(collectionTitle);
+    let mss;
+    let collection = await Collection.findOne({title:collectionTitle});  
+    collection.resource.push({ 
+        type:channel.type,
+        snippet:{ 
+            date :channel.date,
+            id: channel.id,
+            comment:channel.comment,
+            tags:chosenTags
+        }
+    });
+
+    console.log(collection);
+    try {
+        mss = "Playlist guardada correctamente"
+        collection = await collection.save();
+        console.log(collection);
+        e.reply('new-channel-collection',mss);
+    } catch (error) {
+        mss = "Ocurrio un error no se pudo guardar el video"
+        e.reply('new-channel-collection',mss);
+    }
 })
 
 ipcMain.on('new-playList-collection', async (e,playList,collectionTitle,chosenTags)=>{
@@ -126,29 +143,20 @@ ipcMain.on('new-playList-collection', async (e,playList,collectionTitle,chosenTa
             date : playList.date,
             id: playList.id,
             comment: playList.comment,
+            tags:chosenTags
         }
     });
     console.log(collection);
     try {
         mss = "Playlist guardada correctamente"
         collection = await collection.save();
-        index = collection.resource.length-1;
-        chosenTags.forEach(chosenTag=>{
-            collection.resource[index].snippet.tags.push(chosenTag);
-        })
-        try {
-            collection = await collection.save();
-            console.log(collection);
-            e.reply('new-playList-collection',mss);
-        } catch (error) {
-            mss = "Ocurrio un error no se pudo guardar la playList"
-            e.reply('new-playList-collection',mss);
-        }
-        
+        console.log(collection);
+        e.reply('new-playList-collection',mss);
     } catch (error) {
         mss = "Ocurrio un error no se pudo guardar la playList"
         e.reply('new-playList-collection',mss);
     }
+
 })
 
 
@@ -179,6 +187,7 @@ ipcMain.on('edit-collection',async (e,editCollection,chosenTagsEdit)=>{
 ipcMain.on('get-collection-select', async (e) =>{
     let videos =[];
     let playList=[];
+    let channel=[];
     console.log(titleCollection);
     const getCollection = await Collection.findOne({title: titleCollection}); 
     getCollection.resource.forEach((element) =>{
@@ -190,8 +199,8 @@ ipcMain.on('get-collection-select', async (e) =>{
                     Authorization: 'Bearer '+userToken.access_token,
                     Accept:'application/json'
                 } 
-            }).then( async (res)=>{
-                let data = await res.data.items;
+            }).then((res)=>{
+                let data = res.data.items;
                 for (let i = 0; i < data.length; i++) {
                         videos.push({
                         startAt:element.snippet.startAt,
@@ -203,8 +212,9 @@ ipcMain.on('get-collection-select', async (e) =>{
                         channelTitle: data[i].snippet.channelTitle, 
                         videoId: data[i].id, 
                         date: data[i].snippet.publishedAt,
+                        channelId: data[i].snippet.channelId
                     })
-                    e.reply('get-collection-select',videos,playList)
+                    e.reply('get-collection-select',videos,playList,channel)
                 }
             }).catch((error) =>{
                 console.log(error);
@@ -218,8 +228,8 @@ ipcMain.on('get-collection-select', async (e) =>{
                     Authorization: 'Bearer '+userToken.access_token,
                     Accept:'application/json'
                 } 
-            }).then(async(res)=>{
-                let data = await res.data.items;
+            }).then((res)=>{
+                let data = res.data.items;
                 for (let i = 0; i < data.length; i++) {
                         playList.push({
                         tags:element.snippet.tags,
@@ -232,7 +242,32 @@ ipcMain.on('get-collection-select', async (e) =>{
                         date: data[i].snippet.publishedAt,
                     })
                 }     
-                e.reply('get-collection-select',videos,playList)
+                e.reply('get-collection-select',videos,playList,channel)
+            }).catch((error) =>{
+                console.log(error);
+            })
+            
+        }else if (element.type == 'CHANNEL') {
+            let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics%2CbrandingSettings&id='+element.snippet.id+'&key='
+            Axios.get( apiCallPlayList + YOUTUBE_API_KEY,{
+                headers: {
+                    Host:'www.googleapis.com',
+                    Authorization: 'Bearer '+userToken.access_token,
+                    Accept:'application/json'
+                } 
+            }).then((res)=>{
+                let data = res.data.items;
+                for (let i = 0; i < data.length; i++) {
+                        channel.push({
+                        id:element.snippet.id,
+                        tags:element.snippet.tags,
+                        comment:element.snippet.comment,
+                        title: data[i].snippet.title,
+                        image: data[i].snippet.thumbnails.default.url, 
+                        date: data[i].snippet.publishedAt,
+                    })
+                }     
+                e.reply('get-collection-select',videos,playList,channel)
             }).catch((error) =>{
                 console.log(error);
             })
@@ -243,7 +278,7 @@ ipcMain.on('get-collection-select', async (e) =>{
 
 })
 
-ipcMain.on('delete-video-playList',async (e,id)=>{
+ipcMain.on('delete-video-playList-channel',async (e,id)=>{
     const collection = await Collection.findOne({title: titleCollection}); 
     console.log(collection.resource[0].snippet);
     collection.resource.map((element,i) => { 
@@ -252,7 +287,7 @@ ipcMain.on('delete-video-playList',async (e,id)=>{
         }
     })
     await collection.save();
-    e.reply('delete-video-playList');
+    e.reply('delete-video-playList-channel');
 })
 
 ipcMain.on('edit-video-collection', async (e,id,VideoCollection,chosenTags)=>{
@@ -273,7 +308,7 @@ ipcMain.on('edit-video-collection', async (e,id,VideoCollection,chosenTags)=>{
            
     })
     await collection.save();
-    e.reply('edit-video-playlist-collection');
+    e.reply('edit-video-playlist-channel-collection');
 })
 
 ipcMain.on('edit-playlist-collection', async (e,id,playListCollection,chosenTagsEditPlaylist)=>{
@@ -288,5 +323,19 @@ ipcMain.on('edit-playlist-collection', async (e,id,playListCollection,chosenTags
            
     })
     await collection.save();
-    e.reply('edit-video-playlist-collection');
+    e.reply('edit-video-playlist-channel-collection');
+})
+
+ipcMain.on('edit-channel-collection', async (e,id,channelCollection,chosenTagsEditChannel) =>{
+    const collection = await Collection.findOne({title: titleCollection}); 
+    collection.resource.map((element,i) => { 
+        if(element.snippet.id == id ){
+            collection.resource[i].snippet.comment = channelCollection.comment;
+            collection.resource[i].snippet.tags = chosenTagsEditChannel;         
+            console.log(collection.resource[i].snippet.tags)
+        }
+           
+    })
+    await collection.save();
+    e.reply('edit-video-playlist-channel-collection');
 })

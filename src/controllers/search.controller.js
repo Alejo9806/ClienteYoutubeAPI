@@ -41,7 +41,8 @@ ipcMain.on('search',(e)=>{
                 channelTitle: data[i].snippet.channelTitle, 
                 videoId: data[i].id.videoId, 
                 date: data[i].snippet.publishedAt,
-                description:data[i].snippet.description
+                description:data[i].snippet.description,
+                channelId: data[i].snippet.channelId, 
             }
         }
         e.reply('search', results);
