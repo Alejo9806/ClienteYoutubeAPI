@@ -23,8 +23,9 @@ ipcMain.on('channel',(e,id)=>{
 })
 
 ipcMain.on('getChannel',(e)=>{
-    let apicall = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics%2CbrandingSettings&id="+idChannel+"&key=";
-    Axios.get(apicall + YOUTUBE_API_KEY,{
+    let apicallChannel = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics%2CbrandingSettings&id="+idChannel+"&key=";
+    let apicallsubscription = "https://youtube.googleapis.com/youtube/v3/subscriptions?part=snippet%2CcontentDetails&forChannelId="+idChannel+"&mine=true&key="
+    Axios.get(apicallChannel + YOUTUBE_API_KEY,{
         headers: {
             Host:'www.googleapis.com',
             Authorization: 'Bearer '+userToken.access_token,
@@ -66,6 +67,75 @@ ipcMain.on('getChannel',(e)=>{
             }
         }
         
-        e.reply('getChannel', channelDetails);
+        Axios.get(apicallsubscription + YOUTUBE_API_KEY,{
+            headers: {
+                Host:'www.googleapis.com',
+                Authorization: 'Bearer '+userToken.access_token,
+                Accept:'application/json'
+            } 
+        }).then((res)=>{
+            let channelSubscription = true;
+            let dataSubscription = res.data.items;
+            let idSubscription;
+            console.log(dataSubscription);
+            if(!dataSubscription.length){
+                channelSubscription = false;
+                
+            }else{
+                idSubscription = dataSubscription[0].id
+                console.log(idSubscription);
+            }   
+            e.reply('getChannel', channelDetails,channelSubscription,idSubscription);
+        })
     })
+   
+})
+
+ipcMain.on('subscription',(e,channelId)=>{
+    let apicallsubscription = "https://youtube.googleapis.com/youtube/v3/subscriptions?part=snippet&key="
+    let mss;
+    let resource ={
+        snippet: {
+          resourceId: {
+            kind: 'youtube#channel',
+            channelId: channelId
+          }
+        }
+    };
+    Axios.post(apicallsubscription + YOUTUBE_API_KEY,resource,{  
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer '+userToken.access_token,
+            Accept:'application/json',
+            
+            
+        }
+    }).then((res)=>{
+        console.log(res.data.id)
+        mss = "Te has suscrito al canal"
+        e.reply('subscription',mss,res.data.id)
+    },(error)=>{
+        mss = "Ocurrio un error no te pudiste suscribir al canal itentalo mas tarde."
+        e.reply('subscription',mss)
+    }) 
+});
+
+ipcMain.on('unsubscribed',(e,id)=>{
+    let apicallunsubscription = " https://youtube.googleapis.com/youtube/v3/subscriptions?id="+id+"&key="
+    let mss;
+    Axios.delete(apicallunsubscription + YOUTUBE_API_KEY,{  
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer '+userToken.access_token,
+            Accept:'application/json',  
+        }
+    });
+    try {
+        mss = "Se elimino la suscripcion"
+        e.reply('unsubscribed',mss)  
+    } catch (error) {
+        mss = "Ocurrio un error no se pudo eliminar suscripcion."
+        e.reply('unsubscribed',mss)
+    }
+    
 })

@@ -1,3 +1,4 @@
+
 let channel = document.getElementById("channel");
 let newChannelCollection = document.getElementById("newChannelCollection");
 const tagInput = document.getElementById("tag");
@@ -9,6 +10,7 @@ const slectTag = document.getElementById("slectTag");
 let chosenTags =[];
 let idChannel;
 let dateChannel;
+let idSubscription;
 
 
 document.addEventListener('DOMContentLoaded', (e) => {
@@ -17,28 +19,86 @@ document.addEventListener('DOMContentLoaded', (e) => {
 });
 
 
-ipcRenderer.on('getChannel',(e,channelDetails)=>{
-    console.log(channelDetails);
-    channel.innerHTML =  ` 
-    <div class="container" style="background-image: url('${channelDetails.imageBanner}'); height:400px;background-repeat: no-repeat;background-size: 100% 100%; background-position: center center;">
-    </div>
-    <div class="container mt-4">
-        <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
-        <div class="d-inline">
-            <h3 class="text-dark ml-2 d-inline">${channelDetails.title}</h3>
-            <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
+ipcRenderer.on('getChannel',(e,channelDetails,channelSubscription,subscriptionId)=>{
+    console.log(channelDetails,channelSubscription,subscriptionId);
+    if(channelSubscription){
+        channel.innerHTML =  ` 
+        <p id="unsubscribedMss"></p>
+        <div class="container" style="background-image: url('${channelDetails.imageBanner}'); height:400px;background-repeat: no-repeat;background-size: 100% 100%; background-position: center center;">
         </div>
-        <div class="float-right">
-            <a class="btn btn-dark">SUSCRITO</a>
-            <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${channelDetails.id}','${channelDetails.publishedAt}')">COLECCIÓN</a>
+        <div class="container mt-4">
+            <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
+            <div class="d-inline">
+                <h3 class="text-dark ml-2 d-inline">${channelDetails.title}</h3>
+                <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
+            </div>
+            <div class="float-right">
+                <a class="btn btn-dark" data-toggle="modal" data-target="#unsubscriptionModal" onClick="sendId('${subscriptionId}','${channelDetails.publishedAt}','${channelDetails.id}')"">SUSCRITO</a>
+                <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${channelDetails.id}','${channelDetails.publishedAt}')">COLECCIÓN</a>
+            </div>
         </div>
-    </div>
-    ` 
+        ` 
+    }else{
+        channel.innerHTML =  ` 
+        <p id="unsubscribedMss"></p>
+        <div class="container" style="background-image: url('${channelDetails.imageBanner}'); height:400px;background-repeat: no-repeat;background-size: 100% 100%; background-position: center center;">
+        </div>
+        <div class="container mt-4">
+            <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
+            <div class="d-inline">
+                <h3 class="text-dark ml-2 d-inline">${channelDetails.title}</h3>
+                <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
+            </div>
+            <div class="float-right" id="subscribed">
+                <a class="btn btn-dark" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${channelDetails.id}','${channelDetails.publishedAt}')">SUSCRIBIRSE</a>
+                <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${channelDetails.id}','${channelDetails.publishedAt}')">COLECCIÓN</a>
+            </div>
+        </div>
+        ` 
+    }
+   
 });
 
 function channelCollectionModal(id,date) {
     idChannel= id;
     dateChannel= date;
+}
+
+function subscription(id,publishedAt) {
+    console.log(id)
+
+    ipcRenderer.send('subscription',id);
+    ipcRenderer.on('subscription',(e,mss, subscriptionId)=>{
+        document.getElementById("subcriptionMss").innerHTML = `<p>${mss}</p>` 
+        if(mss == "Te has suscrito al canal"){
+            document.getElementById("subscribed").innerHTML = ` 
+            <a class="btn btn-dark" data-toggle="modal" data-target="#unsubscriptionModal" onClick="sendId('${subscriptionId}','${publishedAt}','${id}')">SUSCRITO</a>
+            <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${id}','${publishedAt}')">COLECCIÓN</a>
+            ` 
+        }
+      
+    })
+}
+
+function unsubscribe() {
+    console.log(idSubscription)
+    ipcRenderer.send('unsubscribed',idSubscription);
+    ipcRenderer.on('unsubscribed',(e,mss)=>{
+        document.getElementById("unsubscribedMss").innerHTML=`${mss}`; 
+        if(mss == "Se elimino la suscripcion"){
+            document.getElementById("subscribed").innerHTML =` 
+            <a class="btn btn-dark" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${idChannel}','${dateChannel}')">SUSCRIBIRSE</a>
+            <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${idChannel}','${dateChannel}')">COLECCIÓN</a>
+            ` 
+        }
+    })
+}
+
+function sendId(id,date,idchannels) {
+    console.log(id)
+    idSubscription = id;
+    dateChannel = date;
+    idChannel = idchannels;
 }
 
 ipcRenderer.on('collection',(e,collections)=>{
@@ -51,6 +111,7 @@ ipcRenderer.on('collection',(e,collections)=>{
         `
     });
 });
+
 
 newChannelCollection.addEventListener('submit',(e)=>{
     let collection = document.getElementById("selectedCollectionChannel").value;
