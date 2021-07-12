@@ -12,7 +12,7 @@ ipcRenderer.on('listVideos',(e,listVideos)=>{
     for(let i=0; i< listVideos.length;i++){
         listOfVideos.innerHTML+= `
         <div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4" > 
-            <img class="card-img-top img-fluid border border-secondary" src="${listVideos[i].image.url}" alt="Card image cap" onClick="video('${listVideos[i].videoId}','${listVideos[i].date}')">
+            <img class="card-img-top img-fluid border border-secondary" src="${listVideos[i].image.url}" alt="Card image cap" onClick="video('${listVideos[i].videoId}')">
             <div class="card-body border  border-secondary"> 
                 <h6 class="card-title text-dark overflow" title="${listVideos[i].title}" onClick="video('${listVideos[i].videoId}')">${listVideos[i].title}</h6> 
                 <p class="channel-color" onClick="getChannel('${listVideos[i].channelId}')">${listVideos[i].channelTitle}</p>
@@ -26,9 +26,9 @@ ipcRenderer.on('listVideos',(e,listVideos)=>{
     }
 });
 
-function video(string,date) {
+function video(string) {
     console.log("hola");
-    ipcRenderer.send('video',string,null, null, date);
+    ipcRenderer.send('video',string,null, null);
     window.location.href = "./video.ejs";
   
 }

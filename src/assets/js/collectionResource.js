@@ -49,9 +49,9 @@ ipcRenderer.on('get-collection-select', (e,videos,playList,channel)=>{
     videos.forEach(element => {
             videosCollection.innerHTML+= `
                 <div class="card col-lg-10 col-md-10 col-sm-10 col-10 bg-card border-0 mt-4" > 
-                    <img class="card-img-top img-fluid border border-secondary" src="${element.image.url}" alt="Card image cap" onClick="video('${element.videoId}','${element.startAt}','${element.endAt}','${element.date}')">
+                    <img class="card-img-top img-fluid border border-secondary" src="${element.image.url}" alt="Card image cap" onClick="video('${element.videoId}','${element.startAt}','${element.endAt}')">
                     <div class="card-body border  border-secondary" > 
-                        <h6 class="card-title text-dark overflow" title="${element.title}" onClick="video('${element.videoId}')">${element.title}</h6> 
+                        <h6 class="card-title text-dark overflow" title="${element.title}" onClick="video('${element.videoId},'${element.startAt}','${element.endAt}')">${element.title}</h6> 
                         <p class="channel-color" onClick="getChannel('${element.channelId}')">${element.channelTitle}</p>
                         <p class="channel-color">Publicacion: ${element.date.slice(0,10)}</p>           
                     </div>  
@@ -92,9 +92,9 @@ ipcRenderer.on('get-collection-select', (e,videos,playList,channel)=>{
 })
 
 //* Get video
-function video(string,startAt,endAt,date) {
+function video(string,startAt,endAt) {
     console.log("hola");
-    ipcRenderer.send('video',string,startAt,endAt,date);
+    ipcRenderer.send('video',string,startAt,endAt);
     window.location.href = "./video.ejs";
   
 }

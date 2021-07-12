@@ -40,7 +40,6 @@ ipcMain.on('playList',(e)=>{
             }
         }
         e.reply('playList', playList);
-        console.log(playList);
     });
 });
 
@@ -76,8 +75,37 @@ ipcMain.on('playListItems',(e,id)=>{
                 videoOwnerChannelId: data[i].snippet.videoOwnerChannelId,
                 channelId:data[i].snippet.channelId
             }
-            console.log(data[i].contentDetails);
         }
         e.reply('playListItems', playListItems);
     });
 });
+
+ipcMain.on('newPlaylist',(e,newPlaylist)=>{
+    let apiCallPlaylist = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2C%20status&key="
+    console.log(newPlaylist)
+    let resource ={
+        snippet: {
+            title: newPlaylist.title,
+            description: newPlaylist.description
+        },
+        status: {
+            privacyStatus: newPlaylist.status
+        }
+    };
+    Axios.post(apiCallPlaylist + YOUTUBE_API_KEY,resource,{  
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer'+userToken.access_token,
+            Accept:'application/json',  
+        }
+    }).then((res)=>{
+        console.log(res)
+        mss = "Se creo la playlist correctamente"
+        e.reply('newPlaylist',mss)
+    },(error)=>{
+        console.log(error)
+        mss = "Ocurrio un error no se pudo crear la playlist, itentalo mas tarde."
+        e.reply('newPlaylist',mss)
+    }) 
+})
+

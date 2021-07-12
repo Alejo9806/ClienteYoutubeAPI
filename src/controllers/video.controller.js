@@ -11,6 +11,13 @@ const Axios = require('axios');
 let idVideo;
 let starAtVideo;
 let endAtVideo;
+let userToken;
+
+//get user information and token
+ipcMain.on('user',(e,token,info)=>{
+    userToken = token; 
+});
+
 
 
 //Use api to get list of most popular videos
@@ -44,10 +51,16 @@ ipcMain.on('video', (e, id , starAt, endAt) => {
 
 //Send the id of the specific video to the customer
 ipcMain.on('getVideo', (e) => {
-    apiCallVideo = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus&id="+idVideo+"&key=";
+    apiCallVideo = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus&id="+idVideo+"&maxResults=1&key=";
     let relatedVideos = [];
     let video;
-    Axios.get(apiCallVideo + YOUTUBE_API_KEY).then((res) =>{
+    Axios.get(apiCallVideo + YOUTUBE_API_KEY,{
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer '+userToken.access_token,
+            Accept:'application/json'
+        } 
+    }).then((res) =>{
         let data = res.data.items[0];
         video = {
             id : data.id,
@@ -65,24 +78,34 @@ ipcMain.on('getVideo', (e) => {
             dislikeCount : data.statistics.dislikeCount,
             commentCount : data.statistics.commentCount
         }
-        //* related video
-        apiRelatedVideo = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=60&order=viewCount&q="+video.title+"&safeSearch=moderate&key=";
-        Axios.get(apiRelatedVideo + YOUTUBE_API_KEY).then((res)=>{
+        //* Related video
+        apiRelatedVideo = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&order=viewCount&relatedToVideoId="+video.id+"&type=video&key=";
+        Axios.get(apiRelatedVideo + YOUTUBE_API_KEY,{
+            headers: {
+                Host:'www.googleapis.com',
+                Authorization: 'Bearer '+userToken.access_token,
+                Accept:'application/json'
+            } 
+        }).then((res)=>{
             let dataRelated = res.data.items;
             for (let i = 0; i < dataRelated.length; i++) {
-                relatedVideos[i] = { 
-                    title: dataRelated[i].snippet.title,
-                    image: dataRelated[i].snippet.thumbnails.medium, 
-                    channelTitle: dataRelated[i].snippet.channelTitle, 
-                    videoId: dataRelated[i].id.videoId, 
-                    date: dataRelated[i].snippet.publishedAt,
-                    description: dataRelated[i].snippet.description,
-                    channelId: dataRelated[i].snippet.channelId, 
+                if(dataRelated[i].snippet){
+                    relatedVideos[i] = { 
+                        title: dataRelated[i].snippet.title,
+                        image: dataRelated[i].snippet.thumbnails.medium, 
+                        channelTitle: dataRelated[i].snippet.channelTitle, 
+                        videoId: dataRelated[i].id.videoId, 
+                        date: dataRelated[i].snippet.publishedAt,
+                        description: dataRelated[i].snippet.description,
+                        channelId: dataRelated[i].snippet.channelId, 
+                    }
                 }
             }
+           
             e.reply('getVideo', video,starAtVideo,endAtVideo,relatedVideos);
         })
         
     })
-   
+    
 });
+

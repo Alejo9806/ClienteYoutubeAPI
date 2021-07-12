@@ -8,9 +8,9 @@ ipcRenderer.on('playListItems',(e,playListItems)=>{
     listOfPlaylistItems.innerHTML=''
     for(let i=0; i< playListItems.length;i++){
         listOfPlaylistItems.innerHTML += `<div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4" > 
-        <img class="card-img-top img-fluid border border-secondary" src="${playListItems[i].image.url}" alt="Card image cap"  onClick="video('${playListItems[i].videoId}','${playListItems[i].date}')">
+        <img class="card-img-top img-fluid border border-secondary" src="${playListItems[i].image.url}" alt="Card image cap"  onClick="video('${playListItems[i].videoId}')">
         <div class="card-body border  border-secondary"> 
-            <h6 class="card-title text-dark overflow" title="${playListItems[i].title}"  onClick="video('${playListItems[i].videoId}','${playListItems[i].date}')">${playListItems[i].title}</h6> 
+            <h6 class="card-title text-dark overflow" title="${playListItems[i].title}"  onClick="video('${playListItems[i].videoId}')">${playListItems[i].title}</h6> 
             <p class="channel-color" onClick="getChannel('${playListItems[i].videoOwnerChannelId}')">${playListItems[i].channelVideoTittle}</p>
         </div>  
         <div class="card-footer border  border-secondary">
@@ -21,9 +21,9 @@ ipcRenderer.on('playListItems',(e,playListItems)=>{
 })
 
 
-function video(string,date) {
+function video(string) {
     console.log("hola");
-    ipcRenderer.send('video',string,null, null, date);
+    ipcRenderer.send('video',string,null, null);
     window.location.href = "./video.ejs";
   
 }

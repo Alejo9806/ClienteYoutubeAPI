@@ -217,7 +217,6 @@ ipcMain.on('get-collection-select', async (e) =>{
                     e.reply('get-collection-select',videos,playList,channel)
                 }
             }).catch((error) =>{
-                console.log(error);
             })
         }
         else if (element.type == 'PLAYLIST') {
@@ -244,7 +243,6 @@ ipcMain.on('get-collection-select', async (e) =>{
                 }     
                 e.reply('get-collection-select',videos,playList,channel)
             }).catch((error) =>{
-                console.log(error);
             })
             
         }else if (element.type == 'CHANNEL') {
@@ -269,7 +267,6 @@ ipcMain.on('get-collection-select', async (e) =>{
                 }     
                 e.reply('get-collection-select',videos,playList,channel)
             }).catch((error) =>{
-                console.log(error);
             })
             
         }

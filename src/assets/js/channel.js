@@ -58,7 +58,7 @@ ipcRenderer.on('getChannel',(e,channelDetails,channelSubscription,subscriptionId
         ` 
     }
    document.getElementById("trailer").innerHTML = ` 
-        <div class="row" onClick="video('${videoTrailer.videoId}','${videoTrailer.date}')">
+        <div class="row" onClick="video('${videoTrailer.videoId}')">
         <div class = "col-6">
             <img src="${videoTrailer.image.url}" alt="">
         </div>
@@ -73,9 +73,9 @@ ipcRenderer.on('getChannel',(e,channelDetails,channelSubscription,subscriptionId
    ` 
 });
 
-function video(string,date) {
+function video(string) {
     console.log("hola");
-    ipcRenderer.send('video',string, null, null, date);
+    ipcRenderer.send('video',string, null, null);
     window.location.href = "./video.ejs";
   
 }

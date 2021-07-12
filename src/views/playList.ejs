@@ -2,6 +2,9 @@
 <%-include('./layouts/nav-bar.ejs')%>
 <body style="background-color: #F9F9F9;" >
     <div class="container mt-5">
+        <div class="d-flex justify-content-center">
+            <a class="btn btn-dark" type="button" data-toggle="modal" data-target="#modalPlaylist">Crear playList</a>
+        </div>
         <div class="row" id="playList">
            
         </div>
@@ -53,5 +56,42 @@
   </div>
 </div>
 
+
+
+<!-- Modal  playList-->
+<div class="modal fade" id="modalPlaylist" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Crear playList</h5>
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="newPlayList">
+        <div class="modal-body">  
+          <div class="form-group">
+            <label for="comment">Titulo</label>
+            <input type="text" class="form-control" id="titlePlaylist" placeholder="" required>
+          </div>  
+          <div class="form-group">
+            <label for="comment">Descripcion</label>
+            <input type="text" class="form-control" id="descriptionPlaylist" placeholder="" required>
+          </div>
+          <div class="form-group">
+            <select class="browser-default custom-select custom-select-lg mb-3" id="status" required>
+              <option selected value="public">Publico</option>
+              <option value="unlisted">Oculto</option>
+              <option value="private">Privado</option>
+            </select>  
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-dark">Crear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <script src="../assets/js/playList.js"></script>

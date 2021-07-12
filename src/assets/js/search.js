@@ -8,9 +8,9 @@ ipcRenderer.on('search',(e,results)=>{
     listResult.innerHTML='';
     for(let i=0; i< results.length;i++){
         listResult.innerHTML += `<div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4" > 
-        <img class="card-img-top img-fluid border border-secondary" src="${results[i].image.url}" alt="Card image cap" onClick="video('${results[i].videoId}','${results[i].date}')">
+        <img class="card-img-top img-fluid border border-secondary" src="${results[i].image.url}" alt="Card image cap" onClick="video('${results[i].videoId}')">
         <div class="card-body border  border-secondary"> 
-            <h6 class="card-title text-dark overflow" title="${results[i].title}"  onClick="video('${results[i].videoId}','${results[i].date}')">${results[i].title}</h6> 
+            <h6 class="card-title text-dark overflow" title="${results[i].title}"  onClick="video('${results[i].videoId}')">${results[i].title}</h6> 
             <p class="channel-color">${results[i].description}</p>
             <p class="channel-color"  onClick="getChannel('${results[i].channelId}')">${results[i].channelTitle}</p>
             <p class="channel-color">Publicacion: ${results[i].date.slice(0,10)}</p>
@@ -23,9 +23,9 @@ ipcRenderer.on('search',(e,results)=>{
     }
 });
 
-function video(string,date) {
+function video(string) {
     console.log("hola");
-    ipcRenderer.send('video',string, null, null, date);
+    ipcRenderer.send('video',string, null, null);
     window.location.href = "./video.ejs";
   
 }

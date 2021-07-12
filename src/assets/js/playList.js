@@ -1,3 +1,4 @@
+
 const newPlayListCollection = document.getElementById("newPlayListCollection");
 const tagInput = document.getElementById("tag");
 const saveTag = document.getElementById("saveTag");
@@ -152,3 +153,15 @@ function deletedTag(tag) {
         });
     }
 }
+
+//* New playList 
+
+document.getElementById("newPlayList").addEventListener('submit',(e)=>{
+    let newPlayList = {
+        title : document.getElementById("titlePlaylist").value,
+        description: document.getElementById("descriptionPlaylist").value,
+        status : document.getElementById("status").value
+    }
+    ipcRenderer.send('newPlaylist',newPlayList);
+    location.reload();
+})
