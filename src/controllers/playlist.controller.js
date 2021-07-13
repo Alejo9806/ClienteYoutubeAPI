@@ -95,7 +95,7 @@ ipcMain.on('new-playList',(e,newPlaylist)=>{
     Axios.post(apiCallAddPlaylist + YOUTUBE_API_KEY,resource,{  
         headers: {
             Host:'www.googleapis.com',
-            Authorization: 'Bearer'+userToken.access_token,
+            Authorization: 'Bearer '+userToken.access_token,
             Accept:'application/json',  
         }
     }).then((res)=>{
@@ -116,7 +116,7 @@ ipcMain.on('delete-playList',(e,id)=>{
     Axios.delete(apiCallDeletePlaylist + YOUTUBE_API_KEY, {  
         headers: {
             Host:'www.googleapis.com',
-            Authorization: 'Bearer'+userToken.access_token,
+            Authorization: 'Bearer '+userToken.access_token,
             Accept:'application/json',  
         }
     }).then((res)=>{
@@ -153,15 +153,14 @@ ipcMain.on('new-playlist-with-video',(e,newPlaylist,id) =>{
     Axios.post(apiCallAddPlaylist + YOUTUBE_API_KEY,resource,{  
         headers: {
             Host:'www.googleapis.com',
-            Authorization: 'Bearer'+userToken.access_token,
+            Authorization: 'Bearer '+userToken.access_token,
             Accept:'application/json',  
         }
     }).then((res)=>{
-        console.log(res)
         mss = "Se creo la playlist correctamente"
         let resourceVideoPlaylist= {
             snippet: {
-                playlistId: res.data.items.id,
+                playlistId: res.data.id,
                 resourceId: {
                   "videoId": id,
                   "kind": "youtube#video"
@@ -172,7 +171,7 @@ ipcMain.on('new-playlist-with-video',(e,newPlaylist,id) =>{
         Axios.post(apiCallAddVideo+ YOUTUBE_API_KEY,resourceVideoPlaylist,{  
             headers: {
                 Host:'www.googleapis.com',
-                Authorization: 'Bearer'+userToken.access_token,
+                Authorization: 'Bearer '+userToken.access_token,
                 Accept:'application/json',  
             }
         }).then((res)=>{
@@ -206,13 +205,13 @@ ipcMain.on('add-video-to-playlist',(e,id,idVideo,box)=>{
     Axios.post(apiCallAddVideo+ YOUTUBE_API_KEY,resourceVideoPlaylist,{  
         headers: {
             Host:'www.googleapis.com',
-            Authorization: 'Bearer'+userToken.access_token,
+            Authorization: 'Bearer '+userToken.access_token,
             Accept:'application/json',  
         }
     }).then((res)=>{
         mss = "Video añadido a playlist"
-        let idElementPlaylist = res.id;
-        e.reply('add-video-on-playlist',mss,idElementPlaylist,box)
+        let idElementPlaylist = res.data.id;
+        e.reply('add-video-to-playlist',mss,idElementPlaylist,box)
     },(error)=>{
         console.log(error);
         mss = "Ocurrio un error no se pudo añadir el video a la playlist, itentalo mas tarde."
@@ -227,7 +226,7 @@ ipcMain.on('delete-video-from-playlist',(e,id)=>{
     Axios.delete(apiCallDeleteVideoplayList + YOUTUBE_API_KEY, {  
         headers: {
             Host:'www.googleapis.com',
-            Authorization: 'Bearer'+userToken.access_token,
+            Authorization: 'Bearer '+userToken.access_token,
             Accept:'application/json',  
         }
     }).then((res)=>{

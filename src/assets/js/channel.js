@@ -57,20 +57,22 @@ ipcRenderer.on('getChannel',(e,channelDetails,channelSubscription,subscriptionId
         </div>
         ` 
     }
-   document.getElementById("trailer").innerHTML = ` 
-        <div class="row" onClick="video('${videoTrailer.videoId}')">
-        <div class = "col-6">
-            <img src="${videoTrailer.image.url}" alt="">
-        </div>
-        <div class="col-6">
-            <h5>${videoTrailer.title}</h5>
-            <h6>Publicacion: ${videoTrailer.date.slice(0,10)}</h6>
-            <p>
-            ${videoTrailer.description}
-            </p>
-        </div>
-        </div>
-   ` 
+    if(videoTrailer){
+        document.getElementById("trailer").innerHTML = ` 
+                <div class="row" onClick="video('${videoTrailer.videoId}')">
+                <div class = "col-6">
+                    <img src="${videoTrailer.image.url}" alt="">
+                </div>
+                <div class="col-6">
+                    <h5>${videoTrailer.title}</h5>
+                    <h6>Publicacion: ${videoTrailer.date.slice(0,10)}</h6>
+                    <p>
+                    ${videoTrailer.description}
+                    </p>
+                </div>
+                </div>
+                ` 
+    }
 });
 
 function video(string) {

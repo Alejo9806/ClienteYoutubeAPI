@@ -58,6 +58,7 @@ document.getElementById("newPlayList").addEventListener('submit',(e)=>{
 })
 
 ipcRenderer.on('add-video-to-playlist',(e,mss,idElementPlaylist,box)=>{
+    console.log(mss,idElementPlaylist,box)
     document.getElementById("mssPlaylist").innerHTML = mss;
     idElement.push({idElementPlaylist:idElementPlaylist,box:box});
 })

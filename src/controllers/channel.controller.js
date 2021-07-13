@@ -142,6 +142,7 @@ ipcMain.on('subscription',(e,channelId)=>{
         mss = "Te has suscrito al canal"
         e.reply('subscription',mss,res.data.id)
     },(error)=>{
+        console.log(error)
         mss = "Ocurrio un error no te pudiste suscribir al canal itentalo mas tarde."
         e.reply('subscription',mss)
     }) 
