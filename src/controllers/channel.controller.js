@@ -24,7 +24,7 @@ ipcMain.on('channel',(e,id)=>{
 
 ipcMain.on('getChannel',(e)=>{
     let apicallChannel = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics%2CbrandingSettings&id="+idChannel+"&key=";
-    let apicallsubscription = "https://youtube.googleapis.com/youtube/v3/subscriptions?part=snippet%2CcontentDetails&forChannelId="+idChannel+"&mine=true&key="
+    let apicallsubscription = "https://youtube.googleapis.com/youtube/v3/subscriptions?part=snippet%2CcontentDetails&forChannelId="+idChannel+"&mine=true&key=";
     let videoTrailer;
     Axios.get(apicallChannel + YOUTUBE_API_KEY,{
         headers: {

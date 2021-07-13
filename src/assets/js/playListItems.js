@@ -14,7 +14,8 @@ ipcRenderer.on('playListItems',(e,playListItems)=>{
             <p class="channel-color" onClick="getChannel('${playListItems[i].videoOwnerChannelId}')">${playListItems[i].channelVideoTittle}</p>
         </div>  
         <div class="card-footer border  border-secondary">
-            <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${playListItems[i].videoId}','${playListItems[i].date}')">Agregar a coleccion</button>
+            <button type="button" class="btn btn-dark mb-1 w-50" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${playListItems[i].videoId}','${playListItems[i].date}')">Agregar a coleccion</button>
+            <button type="button" class="btn btn-dark mb-1 w-50" onClick="deleteVideofromPlaylist('${playListItems[i].idElementPlaylist}')">Borrar de la playlist</button>
         </div>  
     </div>`
     }
@@ -39,3 +40,12 @@ function getChannel(channelId) {
 function videoCollectionModal(id,date) {
     ipcRenderer.send('video-collection-modal',id,date);
 }
+
+function deleteVideofromPlaylist(idElement) {
+    ipcRenderer.send('delete-video-from-playlist', idElement)
+    location.reload();
+}
+
+ipcRenderer.on('delete-video-from-playlist',(e,mss)=>{
+    document.getElementById("mssDelete").innerHTML = mss;
+})

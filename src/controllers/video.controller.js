@@ -54,6 +54,7 @@ ipcMain.on('getVideo', (e) => {
     apiCallVideo = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus&id="+idVideo+"&maxResults=1&key=";
     let relatedVideos = [];
     let video;
+    let channelDetails;
     Axios.get(apiCallVideo + YOUTUBE_API_KEY,{
         headers: {
             Host:'www.googleapis.com',
@@ -101,10 +102,45 @@ ipcMain.on('getVideo', (e) => {
                     }
                 }
             }
-           
-            e.reply('getVideo', video,starAtVideo,endAtVideo,relatedVideos);
-        })
-        
+            //* Information channel
+            let apicallChannel = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics%2CbrandingSettings&id="+video.channelId+"&key=";
+            let apicallsubscription = "https://youtube.googleapis.com/youtube/v3/subscriptions?part=snippet%2CcontentDetails&forChannelId="+video.channelId+"&mine=true&key=";
+            Axios.get(apicallChannel + YOUTUBE_API_KEY,{
+                headers: {
+                    Host:'www.googleapis.com',
+                    Authorization: 'Bearer '+userToken.access_token,
+                    Accept:'application/json'
+                } 
+            }).then((res)=>{
+                channelData = res.data.items[0];
+                    channelDetails = {
+                        id:channelData.id,
+                        title:channelData.snippet.title,
+                        thumbnails:channelData.snippet.thumbnails.default.url,
+                        subscriberCount:channelData.statistics.subscriberCount,
+                        hiddenSubscriberCoun:channelData.statistics.hiddenSubscriberCoun,
+                    }
+                    Axios.get(apicallsubscription + YOUTUBE_API_KEY,{
+                        headers: {
+                            Host:'www.googleapis.com',
+                            Authorization: 'Bearer '+userToken.access_token,
+                            Accept:'application/json'
+                        } 
+                    }).then((res)=>{
+                        let channelSubscription = true;
+                        let dataSubscription = res.data.items;
+                        let idSubscription;
+                        if(!dataSubscription.length){
+                            channelSubscription = false;
+                            
+                        }else{
+                            idSubscription = dataSubscription[0].id
+                            console.log(idSubscription);
+                        }   
+                        e.reply('getVideo', video,starAtVideo,endAtVideo,relatedVideos,channelDetails,channelSubscription,idSubscription);
+                    })    
+            })
+        })        
     })
     
 });

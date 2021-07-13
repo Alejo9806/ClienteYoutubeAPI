@@ -109,7 +109,27 @@ ipcMain.on('new-playList',(e,newPlaylist)=>{
     }) 
 })
 
-//*information to add video to playlist
+//*Delete playlist
+
+ipcMain.on('delete-playList',(e,id)=>{
+    let apiCallDeletePlaylist = "https://youtube.googleapis.com/youtube/v3/playlists?id="+id+"&key="
+    Axios.delete(apiCallDeletePlaylist + YOUTUBE_API_KEY, {  
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer'+userToken.access_token,
+            Accept:'application/json',  
+        }
+    }).then((res)=>{
+        mss = "Borrado"
+        e.reply('delete-playList',mss)
+    },(error)=>{
+        console.log(error);
+        mss = "Ocurrio un error no se pudo borrar la playlist, itentalo mas tarde."
+        e.reply('delete-playList',mss)
+    })  
+})
+
+//*Information to add video to playlist
 
 ipcMain.on('video-playlist-modal',(e,id,date)=>{
     e.reply('video-playlist-modal',id,date);

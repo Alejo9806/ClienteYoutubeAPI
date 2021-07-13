@@ -1,4 +1,3 @@
-
 const newPlayListCollection = document.getElementById("newPlayListCollection");
 const tagInput = document.getElementById("tag");
 const saveTag = document.getElementById("saveTag");
@@ -29,6 +28,7 @@ ipcRenderer.on('playList',(e,playList)=>{
         </div>  
         <div class="card-footer border  border-secondary">
             <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalCollectionPlaylist" onClick="playListCollectionModal('${playList[i].id}','${playList[i].date}')">Agregar a coleccion</button>
+            <button type="button" class="btn btn-dark w-100" onClick="deletePlaylist('${playList[i].id}')">Borrar playlist</button>
         </div>  
     </div>`
     }
@@ -156,7 +156,7 @@ function deletedTag(tag) {
 
 //* New playList 
 
-document.getElementById("new-playList").addEventListener('submit',(e)=>{
+document.getElementById("newPlayList").addEventListener('submit',(e)=>{
     let newPlayList = {
         title : document.getElementById("titlePlaylist").value,
         description: document.getElementById("descriptionPlaylist").value,
@@ -164,4 +164,15 @@ document.getElementById("new-playList").addEventListener('submit',(e)=>{
     }
     ipcRenderer.send('new-playList',newPlayList);
     location.reload();
+})
+
+//* Delete playlist 
+
+function deletePlaylist(id) {
+    ipcRenderer.send('delete-playList',id);
+    location.reload();
+}
+
+ipcRenderer.on('delete-playList',(e,mss)=>{
+    document.getElementById("mssDeletePlaylist").innerHTML = mss;
 })

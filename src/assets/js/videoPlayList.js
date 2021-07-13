@@ -36,9 +36,10 @@ function addPlayList(id,box) {
         ipcRenderer.send('add-video-to-playlist',id,idVideo,box)
     }else{
         console.log(id,"no", idElement)
-        idElement.forEach(element => {
+        idElement.forEach((element,index) => {
             if (element.box == box) {
                 ipcRenderer.send('delete-video-from-playlist', element.idElementPlaylist)
+                idElement.splice(index,1);
             }
         });
        

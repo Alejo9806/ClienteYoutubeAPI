@@ -1,19 +1,25 @@
 let id;
 let date;
+let idSubscription;
+let dateChannel;
+let idChannel;
 
 document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('getVideo');
 });
 
-ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos) => {
-    console.log(video,startAt,endAt,relatedVideos);
+ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos,channelDetails,channelSubscription,subscriptionId) => {
+    console.log(video,startAt,endAt,relatedVideos,channelDetails,channelSubscription,subscriptionId);
     document.getElementById("video").setAttribute("src", "https://www.youtube.com/embed/" + video.id+'?start='+startAt+'&end='+endAt);
     document.getElementById("title").innerHTML = video.title;
     document.getElementById("likes").innerHTML = video.likeCount;
+    document.getElementById("viewCount").innerHTML = video.viewCount;
+    document.getElementById("date").innerHTML = video.publishedAt.slice(0,10);
     document.getElementById("dislikes").innerHTML = video.dislikeCount;
     document.getElementById("description").innerHTML = video.description;
     document.getElementById("commentCount").innerHTML = video.commentCount + " comentarios";
     let videosRelated = document.getElementById("related");
+    let informationChannel = document.getElementById("informationChannel");
     videosRelated.innerHTML =  ``;
     for(let i=0; i< relatedVideos.length;i++){
         if(relatedVideos[i]){
@@ -31,6 +37,35 @@ ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos) => {
                 </div>
             </div>  ` 
         }
+    }
+    if(channelSubscription){
+        informationChannel.innerHTML =  ` 
+        <p id="unsubscribedMss"></p>
+        <div class="container">
+            <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
+            <div class="d-inline">
+                <h3 class="text-dark ml-2 d-inline">${channelDetails.title}</h3>
+                <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
+            </div>
+            <div class="float-right">
+                <a class="btn btn-dark" data-toggle="modal" data-target="#unsubscriptionModal" onClick="sendId('${subscriptionId}','${channelDetails.publishedAt}','${channelDetails.id}')"">SUSCRITO</a>
+            </div>
+        </div>
+        ` 
+    }else{
+        informationChannel.innerHTML =  ` 
+        <p id="unsubscribedMss"></p>
+        <div class="container">
+            <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
+            <div class="d-inline">
+                <h3 class="text-dark ml-2 d-inline">${channelDetails.title}</h3>
+                <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
+            </div>
+            <div class="float-right" id="subscribed">
+                <a class="btn btn-dark" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${channelDetails.id}','${channelDetails.publishedAt}')">SUSCRIBIRSE</a>
+            </div>
+        </div>
+        ` 
     }
 
     id = video.id;
@@ -71,3 +106,41 @@ function getChannel(channelId) {
     window.location.href = "./channel.ejs";
 }
 
+
+
+function subscription(id,publishedAt) {
+    console.log(id)
+
+    ipcRenderer.send('subscription',id);
+    ipcRenderer.on('subscription',(e,mss, subscriptionId)=>{
+        document.getElementById("subcriptionMss").innerHTML = `<p>${mss}</p>` 
+        if(mss == "Te has suscrito al canal"){
+            document.getElementById("subscribed").innerHTML = ` 
+            <a class="btn btn-dark" data-toggle="modal" data-target="#unsubscriptionModal" onClick="sendId('${subscriptionId}','${publishedAt}','${id}')">SUSCRITO</a>
+            <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${id}','${publishedAt}')">COLECCIÓN</a>
+            ` 
+        }
+      
+    })
+}
+
+function unsubscribe() {
+    console.log(idSubscription)
+    ipcRenderer.send('unsubscribed',idSubscription);
+    ipcRenderer.on('unsubscribed',(e,mss)=>{
+        document.getElementById("unsubscribedMss").innerHTML=`${mss}`; 
+        if(mss == "Se elimino la suscripcion"){
+            document.getElementById("subscribed").innerHTML =` 
+            <a class="btn btn-dark" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${idChannel}','${dateChannel}')">SUSCRIBIRSE</a>
+            <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${idChannel}','${dateChannel}')">COLECCIÓN</a>
+            ` 
+        }
+    })
+}
+
+function sendId(id,date,idchannels) {
+    console.log(id)
+    idSubscription = id;
+    dateChannel = date;
+    idChannel = idchannels;
+}
