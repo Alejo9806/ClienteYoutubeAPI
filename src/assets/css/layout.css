@@ -27,3 +27,8 @@
 	border-radius: 10px;
 	background-color: #555;
 }
+
+.hide{
+	display: none;
+	overflow: hidden;
+}

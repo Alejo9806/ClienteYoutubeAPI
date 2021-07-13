@@ -9,17 +9,38 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="modal-body">
-            <select class="browser-default custom-select custom-select-lg mb-3">
-                <option selected>Selecciona la playlist</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>              
+        <div class="modal-body" id="myPlayLists">
+            
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-dark">Guardar</button>
+          <h5 id="mssPlaylist"></h5>
+         <a type="button" id="newPlaylistVideo">Nueva lista de reproduccion</a>
+        <div class="container hide">
+           <form id="newPlayList">
+            <div class="modal-body">  
+              <div class="form-group">
+                <label for="titlePlaylist">Titulo</label>
+                <input type="text" class="form-control" id="titlePlaylist" placeholder="" required>
+              </div>  
+              <div class="form-group">
+                <label for="descriptionPlaylist">Descripcion</label>
+                <input type="text" class="form-control" id="descriptionPlaylist" placeholder="" required>
+              </div>
+              <div class="form-group">
+                <select class="browser-default custom-select custom-select-lg mb-3" id="status" required>
+                  <option selected value="public">Publico</option>
+                  <option value="unlisted">Oculto</option>
+                  <option value="private">Privado</option>
+                </select>  
+              </div>
+            </div>
+              <button type="submit" class="btn btn-dark float-right">Crear</button>
+              <a id="hidePlaylist">Ocultar</a>
+          </form>
+        </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script src="src/../../assets/js/videoPlayList.js"></script>

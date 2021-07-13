@@ -20,7 +20,7 @@ ipcRenderer.on('listVideos',(e,listVideos)=>{
             </div>  
             <div class="card-footer border  border-secondary">
             <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${listVideos[i].videoId}','${listVideos[i].date}')">Agregar a colección</button>
-            <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist">Agregar a playlist </button>
+            <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist" onClick="videoPlaylistModal('${listVideos[i].videoId}')">Agregar a playlist </button>
             </div> 
         </div>` 
     }
@@ -35,6 +35,11 @@ function video(string) {
 function videoCollectionModal(id,date) {
     ipcRenderer.send('video-collection-modal',id,date);
 }
+
+function videoPlaylistModal(id) {
+    ipcRenderer.send('video-playlist-modal',id);
+}
+
 
 function getChannel(channelId) {
     console.log("hola");

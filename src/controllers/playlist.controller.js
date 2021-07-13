@@ -61,13 +61,12 @@ ipcMain.on('playListItems',(e,id)=>{
         } 
     }).then((res)=>{
         let data = res.data.items
-        console.log(data[0].snippet)
         for(let i =0; i<data.length;i++){
             playListItems[i] = {
                 title: data[i].snippet.title, 
                 image: data[i].snippet.thumbnails.medium, 
                 channelTitle: data[i].snippet.channelTitle, 
-                videoId: data[i].id, 
+                idElementPlaylist: data[i].id, 
                 date: data[i].snippet.publishedAt,
                 playListId:data[i].snippet.playlistId,
                 channelVideoTittle: data[i].snippet.videoOwnerChannelTitle,
@@ -80,8 +79,9 @@ ipcMain.on('playListItems',(e,id)=>{
     });
 });
 
-ipcMain.on('newPlaylist',(e,newPlaylist)=>{
-    let apiCallPlaylist = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2C%20status&key="
+//* New playlist
+ipcMain.on('new-playList',(e,newPlaylist)=>{
+    let apiCallAddPlaylist = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2C%20status&key="
     console.log(newPlaylist)
     let resource ={
         snippet: {
@@ -92,7 +92,7 @@ ipcMain.on('newPlaylist',(e,newPlaylist)=>{
             privacyStatus: newPlaylist.status
         }
     };
-    Axios.post(apiCallPlaylist + YOUTUBE_API_KEY,resource,{  
+    Axios.post(apiCallAddPlaylist + YOUTUBE_API_KEY,resource,{  
         headers: {
             Host:'www.googleapis.com',
             Authorization: 'Bearer'+userToken.access_token,
@@ -101,11 +101,122 @@ ipcMain.on('newPlaylist',(e,newPlaylist)=>{
     }).then((res)=>{
         console.log(res)
         mss = "Se creo la playlist correctamente"
-        e.reply('newPlaylist',mss)
+        e.reply('new-playList',mss)
     },(error)=>{
         console.log(error)
         mss = "Ocurrio un error no se pudo crear la playlist, itentalo mas tarde."
-        e.reply('newPlaylist',mss)
+        e.reply('new-playList',mss)
     }) 
 })
 
+//*information to add video to playlist
+
+ipcMain.on('video-playlist-modal',(e,id,date)=>{
+    e.reply('video-playlist-modal',id,date);
+})
+
+ipcMain.on('new-playlist-with-video',(e,newPlaylist,id) =>{
+    let apiCallAddPlaylist = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2C%20status&key="
+    let apiCallAddVideo = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&key="; 
+    console.log(newPlaylist,id)
+    let resource ={
+        snippet: {
+            title: newPlaylist.title,
+            description: newPlaylist.description
+        },
+        status: {
+            privacyStatus: newPlaylist.status
+        }
+    };
+    
+    //* Create playlist and add video
+    Axios.post(apiCallAddPlaylist + YOUTUBE_API_KEY,resource,{  
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer'+userToken.access_token,
+            Accept:'application/json',  
+        }
+    }).then((res)=>{
+        console.log(res)
+        mss = "Se creo la playlist correctamente"
+        let resourceVideoPlaylist= {
+            snippet: {
+                playlistId: res.data.items.id,
+                resourceId: {
+                  "videoId": id,
+                  "kind": "youtube#video"
+                },
+                "position": 0
+              }
+        }
+        Axios.post(apiCallAddVideo+ YOUTUBE_API_KEY,resourceVideoPlaylist,{  
+            headers: {
+                Host:'www.googleapis.com',
+                Authorization: 'Bearer'+userToken.access_token,
+                Accept:'application/json',  
+            }
+        }).then((res)=>{
+            e.reply('new-playlist-with-video',mss)
+        },(error)=>{
+            console.log(error);
+            mss = "Ocurrio un error no se pudo añadir el video a la playlist, itentalo mas tarde."
+            e.reply('new-playlist-with-video',mss)
+        })  
+    },(error)=>{
+        console.log(error)
+        mss = "Ocurrio un error no se pudo crear la playlist, itentalo mas tarde."
+        e.reply('new-playlist-with-video',mss)
+    }) 
+})
+
+//* add video to playlist 
+
+ipcMain.on('add-video-to-playlist',(e,id,idVideo,box)=>{
+    let apiCallAddVideo = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&key="; 
+    let resourceVideoPlaylist= {
+        snippet: {
+            playlistId: id,
+            resourceId: {
+              "videoId": idVideo,
+              "kind": "youtube#video"
+            },
+            "position": 0
+          }
+    }
+    Axios.post(apiCallAddVideo+ YOUTUBE_API_KEY,resourceVideoPlaylist,{  
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer'+userToken.access_token,
+            Accept:'application/json',  
+        }
+    }).then((res)=>{
+        mss = "Video añadido a playlist"
+        let idElementPlaylist = res.id;
+        e.reply('add-video-on-playlist',mss,idElementPlaylist,box)
+    },(error)=>{
+        console.log(error);
+        mss = "Ocurrio un error no se pudo añadir el video a la playlist, itentalo mas tarde."
+        e.reply('add-video-to-playlist',mss)
+    })  
+})
+
+//* delete video from playlist
+
+ipcMain.on('delete-video-from-playlist',(e,id)=>{
+    let apiCallDeleteVideoplayList = "https://youtube.googleapis.com/youtube/v3/playlistItems?id="+id+"&key="
+    Axios.delete(apiCallDeleteVideoplayList + YOUTUBE_API_KEY, {  
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer'+userToken.access_token,
+            Accept:'application/json',  
+        }
+    }).then((res)=>{
+        mss = "Borrado"
+        e.reply('delete-video-from-playlist',mss)
+    },(error)=>{
+        console.log(error);
+        mss = "Ocurrio un error no se pudo borrar el video de la playlist, itentalo mas tarde."
+        e.reply('delete-video-from-playlist',mss)
+    })  
+    
+})

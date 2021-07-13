@@ -156,12 +156,12 @@ function deletedTag(tag) {
 
 //* New playList 
 
-document.getElementById("newPlayList").addEventListener('submit',(e)=>{
+document.getElementById("new-playList").addEventListener('submit',(e)=>{
     let newPlayList = {
         title : document.getElementById("titlePlaylist").value,
         description: document.getElementById("descriptionPlaylist").value,
         status : document.getElementById("status").value
     }
-    ipcRenderer.send('newPlaylist',newPlayList);
+    ipcRenderer.send('new-playList',newPlayList);
     location.reload();
 })

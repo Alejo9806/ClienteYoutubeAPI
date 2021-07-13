@@ -27,7 +27,7 @@ ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos) => {
                 </div>  
                 <div class="card-footer border  border-secondary">
                 <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${relatedVideos[i].videoId}','${relatedVideos[i].date}')">Agregar a colección</button>
-                <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist">Agregar a playlist </button>
+                <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist" onClick="videoPlaylistModal('${relatedVideos[i].videoId}')">Agregar a playlist </button>
                 </div>
             </div>  ` 
         }
@@ -43,9 +43,19 @@ document.getElementById("collectionButton").addEventListener('click',e=>{
     ipcRenderer.send('video-collection-modal',id,date);
 });
 
+document.getElementById("playlistButton").addEventListener('click',e=>{
+    ipcRenderer.send('video-playlist-modal',id);
+});
+
 function videoCollectionModal(id,date) {
     ipcRenderer.send('video-collection-modal',id,date);
 }
+
+function videoPlaylistModal(id) {
+    
+    ipcRenderer.send('video-playlist-modal',id);
+}
+
 
 function video(string) {
     console.log("hola");

@@ -17,7 +17,7 @@ ipcRenderer.on('search',(e,results)=>{
         </div>  
         <div class="card-footer border  border-secondary">
             <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${results[i].videoId}','${results[i].date}')">Agregar a colección</button>
-            <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist">Agregar a playlist </button>
+            <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist" onClick="videoPlaylistModal('${results[i].videoId}')">Agregar a playlist </button>
         </div>  
     </div>`
     }
@@ -40,4 +40,8 @@ function getChannel(channelId) {
 
 function videoCollectionModal(id,date) {
     ipcRenderer.send('video-collection-modal',id,date);
+}
+
+function videoPlaylistModal(id) {
+    ipcRenderer.send('video-playlist-modal',id);
 }
