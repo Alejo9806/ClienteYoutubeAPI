@@ -138,7 +138,7 @@ ipcMain.on('getVideo', (e) => {
                         idSubscription = dataSubscription[0].id
                         console.log(idSubscription);
                     }   
-                    let apiCallComments = "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&maxResults=100&order=relevance&textFormat=html&videoId="+video.id+"&key="
+                    let apiCallComments = "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&order=relevance&textFormat=html&videoId="+video.id+"&key="
                     Axios.get(apiCallComments + YOUTUBE_API_KEY).then((res) =>{
                         let dataComments = res.data.items;
                         for (let i = 0; i < dataComments.length; i++) {
@@ -169,7 +169,8 @@ ipcMain.on('getVideo', (e) => {
 });
 
 
-ipcMain.on('comment',(e,id,comment)=>{
+ipcMain.on('sendComment',(e,id,comment)=>{
+    console.log(id,comment)
     let apiCallAddComment = "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet&key="; 
     let resourceComment= {
         snippet: {
@@ -204,10 +205,10 @@ ipcMain.on('comment',(e,id,comment)=>{
             textOriginal:res.data.snippet.topLevelComment.snippet.textOriginal
         }
         mss = "Guardado"
-        e.reply('comment',mss,dataComment)
+        e.reply('sendComment',mss,dataComment)
     },(error)=>{
         console.log(error);
         mss = "Ocurrio un error no se agregar el comentario, itentalo mas tarde."
-        e.reply('add-video-to-playlist',mss)
+        e.reply('sendComment',mss)
     }) 
 })

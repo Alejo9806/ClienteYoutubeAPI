@@ -90,9 +90,12 @@ ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos,channelDetails,
 });
 
 
-document.getElementById("comment").addEventListener('submit',e=>{
-    const comment = document.getElementById("commentText").value;
-    ipcRenderer.send('comment',id,comment);
+document.getElementById("commentForm").addEventListener('submit',e=>{
+    
+    console.log(id,document.getElementById("commentText").value)
+    let comment = document.getElementById("commentText").value;
+    ipcRenderer.send('sendComment',id,comment);
+    e.preventDefault();
 });
 
 document.getElementById("collectionButton").addEventListener('click',e=>{
@@ -166,7 +169,7 @@ function sendId(id,date,idchannels) {
     idChannel = idchannels;
 }
 
-ipcRenderer.on('comment',(e,comment)=>{
+ipcRenderer.on('sendComment',(e,mss,comment)=>{
     
     if (comment) {
         commentList.innerHTML += ` 
@@ -183,6 +186,6 @@ ipcRenderer.on('comment',(e,comment)=>{
         </svg>>${comment.totalReplyCount} respuestas</h6>
         `;
     }else{
-        document.getElementById("comment").innerHTML = mss;
+        document.getElementById("commentFail").innerHTML = mss;
     }
 })
