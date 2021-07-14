@@ -188,11 +188,41 @@ ipcMain.on('get-collection-select', async (e) =>{
     let videos =[];
     let playList=[];
     let channel=[];
+    let elementsVideo = [];
+    let elementsPlaylist = [];
+    let elementsChannel = [];
+    let  chainVideo = "";
+    let chainPlaylist = "";
+    let chainChannel = "";
     console.log(titleCollection);
     const getCollection = await Collection.findOne({title: titleCollection}); 
-    getCollection.resource.forEach((element) =>{
+    getCollection.resource.forEach((element,i) =>{
         if (element.type == 'VIDEO') {
-            let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet&id='+element.snippet.id+'&maxResults=1&key=';
+            elementsVideo.push({
+                id:element.snippet.id,
+                startAt:element.snippet.startAt,
+                endAt:element.snippet.endAt,
+                tags:element.snippet.tags,
+                comment:element.snippet.comment,
+            });
+            chainVideo += '&id='+element.snippet.id;
+        }else if (element.type == 'PLAYLIST') {
+            elementsPlaylist.push({
+                id:element.snippet.id,
+                tags:element.snippet.tags,
+                comment:element.snippet.comment,
+            })
+            chainPlaylist += '&id='+element.snippet.id;
+        }else if (element.type == 'CHANNEL') {
+            elementsChannel.push({
+                id:element.snippet.id,
+                tags:element.snippet.tags,
+                comment:element.snippet.comment,
+            })
+            chainChannel += '&id='+element.snippet.id;
+        }
+    })
+            let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet'+chainVideo+'&key=';
             Axios.get(apiCallVideo + YOUTUBE_API_KEY,{
                 headers: {
                     Host:'www.googleapis.com',
@@ -202,25 +232,28 @@ ipcMain.on('get-collection-select', async (e) =>{
             }).then((res)=>{
                 let data = res.data.items;
                 for (let i = 0; i < data.length; i++) {
-                        videos.push({
-                        startAt:element.snippet.startAt,
-                        endAt:element.snippet.endAt,
-                        tags:element.snippet.tags,
-                        comment:element.snippet.comment,
-                        title: data[i].snippet.title,
-                        image: data[i].snippet.thumbnails.medium, 
-                        channelTitle: data[i].snippet.channelTitle, 
-                        videoId: data[i].id, 
-                        date: data[i].snippet.publishedAt,
-                        channelId: data[i].snippet.channelId
-                    })
+                    elementsVideo.forEach(element => {
+                        if(element.id ==data[i].id){
+                            videos.push({
+                                startAt:element.startAt,
+                                endAt:element.endAt,
+                                tags:element.tags,
+                                comment:element.comment,
+                                title: data[i].snippet.title,
+                                image: data[i].snippet.thumbnails.medium, 
+                                channelTitle: data[i].snippet.channelTitle, 
+                                videoId: data[i].id, 
+                                date: data[i].snippet.publishedAt,
+                                channelId: data[i].snippet.channelId
+                            })
+                        }  
+                    });
+                       
                     e.reply('get-collection-select',videos,playList,channel)
                 }
             }).catch((error) =>{
-            })
-        }
-        else if (element.type == 'PLAYLIST') {
-            let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet&id='+element.snippet.id+'&maxResults=1&key='
+            });
+            let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet'+chainPlaylist+'&key='
             Axios.get( apiCallPlayList + YOUTUBE_API_KEY,{
                 headers: {
                     Host:'www.googleapis.com',
@@ -230,24 +263,27 @@ ipcMain.on('get-collection-select', async (e) =>{
             }).then((res)=>{
                 let data = res.data.items;
                 for (let i = 0; i < data.length; i++) {
-                        playList.push({
-                        tags:element.snippet.tags,
-                        comment:element.snippet.comment,
-                        title: data[i].snippet.title,
-                        image: data[i].snippet.thumbnails.medium, 
-                        channelTitle: data[i].snippet.channelTitle, 
-                        channelId:data[i].snippet.channelId,
-                        id:data[i].id,
-                        date: data[i].snippet.publishedAt,
-                    })
+                    elementsPlaylist.forEach(element => {
+                        if(element.id ==data[i].id){
+                            playList.push({
+                                tags:element.tags,
+                                comment:element.comment,
+                                title: data[i].snippet.title,
+                                image: data[i].snippet.thumbnails.medium, 
+                                channelTitle: data[i].snippet.channelTitle, 
+                                channelId:data[i].snippet.channelId,
+                                id:data[i].id,
+                                date: data[i].snippet.publishedAt,
+                            })
+                        }  
+                    });
+                      
                 }     
                 e.reply('get-collection-select',videos,playList,channel)
             }).catch((error) =>{
-            })
-            
-        }else if (element.type == 'CHANNEL') {
-            let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics%2CbrandingSettings&id='+element.snippet.id+'&key='
-            Axios.get( apiCallPlayList + YOUTUBE_API_KEY,{
+            });
+            let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet'+chainChannel+'&key='
+            Axios.get( apiCallChannel + YOUTUBE_API_KEY,{
                 headers: {
                     Host:'www.googleapis.com',
                     Authorization: 'Bearer '+userToken.access_token,
@@ -256,23 +292,23 @@ ipcMain.on('get-collection-select', async (e) =>{
             }).then((res)=>{
                 let data = res.data.items;
                 for (let i = 0; i < data.length; i++) {
-                        channel.push({
-                        id:element.snippet.id,
-                        tags:element.snippet.tags,
-                        comment:element.snippet.comment,
-                        title: data[i].snippet.title,
-                        image: data[i].snippet.thumbnails.default.url, 
-                        date: data[i].snippet.publishedAt,
-                    })
+                    elementsChannel.forEach(element => {
+                        if(element.id ==data[i].id){
+                            channel.push({
+                                id:element.id,
+                                tags:element.tags,
+                                comment:element.comment,
+                                title: data[i].snippet.title,
+                                image: data[i].snippet.thumbnails.default.url, 
+                                date: data[i].snippet.publishedAt,
+                            })
+                        }  
+                    });
+                                     
                 }     
                 e.reply('get-collection-select',videos,playList,channel)
             }).catch((error) =>{
             })
-            
-        }
-    
-    })
-
 })
 
 ipcMain.on('delete-video-playList-channel',async (e,id)=>{

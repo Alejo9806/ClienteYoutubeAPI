@@ -132,7 +132,7 @@ ipcMain.on('subscription',(e,channelId)=>{
     Axios.post(apicallsubscription + YOUTUBE_API_KEY,resource,{  
         headers: {
             Host:'www.googleapis.com',
-            Authorization: 'Bearer'+userToken.access_token,
+            Authorization: 'Bearer '+userToken.access_token,
             Accept:'application/json',
             
             
