@@ -66,8 +66,8 @@ ipcMain.on('search-tag',async (e,searchTag)=>{
     e.reply('search-tag',tags);
 });
 
-ipcMain.on('video-collection-modal',(e,id,date)=>{
-    e.reply('video-collection-modal',id,date);
+ipcMain.on('video-collection-modal',(e,id,date,time)=>{
+    e.reply('video-collection-modal',id,date,time);
 })
 
 ipcMain.on('playList-collection-modal',(e,id,date)=>{
@@ -222,7 +222,7 @@ ipcMain.on('get-collection-select', async (e) =>{
             chainChannel += '&id='+element.snippet.id;
         }
     })
-            let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet'+chainVideo+'&key=';
+            let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus'+chainVideo+'&key=';
             Axios.get(apiCallVideo + YOUTUBE_API_KEY,{
                 headers: {
                     Host:'www.googleapis.com',
@@ -244,7 +244,13 @@ ipcMain.on('get-collection-select', async (e) =>{
                                 channelTitle: data[i].snippet.channelTitle, 
                                 videoId: data[i].id, 
                                 date: data[i].snippet.publishedAt,
-                                channelId: data[i].snippet.channelId
+                                channelId: data[i].snippet.channelId,
+                                duration : data[i].contentDetails.duration,
+                                publicStatsViewable : data[i].status.publicStatsViewable,
+                                viewCount : data[i].statistics.viewCount,
+                                likeCount : data[i].statistics.likeCount,
+                                dislikeCount : data[i].statistics.dislikeCount,
+                                commentCount : data[i].statistics.commentCount
                             })
                         }  
                     });

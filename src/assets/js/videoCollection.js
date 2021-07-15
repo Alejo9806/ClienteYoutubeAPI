@@ -24,12 +24,41 @@ ipcRenderer.on('collection',(e,collections)=>{
         <option value="${collection.title}">${collection.title}</option>
         `
     });
+
 });
 
-ipcRenderer.on('video-collection-modal',(e,id,date)=>{
-    console.log(id,date)
+ipcRenderer.on('video-collection-modal',(e,id,date,timeDuration)=>{
+    console.log(id,date,timeDuration)
+    let duration = timeDuration.split("");
+    let timeS= '';
+    let numero1 = '';
+    let timeH= '';
+    let timeM= '';
+    for (let index = 2; index < duration.length; index++) {
+            if (duration[index] == "H" || duration[index] == "M" || duration[index] == "S") {
+                if(duration[index] == "H"){
+                    timeH = numero1;
+                    numero1 = '';
+                }else if(duration[index] == "M"){
+                    timeM =  numero1;
+                    numero1 = '';
+                }else if(duration[index] == "S"){
+                    timeS =  numero1;
+                    numero1 = '';
+                }
+            }
+            if (!isNaN(duration[index])) {
+                numero1 += duration[index];
+            }
+            
+    }
+    timeH = timeH*3600 
+    timeM = timeM*60 
+    let time = parseInt(timeH)+parseInt(timeM)+parseInt(timeS);
     videoId = id;
     videoDate = date;
+    document.getElementById("startAt").setAttribute("max", time);
+    document.getElementById("endAt").setAttribute("max",time);
 });
 
 newVideoCollection.addEventListener('submit',(e)=>{

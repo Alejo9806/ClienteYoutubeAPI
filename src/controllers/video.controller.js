@@ -18,11 +18,10 @@ ipcMain.on('user',(e,token,info)=>{
     userToken = token; 
 });
 
-
-
+ 
 //Use api to get list of most popular videos
 ipcMain.on('listVideos', (e) => {
-    let apicall = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=60&key="
+    let apicall = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus&chart=mostPopular&maxResults=20&regionCode=CO&key="
     let listVideos = [];
     Axios.get(apicall + YOUTUBE_API_KEY).then((res) => {
         let data = res.data.items
@@ -33,7 +32,13 @@ ipcMain.on('listVideos', (e) => {
                 channelTitle: data[i].snippet.channelTitle, 
                 videoId: data[i].id, 
                 date: data[i].snippet.publishedAt, 
-                channelId: data[i].snippet.channelId
+                channelId: data[i].snippet.channelId,
+                duration: data[i].contentDetails.duration,
+                publicStatsViewable : data[i].status.publicStatsViewable,
+                viewCount : data[i].statistics.viewCount,
+                likeCount : data[i].statistics.likeCount,
+                dislikeCount : data[i].statistics.dislikeCount,
+                commentCount : data[i].statistics.commentCount
             }
         }
         e.reply('listVideos', listVideos);
@@ -81,7 +86,7 @@ ipcMain.on('getVideo', (e) => {
             commentCount : data.statistics.commentCount
         }
         //* Related video
-        apiRelatedVideo = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&order=viewCount&relatedToVideoId="+video.id+"&type=video&key=";
+        apiRelatedVideo = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&order=viewCount&relatedToVideoId="+video.id+"&type=video&key=";
         Axios.get(apiRelatedVideo + YOUTUBE_API_KEY,{
             headers: {
                 Host:'www.googleapis.com',
@@ -211,4 +216,36 @@ ipcMain.on('sendComment',(e,id,comment)=>{
         mss = "Ocurrio un error no se agregar el comentario, itentalo mas tarde."
         e.reply('sendComment',mss)
     }) 
+})
+
+//*Details of the video to obtain necessary data.
+ipcMain.on('video-details',(e,id)=>{
+    apiCallVideo = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus&id="+id+"&maxResults=1&key=";
+    let video;
+    Axios.get(apiCallVideo + YOUTUBE_API_KEY,{
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer '+userToken.access_token,
+            Accept:'application/json'
+        } 
+    }).then((res) =>{
+        let data = res.data.items[0];
+        video = {
+            id : data.id,
+            publishedAt : data.snippet.publishedAt,
+            title : data.snippet.title,
+            description : data.snippet.description,
+            channelId : data.snippet.channelId,
+            channelTitle : data.snippet.channelTitle,
+            tags : data.snippet.tags,
+            categoryId : data.snippet.categoryId,
+            duration : data.contentDetails.duration,
+            publicStatsViewable : data.status.publicStatsViewable,
+            viewCount : data.statistics.viewCount,
+            likeCount : data.statistics.likeCount,
+            dislikeCount : data.statistics.dislikeCount,
+            commentCount : data.statistics.commentCount
+        }
+        e.reply('video-details',video);
+    })
 })

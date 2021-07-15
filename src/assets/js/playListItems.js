@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded',(e)=>{
     ipcRenderer.send('playListItems');
 })
@@ -38,7 +37,11 @@ function getChannel(channelId) {
 }
 
 function videoCollectionModal(id,date) {
-    ipcRenderer.send('video-collection-modal',id,date);
+    ipcRenderer.send('video-details',id);
+    ipcRenderer.on('video-details',(e,videoDetails)=>{
+        ipcRenderer.send('video-collection-modal',id,date,videoDetails.duration);
+    })
+    
 }
 
 function deleteVideofromPlaylist(idElement) {

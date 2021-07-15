@@ -57,7 +57,7 @@ ipcRenderer.on('get-collection-select', (e,videos,playList,channel)=>{
                     </div>  
                     <div class="card-footer border  border-secondary">
                     <a class="btn btn-danger" onClick="deleteVideoOrPlayListOrChannel('${element.videoId}')">Borrar de la colección<a/>
-                    <a class="btn btn-primary" data-toggle="modal" data-target="#modalCollectionEdit" onClick="editVideo('${element.videoId}','${element.comment}','${element.startAt}','${element.endAt}','${element.tags}')">Editar tags<a/>
+                    <a class="btn btn-primary" data-toggle="modal" data-target="#modalCollectionEdit" onClick="editVideo('${element.videoId}','${element.comment}','${element.startAt}','${element.endAt}','${element.tags}','${element.duration}')">Editar tags<a/>
                     </div> 
                 </div>` 
     });
@@ -125,7 +125,36 @@ ipcRenderer.on('delete-video-playList-channel',(e)=>{
 
 //* funcitions edit video
 
-function editVideo(id,comment,startAt,endAt,tags) {
+function editVideo(id,comment,startAt,endAt,tags,timeDuration) {
+    let duration = timeDuration.split("");
+    let timeS= '';
+    let numero1 = '';
+    let timeH= '';
+    let timeM= '';
+    for (let index = 2; index < duration.length; index++) {
+            if (duration[index] == "H" || duration[index] == "M" || duration[index] == "S") {
+                if(duration[index] == "H"){
+                    timeH = numero1;
+                    numero1 = '';
+                }else if(duration[index] == "M"){
+                    timeM =  numero1;
+                    numero1 = '';
+                }else if(duration[index] == "S"){
+                    timeS =  numero1;
+                    numero1 = '';
+                }
+            }
+            if (!isNaN(duration[index])) {
+                numero1 += duration[index];
+            }
+            
+    }
+    timeH = timeH*3600 
+    timeM = timeM*60 
+    let time = parseInt(timeH)+parseInt(timeM)+parseInt(timeS);
+    document.getElementById("startAt").setAttribute("max", time);
+    document.getElementById("endAt").setAttribute("max",time);
+
     let tagsCadena = [];
     chosenTags = [];
     idVideo = id;

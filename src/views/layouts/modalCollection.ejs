@@ -19,9 +19,12 @@
             <div class="form-group">
               <h6>Puedes elegir el momento donde quieres que empiece y termine el video</h6>
               <label for="startAt">Inicio</label>
-              <input type="number" class="form-control" id="startAt" placeholder="Por favor copie el minuto y el segundo del siguiente modo 0:0">
-              <label for="endA">Fin</label>
-              <input type="number" class="form-control" id="endAt" placeholder="Por favor copie el minuto y el segundo del siguiente modo 0:0">
+              <input type="range" class="form-range w-100" value="0" min="0" max="" id="startAt" oninput="this.nextElementSibling.value = this.value">
+              <output>0</output> <span>segundo</span>
+              <br>
+              <label for="endAt">Fin</label>
+              <input type="range" class="form-range w-100" value="0" min="0" max=""  id="endAt" oninput="this.nextElementSibling.value = this.value">
+              <output>0</output> <span>segundo</span>
             </div>
             <div class="form-group">
               <label for="comment">Comentario</label>
