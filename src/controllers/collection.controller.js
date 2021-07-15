@@ -222,99 +222,112 @@ ipcMain.on('get-collection-select', async (e) =>{
             chainChannel += '&id='+element.snippet.id;
         }
     })
-            let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus'+chainVideo+'&key=';
-            Axios.get(apiCallVideo + YOUTUBE_API_KEY,{
-                headers: {
-                    Host:'www.googleapis.com',
-                    Authorization: 'Bearer '+userToken.access_token,
-                    Accept:'application/json'
-                } 
-            }).then((res)=>{
-                let data = res.data.items;
-                for (let i = 0; i < data.length; i++) {
-                    elementsVideo.forEach(element => {
-                        if(element.id ==data[i].id){
-                            videos.push({
-                                startAt:element.startAt,
-                                endAt:element.endAt,
-                                tags:element.tags,
-                                comment:element.comment,
-                                title: data[i].snippet.title,
-                                image: data[i].snippet.thumbnails.medium, 
-                                channelTitle: data[i].snippet.channelTitle, 
-                                videoId: data[i].id, 
-                                date: data[i].snippet.publishedAt,
-                                channelId: data[i].snippet.channelId,
-                                duration : data[i].contentDetails.duration,
-                                publicStatsViewable : data[i].status.publicStatsViewable,
-                                viewCount : data[i].statistics.viewCount,
-                                likeCount : data[i].statistics.likeCount,
-                                dislikeCount : data[i].statistics.dislikeCount,
-                                commentCount : data[i].statistics.commentCount
-                            })
-                        }  
-                    });
-                       
-                    e.reply('get-collection-select',videos,playList,channel)
-                }
-            }).catch((error) =>{
+    //* Search for collections to recommend based on similar tags.
+    const collections = await Collection.find({tags: {$in: getCollection.tags}});
+    let relatedCollections= [];
+    console.log(collections);
+    collections.forEach((element,index) =>{
+        if(element.title != getCollection.title ){
+            relatedCollections.push({
+                title:element.title,
+                description:element.description
+            }) 
+        }
+    })
+
+    let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus'+chainVideo+'&key=';
+    Axios.get(apiCallVideo + YOUTUBE_API_KEY,{
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer '+userToken.access_token,
+            Accept:'application/json'
+        } 
+    }).then((res)=>{
+        let data = res.data.items;
+        for (let i = 0; i < data.length; i++) {
+            elementsVideo.forEach(element => {
+                if(element.id ==data[i].id){
+                    videos.push({
+                        startAt:element.startAt,
+                        endAt:element.endAt,
+                        tags:element.tags,
+                        comment:element.comment,
+                        title: data[i].snippet.title,
+                        image: data[i].snippet.thumbnails.medium, 
+                        channelTitle: data[i].snippet.channelTitle, 
+                        videoId: data[i].id, 
+                        date: data[i].snippet.publishedAt,
+                        channelId: data[i].snippet.channelId,
+                        duration : data[i].contentDetails.duration,
+                        publicStatsViewable : data[i].status.publicStatsViewable,
+                        viewCount : data[i].statistics.viewCount,
+                        likeCount : data[i].statistics.likeCount,
+                        dislikeCount : data[i].statistics.dislikeCount,
+                        commentCount : data[i].statistics.commentCount
+                    })
+                }  
             });
-            let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet'+chainPlaylist+'&key='
-            Axios.get( apiCallPlayList + YOUTUBE_API_KEY,{
-                headers: {
-                    Host:'www.googleapis.com',
-                    Authorization: 'Bearer '+userToken.access_token,
-                    Accept:'application/json'
-                } 
-            }).then((res)=>{
-                let data = res.data.items;
-                for (let i = 0; i < data.length; i++) {
-                    elementsPlaylist.forEach(element => {
-                        if(element.id ==data[i].id){
-                            playList.push({
-                                tags:element.tags,
-                                comment:element.comment,
-                                title: data[i].snippet.title,
-                                image: data[i].snippet.thumbnails.medium, 
-                                channelTitle: data[i].snippet.channelTitle, 
-                                channelId:data[i].snippet.channelId,
-                                id:data[i].id,
-                                date: data[i].snippet.publishedAt,
-                            })
-                        }  
-                    });
-                      
-                }     
-                e.reply('get-collection-select',videos,playList,channel)
-            }).catch((error) =>{
+                
+            e.reply('get-collection-select',videos,playList,channel,relatedCollections)
+        }
+    }).catch((error) =>{
+    });
+    let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet'+chainPlaylist+'&key='
+    Axios.get( apiCallPlayList + YOUTUBE_API_KEY,{
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer '+userToken.access_token,
+            Accept:'application/json'
+        } 
+    }).then((res)=>{
+        let data = res.data.items;
+        for (let i = 0; i < data.length; i++) {
+            elementsPlaylist.forEach(element => {
+                if(element.id ==data[i].id){
+                    playList.push({
+                        tags:element.tags,
+                        comment:element.comment,
+                        title: data[i].snippet.title,
+                        image: data[i].snippet.thumbnails.medium, 
+                        channelTitle: data[i].snippet.channelTitle, 
+                        channelId:data[i].snippet.channelId,
+                        id:data[i].id,
+                        date: data[i].snippet.publishedAt,
+                    })
+                }  
             });
-            let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet'+chainChannel+'&key='
-            Axios.get( apiCallChannel + YOUTUBE_API_KEY,{
-                headers: {
-                    Host:'www.googleapis.com',
-                    Authorization: 'Bearer '+userToken.access_token,
-                    Accept:'application/json'
-                } 
-            }).then((res)=>{
-                let data = res.data.items;
-                for (let i = 0; i < data.length; i++) {
-                    elementsChannel.forEach(element => {
-                        if(element.id ==data[i].id){
-                            channel.push({
-                                id:element.id,
-                                tags:element.tags,
-                                comment:element.comment,
-                                title: data[i].snippet.title,
-                                image: data[i].snippet.thumbnails.default.url, 
-                                date: data[i].snippet.publishedAt,
-                            })
-                        }  
-                    });
-                                     
-                }     
-                e.reply('get-collection-select',videos,playList,channel)
-            }).catch((error) =>{
-            })
+                
+        }     
+        e.reply('get-collection-select',videos,playList,channel,relatedCollections)
+    }).catch((error) =>{
+    });
+    let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet'+chainChannel+'&key='
+    Axios.get( apiCallChannel + YOUTUBE_API_KEY,{
+        headers: {
+            Host:'www.googleapis.com',
+            Authorization: 'Bearer '+userToken.access_token,
+            Accept:'application/json'
+        } 
+    }).then((res)=>{
+        let data = res.data.items;
+        for (let i = 0; i < data.length; i++) {
+            elementsChannel.forEach(element => {
+                if(element.id ==data[i].id){
+                    channel.push({
+                        id:element.id,
+                        tags:element.tags,
+                        comment:element.comment,
+                        title: data[i].snippet.title,
+                        image: data[i].snippet.thumbnails.default.url, 
+                        date: data[i].snippet.publishedAt,
+                    })
+                }  
+            });
+                                
+        }     
+        e.reply('get-collection-select',videos,playList,channel,relatedCollections)
+    }).catch((error) =>{
+    })
 })
 
 ipcMain.on('delete-video-playList-channel',async (e,id)=>{
@@ -378,3 +391,6 @@ ipcMain.on('edit-channel-collection', async (e,id,channelCollection,chosenTagsEd
     await collection.save();
     e.reply('edit-video-playlist-channel-collection');
 })
+
+
+

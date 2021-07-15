@@ -39,13 +39,15 @@ document.addEventListener('DOMContentLoaded', (e)=>{
     ipcRenderer.send('get-collection-select');
 })
 
-ipcRenderer.on('get-collection-select', (e,videos,playList,channel)=>{
+ipcRenderer.on('get-collection-select', (e,videos,playList,channel,relatedCollections)=>{
     const videosCollection = document.getElementById('videosCollection');
     const playListCollection = document.getElementById('playListCollection');
     const channelsCollection = document.getElementById('channelsCollection');
+    const collectionRelated = document.getElementById('collectionRelated');
     playListCollection.innerHTML='';
     videosCollection.innerHTML='';
     channelsCollection.innerHTML = '';
+    collectionRelated.innerHTML = '';
     videos.forEach(element => {
             videosCollection.innerHTML+= `
                 <div class="card col-lg-10 col-md-10 col-sm-10 col-10 bg-card border-0 mt-4" > 
@@ -87,8 +89,15 @@ ipcRenderer.on('get-collection-select', (e,videos,playList,channel)=>{
             <a class="btn btn-primary" data-toggle="modal" data-target="#modalCollectionChannelEdit" onClick="editChannel('${element.id}','${element.comment}','${element.tags}')">Editar tags<a/>
             </div> 
         `
-    })
-   
+    });
+   relatedCollections.forEach((element,i) =>{
+        collectionRelated.innerHTML += `
+        <tr>
+        <th scope="row">${i}</th>
+        <td><a onClick="getCollection('${element.title}')" style="cursor:pointer">${element.title}</a></td>
+        <td>${element.description}</td>
+      </tr> `
+   });
 })
 
 //* Get video

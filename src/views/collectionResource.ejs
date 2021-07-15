@@ -1,26 +1,43 @@
 <%-include('./layouts/main.ejs')%>
 <%-include('./layouts/nav-bar.ejs')%>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-4">
+        <div class="col-3">
             <h5>Videos</h5>
             <div class="container" id="videosCollection">
 
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-3">
           <h5>Canales</h5>
           <div class="container" id="channelsCollection">
 
           </div>
       </div>
-        <div class="col-4">
+        <div class="col-3">
             <h5>PlayLists</h5>
             <div class="container" id="playListCollection">
 
             </div>
         </div>
+        <div class="col-3">
+          <h5>Colecciones recomendadas</h5>
+          <div class="container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Titulo</th>
+                  <th scope="col">Descripción</th>
+                </tr>
+              </thead>
+              <tbody id="collectionRelated">
+                
+              </tbody>
+            </table>
+          </div>
+      </div>
     </div>
 </div>
 
