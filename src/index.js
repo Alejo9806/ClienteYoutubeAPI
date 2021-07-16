@@ -12,10 +12,10 @@ require('ejs-electron');
 let userInfo;
 let mainWindow;
 
-if (process.env.NODE_ENV != "production") {
-    require('electron-reload')(__dirname)
+// if (process.env.NODE_ENV != "production") {
+//     require('electron-reload')(__dirname)
    
-}
+// }
 
 //Init 
 require('./database');

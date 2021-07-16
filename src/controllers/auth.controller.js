@@ -1,10 +1,12 @@
 //environment variables
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT } = require('../config/keys');
 require('dotenv').config({ path: '.env' });
 'use strict';
 
+
 //requires 
 const { ipcMain } = require('electron');
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT } = process.env;
+// const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT } = process.env;
 const ElectronGoogleOAuth2 = require('@getstation/electron-google-oauth2').default;
 let account = new ElectronGoogleOAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, [GOOGLE_REDIRECT]);
 const User = require('../model/user');

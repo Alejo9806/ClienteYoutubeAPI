@@ -1,9 +1,12 @@
+//environment variables
+const { YOUTUBE_API_KEY  } = require('../config/keys');
+
 //requires 
 const Collection = require('../model/collection');
 const Tag = require('../model/tag');
 const User = require('../model/user');
 const { ipcMain } = require('electron');
-const { YOUTUBE_API_KEY } = process.env;
+// const { YOUTUBE_API_KEY } = process.env;
 const Axios = require('axios');
 
 

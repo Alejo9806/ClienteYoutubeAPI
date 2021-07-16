@@ -1,10 +1,11 @@
 //environment variables
+const { YOUTUBE_API_KEY  } = require('../config/keys');
 require('dotenv').config({ path: '.env' });
 'use strict';
 
 //requires 
 const { ipcMain } = require('electron');
-const { YOUTUBE_API_KEY } = process.env;
+// const { YOUTUBE_API_KEY } = process.env;
 const Axios = require('axios');
 
 //global variables
