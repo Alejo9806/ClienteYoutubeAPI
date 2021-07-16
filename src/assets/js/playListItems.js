@@ -1,13 +1,13 @@
 //* Load playListItems page and make a call to retrieve the channel information.
-document.addEventListener('DOMContentLoaded',(e)=>{
+document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('playListItems');
 })
 
 //* Retrieving information from the playListItems and painting it on the screen
-ipcRenderer.on('playListItems',(e,playListItems)=>{
-    let listOfPlaylistItems = document.getElementById("playListItems"); 
-    listOfPlaylistItems.innerHTML=''
-    for(let i=0; i< playListItems.length;i++){
+ipcRenderer.on('playListItems', (e, playListItems) => {
+    let listOfPlaylistItems = document.getElementById("playListItems");
+    listOfPlaylistItems.innerHTML = ''
+    for (let i = 0; i < playListItems.length; i++) {
         listOfPlaylistItems.innerHTML += `<div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4" > 
         <img class="card-img-top img-fluid border border-secondary" src="${playListItems[i].image.url}" alt="Card image cap"  onClick="video('${playListItems[i].videoId}')">
         <div class="card-body border  border-secondary"> 
@@ -24,28 +24,26 @@ ipcRenderer.on('playListItems',(e,playListItems)=>{
 
 //* Get video
 function video(string) {
-    console.log("hola");
-    ipcRenderer.send('video',string,null, null);
+    ipcRenderer.send('video', string, null, null);
     window.location.href = "./video.ejs";
-  
+
 }
 
 
 //* Get channel
 function getChannel(channelId) {
-    console.log("hola");
-    ipcRenderer.send('channel',channelId);
+    ipcRenderer.send('channel', channelId);
     window.location.href = "./channel.ejs";
 }
 
 
 //* When opening the modal to add to the collection, the video id and creation date are sent.
-function videoCollectionModal(id,date) {
-    ipcRenderer.send('video-details',id);
-    ipcRenderer.on('video-details',(e,videoDetails)=>{
-        ipcRenderer.send('video-collection-modal',id,date,videoDetails.duration);
+function videoCollectionModal(id, date) {
+    ipcRenderer.send('video-details', id);
+    ipcRenderer.on('video-details', (e, videoDetails) => {
+        ipcRenderer.send('video-collection-modal', id, date, videoDetails.duration);
     })
-    
+
 }
 //* Delete from playlist 
 function deleteVideofromPlaylist(idElement) {
@@ -54,6 +52,6 @@ function deleteVideofromPlaylist(idElement) {
 }
 
 //*A message is displayed if a successful deletion or error occurred.
-ipcRenderer.on('delete-video-from-playlist',(e,mss)=>{
+ipcRenderer.on('delete-video-from-playlist', (e, mss) => {
     document.getElementById("mssDelete").innerHTML = mss;
 })

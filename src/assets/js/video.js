@@ -3,29 +3,29 @@ let date;
 let idSubscription;
 let dateChannel;
 let idChannel;
-let videoTime; 
+let videoTime;
 let commentList = document.getElementById("commentsList");
 
 document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('getVideo');
 });
 
-ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos,channelDetails,channelSubscription,subscriptionId,dataComments) => {
-    document.getElementById("video").setAttribute("src", "https://www.youtube.com/embed/" + video.id+'?start='+startAt+'&end='+endAt);
+ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDetails, channelSubscription, subscriptionId, dataComments) => {
+    document.getElementById("video").setAttribute("src", "https://www.youtube.com/embed/" + video.id + '?start=' + startAt + '&end=' + endAt);
     document.getElementById("title").innerHTML = video.title;
     document.getElementById("likes").innerHTML = video.likeCount;
     document.getElementById("viewCount").innerHTML = video.viewCount;
-    document.getElementById("date").innerHTML = video.publishedAt.slice(0,10);
+    document.getElementById("date").innerHTML = video.publishedAt.slice(0, 10);
     document.getElementById("dislikes").innerHTML = video.dislikeCount;
     document.getElementById("description").innerHTML = video.description;
     document.getElementById("commentCount").innerHTML = video.commentCount + " comentarios";
     let videosRelated = document.getElementById("related");
     let informationChannel = document.getElementById("informationChannel");
-    videosRelated.innerHTML =  ``;
+    videosRelated.innerHTML = ``;
     commentList.innerHTML = '';
-    for(let i=0; i< relatedVideos.length;i++){
-        if(relatedVideos[i]){
-            videosRelated.innerHTML+= `
+    for (let i = 0; i < relatedVideos.length; i++) {
+        if (relatedVideos[i]) {
+            videosRelated.innerHTML += `
             <div>
                 <img class="card-img-top img-fluid border border-secondary" src="${relatedVideos[i].image.url}" alt="Card image cap" onClick="video('${relatedVideos[i].videoId}')">
                 <div class="card-body border  border-secondary"> 
@@ -37,11 +37,11 @@ ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos,channelDetails,
                 <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${relatedVideos[i].videoId}','${relatedVideos[i].date}')">Agregar a colección</button>
                 <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist" onClick="videoPlaylistModal('${relatedVideos[i].videoId}')">Agregar a playlist </button>
                 </div>
-            </div>  ` 
+            </div>  `
         }
     }
-    if(channelSubscription){
-        informationChannel.innerHTML =  ` 
+    if (channelSubscription) {
+        informationChannel.innerHTML = ` 
         <p id="unsubscribedMss"></p>
         <div class="container">
             <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
@@ -53,9 +53,9 @@ ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos,channelDetails,
                 <a class="btn btn-dark" data-toggle="modal" data-target="#unsubscriptionModal" onClick="sendId('${subscriptionId}','${channelDetails.publishedAt}','${channelDetails.id}')"">SUSCRITO</a>
             </div>
         </div>
-        ` 
-    }else{
-        informationChannel.innerHTML =  ` 
+        `
+    } else {
+        informationChannel.innerHTML = ` 
         <p id="unsubscribedMss"></p>
         <div class="container">
             <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
@@ -67,7 +67,7 @@ ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos,channelDetails,
                 <a class="btn btn-dark" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${channelDetails.id}','${channelDetails.publishedAt}')">SUSCRIBIRSE</a>
             </div>
         </div>
-        ` 
+        `
     }
     dataComments.forEach(element => {
         commentList.innerHTML += ` 
@@ -92,90 +92,83 @@ ipcRenderer.on('getVideo', (e, video,startAt,endAt,relatedVideos,channelDetails,
 });
 
 
-document.getElementById("commentForm").addEventListener('submit',e=>{
-    
-    console.log(id,document.getElementById("commentText").value)
+document.getElementById("commentForm").addEventListener('submit', e => {
     let comment = document.getElementById("commentText").value;
-    ipcRenderer.send('sendComment',id,comment);
+    ipcRenderer.send('sendComment', id, comment);
     e.preventDefault();
 });
 
-document.getElementById("collectionButton").addEventListener('click',e=>{
-    ipcRenderer.send('video-collection-modal',id,date,videoTime);
+document.getElementById("collectionButton").addEventListener('click', e => {
+    ipcRenderer.send('video-collection-modal', id, date, videoTime);
 });
 
-document.getElementById("playlistButton").addEventListener('click',e=>{
-    ipcRenderer.send('video-playlist-modal',id);
+document.getElementById("playlistButton").addEventListener('click', e => {
+    ipcRenderer.send('video-playlist-modal', id);
 });
 
-function videoCollectionModal(id,date,time) {
-    ipcRenderer.send('video-details',id);
-    ipcRenderer.on('video-details',(e,videoDetails)=>{
-        ipcRenderer.send('video-collection-modal',id,date,videoDetails.duration);
+function videoCollectionModal(id, date, time) {
+    ipcRenderer.send('video-details', id);
+    ipcRenderer.on('video-details', (e, videoDetails) => {
+        ipcRenderer.send('video-collection-modal', id, date, videoDetails.duration);
     })
 }
 
 function videoPlaylistModal(id) {
-    
-    ipcRenderer.send('video-playlist-modal',id);
+
+    ipcRenderer.send('video-playlist-modal', id);
 }
 
 
 function video(string) {
-    console.log("hola");
-    ipcRenderer.send('video',string, null, null);
+    ipcRenderer.send('video', string, null, null);
     window.location.href = "./video.ejs";
-  
+
 }
 
 //* Get channel
 function getChannel(channelId) {
-    console.log("hola");
-    ipcRenderer.send('channel',channelId);
+    ipcRenderer.send('channel', channelId);
     window.location.href = "./channel.ejs";
 }
 
 
 
-function subscription(id,publishedAt) {
-    console.log(id)
+function subscription(id, publishedAt) {
 
-    ipcRenderer.send('subscription',id);
-    ipcRenderer.on('subscription',(e,mss, subscriptionId)=>{
-        document.getElementById("subcriptionMss").innerHTML = `<p>${mss}</p>` 
-        if(mss == "Te has suscrito al canal"){
+    ipcRenderer.send('subscription', id);
+    ipcRenderer.on('subscription', (e, mss, subscriptionId) => {
+        document.getElementById("subcriptionMss").innerHTML = `<p>${mss}</p>`
+        if (mss == "Te has suscrito al canal") {
             document.getElementById("subscribed").innerHTML = ` 
             <a class="btn btn-dark" data-toggle="modal" data-target="#unsubscriptionModal" onClick="sendId('${subscriptionId}','${publishedAt}','${id}')">SUSCRITO</a>
             <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${id}','${publishedAt}')">COLECCIÓN</a>
-            ` 
+            `
         }
-      
+
     })
 }
 
 function unsubscribe() {
-    console.log(idSubscription)
-    ipcRenderer.send('unsubscribed',idSubscription);
-    ipcRenderer.on('unsubscribed',(e,mss)=>{
-        document.getElementById("unsubscribedMss").innerHTML=`${mss}`; 
-        if(mss == "Se elimino la suscripcion"){
-            document.getElementById("subscribed").innerHTML =` 
+    ipcRenderer.send('unsubscribed', idSubscription);
+    ipcRenderer.on('unsubscribed', (e, mss) => {
+        document.getElementById("unsubscribedMss").innerHTML = `${mss}`;
+        if (mss == "Se elimino la suscripcion") {
+            document.getElementById("subscribed").innerHTML = ` 
             <a class="btn btn-dark" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${idChannel}','${dateChannel}')">SUSCRIBIRSE</a>
             <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${idChannel}','${dateChannel}')">COLECCIÓN</a>
-            ` 
+            `
         }
     })
 }
 
-function sendId(id,date,idchannels) {
-    console.log(id)
+function sendId(id, date, idchannels) {
     idSubscription = id;
     dateChannel = date;
     idChannel = idchannels;
 }
 
-ipcRenderer.on('sendComment',(e,mss,comment)=>{
-    
+ipcRenderer.on('sendComment', (e, mss, comment) => {
+
     if (comment) {
         commentList.innerHTML += ` 
         <img src="${comment.authorProfileImageUrl}" alt="${comment.authorDisplayName}" class="img-circle border rounded-circle d-inline " height="40px">
@@ -190,7 +183,7 @@ ipcRenderer.on('sendComment',(e,mss,comment)=>{
         <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
         </svg>${comment.totalReplyCount} respuestas</h6>
         `;
-    }else{
+    } else {
         document.getElementById("commentFail").innerHTML = mss;
     }
 })

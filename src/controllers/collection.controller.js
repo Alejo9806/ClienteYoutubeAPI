@@ -1,4 +1,3 @@
-
 //requires 
 const Collection = require('../model/collection');
 const Tag = require('../model/tag');
@@ -14,393 +13,359 @@ let userInfo;
 let userToken;
 
 //get user information and token
-ipcMain.on('user',(e,token,info)=>{
-    userToken = token; 
+ipcMain.on('user', (e, token, info) => {
+    userToken = token;
     userInfo = info;
 });
 
 
-ipcMain.on('collection',async (e)=>{
-    const user = await  User.findOne({ email: userInfo.email });
-    const collection = await Collection.aggregate([{$match:{id_user: ""+user._id}},{$project:{'title':1,'description':1}}])
+ipcMain.on('collection', async(e) => {
+    const user = await User.findOne({ email: userInfo.email });
+    const collection = await Collection.aggregate([{ $match: { id_user: "" + user._id } }, { $project: { 'title': 1, 'description': 1 } }])
     e.reply('collection', collection);
 });
 
-ipcMain.on('new-collection',async (e,newCollection,chosenTags)=>{
-    console.log(newCollection);
-    let collection = new Collection();  
+ipcMain.on('new-collection', async(e, newCollection, chosenTags) => {
+    let collection = new Collection();
     const user = await User.findOne({ email: userInfo.email });
-    console.log(user);
     collection.title = newCollection.title;
     collection.description = newCollection.description;
     collection.id_user = user._id;
-    chosenTags.forEach(chosenTag=> {
+    chosenTags.forEach(chosenTag => {
         collection.tags.push(chosenTag);
     });
-    collection  = await collection.save();
+    collection = await collection.save();
 });
 
-ipcMain.on('new-tag',async (e,newTag)=>{
-    let mss; 
+ipcMain.on('new-tag', async(e, newTag) => {
+    let mss;
     let tag = new Tag();
     const user = await User.findOne({ email: userInfo.email });
-    const existsTag = await Tag.findOne({tag:newTag,id_user:user._id});
-    console.log(existsTag);
+    const existsTag = await Tag.findOne({ tag: newTag, id_user: user._id });
     if (!existsTag) {
-            tag.id_user = user._id;
-            tag.tag = newTag;
-            tag = await tag.save();
-            mss = "Guardado correctamente"
-            e.reply('new-tag',mss);
-    }else{
-            mss = "El tag ya existe lo hemos seleccionado."
-            e.reply('new-tag',mss);
+        tag.id_user = user._id;
+        tag.tag = newTag;
+        tag = await tag.save();
+        mss = "Guardado correctamente"
+        e.reply('new-tag', mss);
+    } else {
+        mss = "El tag ya existe lo hemos seleccionado."
+        e.reply('new-tag', mss);
     }
 });
 
-ipcMain.on('search-tag',async (e,searchTag)=>{
-    console.log(searchTag);
+ipcMain.on('search-tag', async(e, searchTag) => {
     const regularExpr = new RegExp(searchTag);
     const user = await User.findOne({ email: userInfo.email });
-    const tags = await Tag.find({tag:{ $regex: regularExpr , $options: 'i'},id_user:user._id}).limit(5);
-    e.reply('search-tag',tags);
+    const tags = await Tag.find({ tag: { $regex: regularExpr, $options: 'i' }, id_user: user._id }).limit(5);
+    e.reply('search-tag', tags);
 });
 
-ipcMain.on('video-collection-modal',(e,id,date,time)=>{
-    e.reply('video-collection-modal',id,date,time);
+ipcMain.on('video-collection-modal', (e, id, date, time) => {
+    e.reply('video-collection-modal', id, date, time);
 })
 
-ipcMain.on('playList-collection-modal',(e,id,date)=>{
-    e.reply('playList-collection-modal',id,date);
+ipcMain.on('playList-collection-modal', (e, id, date) => {
+    e.reply('playList-collection-modal', id, date);
 })
 
 
-ipcMain.on('new-video-collection',async (e,video,collectionTitle,chosenTags)=>{
-    console.log(video);
-    console.log(collectionTitle);
+ipcMain.on('new-video-collection', async(e, video, collectionTitle, chosenTags) => {
     let mss;
-    const user = await  User.findOne({ email: userInfo.email });
-    let collection = await Collection.findOne({title:collectionTitle,id_user:user._id});  
-    collection.resource.push({ 
-        type:video.type,
-        snippet:{ 
-            date : video.date,
+    const user = await User.findOne({ email: userInfo.email });
+    let collection = await Collection.findOne({ title: collectionTitle, id_user: user._id });
+    collection.resource.push({
+        type: video.type,
+        snippet: {
+            date: video.date,
             id: video.id,
             startAt: video.startAt,
-            endAt:video.endAt,
-            comment:video.comment,
-            tags:chosenTags
+            endAt: video.endAt,
+            comment: video.comment,
+            tags: chosenTags
         }
     });
 
-    console.log(collection);
     try {
         mss = "Video guardado correctamente"
         collection = await collection.save();
-        console.log(collection);
-        e.reply('new-video-collection',mss);
+        e.reply('new-video-collection', mss);
     } catch (error) {
         mss = "Ocurrio un error no se pudo guardar el video"
-        e.reply('new-video-collection',mss);
+        e.reply('new-video-collection', mss);
     }
 })
 
 
-ipcMain.on('new-channel-collection',async (e,channel,collectionTitle,chosenTags)=>{
-    console.log(channel);
-    console.log(collectionTitle);
+ipcMain.on('new-channel-collection', async(e, channel, collectionTitle, chosenTags) => {
     let mss
-    const user = await  User.findOne({ email: userInfo.email });
-    let collection = await Collection.findOne({title:collectionTitle,id_user:user._id});   
-    collection.resource.push({ 
-        type:channel.type,
-        snippet:{ 
-            date :channel.date,
+    const user = await User.findOne({ email: userInfo.email });
+    let collection = await Collection.findOne({ title: collectionTitle, id_user: user._id });
+    collection.resource.push({
+        type: channel.type,
+        snippet: {
+            date: channel.date,
             id: channel.id,
-            comment:channel.comment,
-            tags:chosenTags
+            comment: channel.comment,
+            tags: chosenTags
         }
     });
 
-    console.log(collection);
     try {
         mss = "Playlist guardada correctamente"
         collection = await collection.save();
-        console.log(collection);
-        e.reply('new-channel-collection',mss);
+        e.reply('new-channel-collection', mss);
     } catch (error) {
         mss = "Ocurrio un error no se pudo guardar el video"
-        e.reply('new-channel-collection',mss);
+        e.reply('new-channel-collection', mss);
     }
 })
 
-ipcMain.on('new-playList-collection', async (e,playList,collectionTitle,chosenTags)=>{
-    console.log(playList);
-    console.log(collectionTitle);
+ipcMain.on('new-playList-collection', async(e, playList, collectionTitle, chosenTags) => {
     let mss;
-    const user = await  User.findOne({ email: userInfo.email });
-    let collection = await Collection.findOne({title:collectionTitle,id_user:user._id});  
-    collection.resource.push({ 
-        type:playList.type,
-        snippet:{ 
-            date : playList.date,
+    const user = await User.findOne({ email: userInfo.email });
+    let collection = await Collection.findOne({ title: collectionTitle, id_user: user._id });
+    collection.resource.push({
+        type: playList.type,
+        snippet: {
+            date: playList.date,
             id: playList.id,
             comment: playList.comment,
-            tags:chosenTags
+            tags: chosenTags
         }
     });
-    console.log(collection);
     try {
         mss = "Playlist guardada correctamente"
         collection = await collection.save();
-        console.log(collection);
-        e.reply('new-playList-collection',mss);
+        e.reply('new-playList-collection', mss);
     } catch (error) {
         mss = "Ocurrio un error no se pudo guardar la playList"
-        e.reply('new-playList-collection',mss);
+        e.reply('new-playList-collection', mss);
     }
 
 })
 
 
-ipcMain.on('get-edit-collection', async (e,title)=>{
-    const user = await  User.findOne({ email: userInfo.email });
-    const getCollection = await Collection.findOne({title: title,id_user:user._id},{'title':1,'tags':1,'description':1,'_id':1}); 
-    console.log(getCollection);
-    e.reply('get-edit-collection',getCollection);
+ipcMain.on('get-edit-collection', async(e, title) => {
+    const user = await User.findOne({ email: userInfo.email });
+    const getCollection = await Collection.findOne({ title: title, id_user: user._id }, { 'title': 1, 'tags': 1, 'description': 1, '_id': 1 });
+    e.reply('get-edit-collection', getCollection);
 })
 
-ipcMain.on('get-collection', (e,title)=>{
+ipcMain.on('get-collection', (e, title) => {
     titleCollection = title;
 
 });
 
-ipcMain.on('edit-collection',async (e,editCollection,chosenTagsEdit)=>{
-    console.log(editCollection,chosenTagsEdit)
-    const user = await  User.findOne({ email: userInfo.email });
-    let collection = await Collection.findOne({title: titleCollection,id_user:user._id});
+ipcMain.on('edit-collection', async(e, editCollection, chosenTagsEdit) => {
+    const user = await User.findOne({ email: userInfo.email });
+    let collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
     collection.title = editCollection.title;
     collection.description = editCollection.description;
     collection.tags = chosenTagsEdit;
     try {
         collection = await collection.save();
-    } catch (error) {
-        console.log(error)
-    }
+    } catch (error) {}
 });
 
-ipcMain.on('get-collection-select', async (e) =>{
-    let videos =[];
-    let playList=[];
-    let channel=[];
+ipcMain.on('get-collection-select', async(e) => {
+    let videos = [];
+    let playList = [];
+    let channel = [];
     let elementsVideo = [];
     let elementsPlaylist = [];
     let elementsChannel = [];
-    let  chainVideo = "";
+    let chainVideo = "";
     let chainPlaylist = "";
     let chainChannel = "";
-    console.log(titleCollection);
-    const user = await  User.findOne({ email: userInfo.email });
-    const getCollection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
-    getCollection.resource.forEach((element,i) =>{
-        if (element.type == 'VIDEO') {
-            elementsVideo.push({
-                id:element.snippet.id,
-                startAt:element.snippet.startAt,
-                endAt:element.snippet.endAt,
-                tags:element.snippet.tags,
-                comment:element.snippet.comment,
-            });
-            chainVideo += '&id='+element.snippet.id;
-        }else if (element.type == 'PLAYLIST') {
-            elementsPlaylist.push({
-                id:element.snippet.id,
-                tags:element.snippet.tags,
-                comment:element.snippet.comment,
-            })
-            chainPlaylist += '&id='+element.snippet.id;
-        }else if (element.type == 'CHANNEL') {
-            elementsChannel.push({
-                id:element.snippet.id,
-                tags:element.snippet.tags,
-                comment:element.snippet.comment,
-            })
-            chainChannel += '&id='+element.snippet.id;
-        }
-    })
-    //* Search for collections to recommend based on similar tags.
-    const collections = await Collection.find({tags: {$in: getCollection.tags},id_user:user._id});
-    let relatedCollections= [];
-    console.log(collections);
-    collections.forEach((element,index) =>{
-        if(element.title != getCollection.title ){
+    const user = await User.findOne({ email: userInfo.email });
+    const getCollection = await Collection.findOne({ title: titleCollection, id_user: user._id });
+    getCollection.resource.forEach((element, i) => {
+            if (element.type == 'VIDEO') {
+                elementsVideo.push({
+                    id: element.snippet.id,
+                    startAt: element.snippet.startAt,
+                    endAt: element.snippet.endAt,
+                    tags: element.snippet.tags,
+                    comment: element.snippet.comment,
+                });
+                chainVideo += '&id=' + element.snippet.id;
+            } else if (element.type == 'PLAYLIST') {
+                elementsPlaylist.push({
+                    id: element.snippet.id,
+                    tags: element.snippet.tags,
+                    comment: element.snippet.comment,
+                })
+                chainPlaylist += '&id=' + element.snippet.id;
+            } else if (element.type == 'CHANNEL') {
+                elementsChannel.push({
+                    id: element.snippet.id,
+                    tags: element.snippet.tags,
+                    comment: element.snippet.comment,
+                })
+                chainChannel += '&id=' + element.snippet.id;
+            }
+        })
+        //* Search for collections to recommend based on similar tags.
+    const collections = await Collection.find({ tags: { $in: getCollection.tags }, id_user: user._id });
+    let relatedCollections = [];
+    collections.forEach((element, index) => {
+        if (element.title != getCollection.title) {
             relatedCollections.push({
-                title:element.title,
-                description:element.description
-            }) 
+                title: element.title,
+                description: element.description
+            })
         }
     })
 
-    let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus'+chainVideo+'&key=';
-    Axios.get(apiCallVideo + YOUTUBE_API_KEY,{
+    let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus' + chainVideo + '&key=';
+    Axios.get(apiCallVideo + YOUTUBE_API_KEY, {
         headers: {
-            Host:'www.googleapis.com',
-            Authorization: 'Bearer '+userToken.access_token,
-            Accept:'application/json'
-        } 
-    }).then((res)=>{
+            Host: 'www.googleapis.com',
+            Authorization: 'Bearer ' + userToken.access_token,
+            Accept: 'application/json'
+        }
+    }).then((res) => {
         let data = res.data.items;
         for (let i = 0; i < data.length; i++) {
             elementsVideo.forEach(element => {
-                if(element.id ==data[i].id){
+                if (element.id == data[i].id) {
                     videos.push({
-                        startAt:element.startAt,
-                        endAt:element.endAt,
-                        tags:element.tags,
-                        comment:element.comment,
+                        startAt: element.startAt,
+                        endAt: element.endAt,
+                        tags: element.tags,
+                        comment: element.comment,
                         title: data[i].snippet.title,
-                        image: data[i].snippet.thumbnails.medium, 
-                        channelTitle: data[i].snippet.channelTitle, 
-                        videoId: data[i].id, 
+                        image: data[i].snippet.thumbnails.medium,
+                        channelTitle: data[i].snippet.channelTitle,
+                        videoId: data[i].id,
                         date: data[i].snippet.publishedAt,
                         channelId: data[i].snippet.channelId,
-                        duration : data[i].contentDetails.duration,
-                        publicStatsViewable : data[i].status.publicStatsViewable,
-                        viewCount : data[i].statistics.viewCount,
-                        likeCount : data[i].statistics.likeCount,
-                        dislikeCount : data[i].statistics.dislikeCount,
-                        commentCount : data[i].statistics.commentCount
+                        duration: data[i].contentDetails.duration,
+                        publicStatsViewable: data[i].status.publicStatsViewable,
+                        viewCount: data[i].statistics.viewCount,
+                        likeCount: data[i].statistics.likeCount,
+                        dislikeCount: data[i].statistics.dislikeCount,
+                        commentCount: data[i].statistics.commentCount
                     })
-                }  
+                }
             });
-                
-            e.reply('get-collection-select',videos,playList,channel,relatedCollections)
+
+            e.reply('get-collection-select', videos, playList, channel, relatedCollections)
         }
-    }).catch((error) =>{
-    });
-    let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet'+chainPlaylist+'&key='
-    Axios.get( apiCallPlayList + YOUTUBE_API_KEY,{
+    }).catch((error) => {});
+    let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet' + chainPlaylist + '&key='
+    Axios.get(apiCallPlayList + YOUTUBE_API_KEY, {
         headers: {
-            Host:'www.googleapis.com',
-            Authorization: 'Bearer '+userToken.access_token,
-            Accept:'application/json'
-        } 
-    }).then((res)=>{
+            Host: 'www.googleapis.com',
+            Authorization: 'Bearer ' + userToken.access_token,
+            Accept: 'application/json'
+        }
+    }).then((res) => {
         let data = res.data.items;
         for (let i = 0; i < data.length; i++) {
             elementsPlaylist.forEach(element => {
-                if(element.id ==data[i].id){
+                if (element.id == data[i].id) {
                     playList.push({
-                        tags:element.tags,
-                        comment:element.comment,
+                        tags: element.tags,
+                        comment: element.comment,
                         title: data[i].snippet.title,
-                        image: data[i].snippet.thumbnails.medium, 
-                        channelTitle: data[i].snippet.channelTitle, 
-                        channelId:data[i].snippet.channelId,
-                        id:data[i].id,
+                        image: data[i].snippet.thumbnails.medium,
+                        channelTitle: data[i].snippet.channelTitle,
+                        channelId: data[i].snippet.channelId,
+                        id: data[i].id,
                         date: data[i].snippet.publishedAt,
                     })
-                }  
+                }
             });
-                
-        }     
-        e.reply('get-collection-select',videos,playList,channel,relatedCollections)
-    }).catch((error) =>{
-    });
-    let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet'+chainChannel+'&key='
-    Axios.get( apiCallChannel + YOUTUBE_API_KEY,{
+
+        }
+        e.reply('get-collection-select', videos, playList, channel, relatedCollections)
+    }).catch((error) => {});
+    let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet' + chainChannel + '&key='
+    Axios.get(apiCallChannel + YOUTUBE_API_KEY, {
         headers: {
-            Host:'www.googleapis.com',
-            Authorization: 'Bearer '+userToken.access_token,
-            Accept:'application/json'
-        } 
-    }).then((res)=>{
+            Host: 'www.googleapis.com',
+            Authorization: 'Bearer ' + userToken.access_token,
+            Accept: 'application/json'
+        }
+    }).then((res) => {
         let data = res.data.items;
         for (let i = 0; i < data.length; i++) {
             elementsChannel.forEach(element => {
-                if(element.id ==data[i].id){
+                if (element.id == data[i].id) {
                     channel.push({
-                        id:element.id,
-                        tags:element.tags,
-                        comment:element.comment,
+                        id: element.id,
+                        tags: element.tags,
+                        comment: element.comment,
                         title: data[i].snippet.title,
-                        image: data[i].snippet.thumbnails.default.url, 
+                        image: data[i].snippet.thumbnails.default.url,
                         date: data[i].snippet.publishedAt,
                     })
-                }  
+                }
             });
-                                
-        }     
-        e.reply('get-collection-select',videos,playList,channel,relatedCollections)
-    }).catch((error) =>{
-    })
+
+        }
+        e.reply('get-collection-select', videos, playList, channel, relatedCollections)
+    }).catch((error) => {})
 })
 
-ipcMain.on('delete-video-playList-channel',async (e,id)=>{
-    const user = await  User.findOne({ email: userInfo.email });
-    const collection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
-    console.log(collection.resource[0].snippet);
-    collection.resource.map((element,i) => { 
-        if(element.snippet.id == id ){
-            collection.resource.splice(i,1);
+ipcMain.on('delete-video-playList-channel', async(e, id) => {
+    const user = await User.findOne({ email: userInfo.email });
+    const collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
+    collection.resource.map((element, i) => {
+        if (element.snippet.id == id) {
+            collection.resource.splice(i, 1);
         }
     })
     await collection.save();
     e.reply('delete-video-playList-channel');
 })
 
-ipcMain.on('edit-video-collection', async (e,id,VideoCollection,chosenTags)=>{
-    console.log(chosenTags);
-    const user = await  User.findOne({ email: userInfo.email });
-    const collection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
-    collection.resource.map((element,i) => { 
-        if(element.snippet.id == id ){
+ipcMain.on('edit-video-collection', async(e, id, VideoCollection, chosenTags) => {
+    const user = await User.findOne({ email: userInfo.email });
+    const collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
+    collection.resource.map((element, i) => {
+        if (element.snippet.id == id) {
             collection.resource[i].snippet.comment = VideoCollection.comment;
-            if(VideoCollection.startAt != null){
+            if (VideoCollection.startAt != null) {
                 collection.resource[i].snippet.startAt = VideoCollection.startAt;
             }
-            if(VideoCollection.endAt != null){
+            if (VideoCollection.endAt != null) {
                 collection.resource[i].snippet.endAt = VideoCollection.endAt;
             }
-            collection.resource[i].snippet.tags = chosenTags;         
-            console.log(collection.resource[i].snippet.tags)
+            collection.resource[i].snippet.tags = chosenTags;
         }
-           
+
     })
     await collection.save();
     e.reply('edit-video-playlist-channel-collection');
 })
 
-ipcMain.on('edit-playlist-collection', async (e,id,playListCollection,chosenTagsEditPlaylist)=>{
-    console.log(chosenTagsEditPlaylist);
-    const user = await  User.findOne({ email: userInfo.email });
-    const collection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
-    collection.resource.map((element,i) => { 
-        if(element.snippet.id == id ){
+ipcMain.on('edit-playlist-collection', async(e, id, playListCollection, chosenTagsEditPlaylist) => {
+    const user = await User.findOne({ email: userInfo.email });
+    const collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
+    collection.resource.map((element, i) => {
+        if (element.snippet.id == id) {
             collection.resource[i].snippet.comment = playListCollection.comment;
-            collection.resource[i].snippet.tags = chosenTagsEditPlaylist;         
-            console.log(collection.resource[i].snippet.tags)
+            collection.resource[i].snippet.tags = chosenTagsEditPlaylist;
         }
-           
+
     })
     await collection.save();
     e.reply('edit-video-playlist-channel-collection');
 })
 
-ipcMain.on('edit-channel-collection', async (e,id,channelCollection,chosenTagsEditChannel) =>{
-    const user = await  User.findOne({ email: userInfo.email });
-    const collection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
-    collection.resource.map((element,i) => { 
-        if(element.snippet.id == id ){
+ipcMain.on('edit-channel-collection', async(e, id, channelCollection, chosenTagsEditChannel) => {
+    const user = await User.findOne({ email: userInfo.email });
+    const collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
+    collection.resource.map((element, i) => {
+        if (element.snippet.id == id) {
             collection.resource[i].snippet.comment = channelCollection.comment;
-            collection.resource[i].snippet.tags = chosenTagsEditChannel;         
-            console.log(collection.resource[i].snippet.tags)
+            collection.resource[i].snippet.tags = chosenTagsEditChannel;
         }
-           
+
     })
     await collection.save();
     e.reply('edit-video-playlist-channel-collection');
 })
-
-
-

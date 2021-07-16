@@ -13,22 +13,21 @@ const labelTags = document.getElementById("labelTags");
 const slectTag = document.getElementById("slectTag");
 const slectTagEdit = document.getElementById("slectTagEdit");
 const labelTagsEdit = document.getElementById("labelTagsEdit");
-let chosenTags =[];
-let chosenTagsEdit =[];
+let chosenTags = [];
+let chosenTagsEdit = [];
 
-document.addEventListener('DOMContentLoaded',(e)=>{
+document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('collection');
 
 })
 
 //* Display the information in a table of the collections.
 
-ipcRenderer.on('collection',(e,collections)=>{
-    console.log(collections);
-    let listOfCollection=document.getElementById("tableCollection");
-    listOfCollection.innerHTML='';
-    collections.forEach( (collection,i) => {
-        listOfCollection.innerHTML+= `
+ipcRenderer.on('collection', (e, collections) => {
+    let listOfCollection = document.getElementById("tableCollection");
+    listOfCollection.innerHTML = '';
+    collections.forEach((collection, i) => {
+        listOfCollection.innerHTML += `
         <tr>
         <th scope="row">${i}</th>
         <td><a onClick="getCollection('${collection.title}')" style="cursor:pointer">${collection.title}</a></td>
@@ -43,50 +42,48 @@ ipcRenderer.on('collection',(e,collections)=>{
 
 //* New collection functions 
 
-newCollection.addEventListener('submit',(e)=>{
+newCollection.addEventListener('submit', (e) => {
     const collection = {
         title: document.getElementById("titleCollection").value,
         description: document.getElementById("description").value,
     };
-    ipcRenderer.send('new-collection',collection,chosenTags);
+    ipcRenderer.send('new-collection', collection, chosenTags);
     newCollection.reset();
 });
 
 
 //* A search for the tag is performed each time a key is pressed in the input.
-function keyPressValue(){
+function keyPressValue() {
     const searchTag = tagInput.value;
-    console.log(searchTag);
-    ipcRenderer.send('search-tag',searchTag);
+    ipcRenderer.send('search-tag', searchTag);
 }
 
 //* The tag is sent to be saved in the database and verified if it is a valid tag to be entered.
-saveTag.addEventListener('click',(e)=>{
+saveTag.addEventListener('click', (e) => {
     const tags = tagInput.value;
-    if(tags != ""){
-        ipcRenderer.send('new-tag',tags);
-        ipcRenderer.on('new-tag',(e,mss)=>{
+    if (tags != "") {
+        ipcRenderer.send('new-tag', tags);
+        ipcRenderer.on('new-tag', (e, mss) => {
             save.innerHTML = mss;
-            tagInput.value = ""; 
+            tagInput.value = "";
             selectionTag(tags);
-        });      
-    }else{
-        noSave.innerHTML = "Ingrese un tag para guardar"; 
+        });
+    } else {
+        noSave.innerHTML = "Ingrese un tag para guardar";
         save.innerHTML = "";
-        tagInput.value = ""; 
+        tagInput.value = "";
     }
 });
 
 //*  The response is obtained from the back in and the tag is set to select if it was in the database.
-ipcRenderer.on('search-tag',(e,tags)=>{
-    console.log(tags);
-    slectTag.innerHTML='';
-    slectTagEdit.innerHTML='';
+ipcRenderer.on('search-tag', (e, tags) => {
+    slectTag.innerHTML = '';
+    slectTagEdit.innerHTML = '';
     tags.forEach(tag_user => {
-        slectTag.innerHTML+= `
+        slectTag.innerHTML += `
         <a class="btn btn-danger" onClick="selectionTag('${tag_user._doc.tag}')">${tag_user._doc.tag}</a>
         `;
-        slectTagEdit.innerHTML+= `
+        slectTagEdit.innerHTML += `
         <a class="btn btn-danger" onClick="selectionTagEdit('${tag_user._doc.tag}')">${tag_user._doc.tag}</a>
         `;
     });
@@ -95,14 +92,14 @@ ipcRenderer.on('search-tag',(e,tags)=>{
 //* The tag is added to an array to be stored in the collection. 
 function selectionTag(tag) {
 
-    let someTag = chosenTags.filter(choseTag => { return choseTag == tag});
-    if (someTag.length ===0) {
+    let someTag = chosenTags.filter(choseTag => { return choseTag == tag });
+    if (someTag.length === 0) {
         chosenTags.push(tag);
     }
 
     labelTags.innerHTML = "";
-    chosenTags.forEach(tagSelected=> {
-        labelTags.innerHTML+= `
+    chosenTags.forEach(tagSelected => {
+        labelTags.innerHTML += `
         <label for="description">${tagSelected} </label>
         <a onClick="deletedTag('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
@@ -113,18 +110,17 @@ function selectionTag(tag) {
 
 //* The tag is deleted from the array if the tag is not wanted.
 function deletedTag(tag) {
-    chosenTags.map((value,i)=>{
-        if (value === tag)  {
-            chosenTags.splice(i,1);
+    chosenTags.map((value, i) => {
+        if (value === tag) {
+            chosenTags.splice(i, 1);
         }
     })
     if (!chosenTags.length) {
-        labelTags.innerHTML ="";
-    }else{ 
-        labelTags.innerHTML ="";
-        chosenTags.forEach(tagSelected=> {
-            console.log(tagSelected);
-            labelTags.innerHTML+= `
+        labelTags.innerHTML = "";
+    } else {
+        labelTags.innerHTML = "";
+        chosenTags.forEach(tagSelected => {
+            labelTags.innerHTML += `
             <label for="description">${tagSelected} </label>
             <a onClick="deletedTag('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
@@ -136,29 +132,26 @@ function deletedTag(tag) {
 
 //* Access to the selected collection
 function getCollection(title) {
-    console.log(title);
-    ipcRenderer.send('get-collection',title);
+    ipcRenderer.send('get-collection', title);
     window.location.href = './collectionResource.ejs';
 }
 
 
 //* Functions to edit a collection.
 function getEditCollection(title) {
-    console.log(title);
-    ipcRenderer.send('get-collection',title);
-    ipcRenderer.send('get-edit-collection',title);
-    ipcRenderer.on('get-edit-collection',(e,collection)=>{
+    ipcRenderer.send('get-collection', title);
+    ipcRenderer.send('get-edit-collection', title);
+    ipcRenderer.on('get-edit-collection', (e, collection) => {
         chosenTagsEdit = [];
         tagInputEdit.value = "";
         slectTag.innerHTML = ``;
         slectTagEdit.innerHTML = ``;
-        console.log(collection._doc);
         document.getElementById('titleCollectionEdit').value = collection._doc.title;
         document.getElementById('descriptionEdit').value = collection._doc.description;
         document.getElementById('labelTagsEdit').innerHTML = '';
-        collection._doc.tags.forEach(tag =>{
+        collection._doc.tags.forEach(tag => {
             chosenTagsEdit.push(tag);
-            document.getElementById('labelTagsEdit').innerHTML+= `
+            document.getElementById('labelTagsEdit').innerHTML += `
             <label for="description">${tag} </label>
             <a onClick="deletedTagEdit('${tag}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
@@ -169,26 +162,26 @@ function getEditCollection(title) {
 }
 
 //* Form to edit the metadata of a collection
-editCollection.addEventListener('submit',(e)=>{
+editCollection.addEventListener('submit', (e) => {
     const collection = {
         title: document.getElementById("titleCollectionEdit").value,
         description: document.getElementById("descriptionEdit").value,
     };
-    ipcRenderer.send('edit-collection',collection,chosenTagsEdit);
+    ipcRenderer.send('edit-collection', collection, chosenTagsEdit);
     editCollection.reset();
 })
 
 //* The tag is added to an array to be stored in the collection edit. 
 function selectionTagEdit(tag) {
 
-    let someTag = chosenTagsEdit.filter(choseTag => { return choseTag == tag});
-    if (someTag.length ===0) {
+    let someTag = chosenTagsEdit.filter(choseTag => { return choseTag == tag });
+    if (someTag.length === 0) {
         chosenTagsEdit.push(tag);
     }
 
     labelTagsEdit.innerHTML = "";
-    chosenTagsEdit.forEach(tagSelected=> {
-        labelTagsEdit.innerHTML+= `
+    chosenTagsEdit.forEach(tagSelected => {
+        labelTagsEdit.innerHTML += `
         <label for="description">${tagSelected} </label>
         <a onClick="deletedTagEdit('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
@@ -198,43 +191,40 @@ function selectionTagEdit(tag) {
 }
 
 //* A search for the tag is performed each time a key is pressed in the input collection edit.
-function keyPressValueEdit(){
+function keyPressValueEdit() {
     const searchTag = tagInputEdit.value;
-    console.log(searchTag);
-    ipcRenderer.send('search-tag',searchTag);
+    ipcRenderer.send('search-tag', searchTag);
 }
 //* The tag is sent to be saved in the database and verified if it is a valid tag to be entered collection edit.
-saveTagEdit.addEventListener('click',(e)=>{
+saveTagEdit.addEventListener('click', (e) => {
     const tags = tagInputEdit.value;
-    if(tags != ""){
-        ipcRenderer.send('new-tag',tags);
-        ipcRenderer.on('new-tag',(e,mss)=>{
+    if (tags != "") {
+        ipcRenderer.send('new-tag', tags);
+        ipcRenderer.on('new-tag', (e, mss) => {
             saveEdit.innerHTML = mss;
-            tagInputEdit.value = ""; 
+            tagInputEdit.value = "";
             selectionTagEdit(tags);
-        });      
-    }else{
-        noSaveEdit.innerHTML = "Ingrese un tag para guardar"; 
+        });
+    } else {
+        noSaveEdit.innerHTML = "Ingrese un tag para guardar";
         saveEdit.innerHTML = "";
-        tagInputEdit.value = ""; 
+        tagInputEdit.value = "";
     }
 });
 
 //* The tag is deleted from the array if the tag is not wanted collection edit.
 function deletedTagEdit(tag) {
-    console.log(chosenTagsEdit)
-    chosenTagsEdit.map((value,i)=>{
-        if (value === tag)  {
-            chosenTagsEdit.splice(i,1);
+    chosenTagsEdit.map((value, i) => {
+        if (value === tag) {
+            chosenTagsEdit.splice(i, 1);
         }
     })
     if (!chosenTagsEdit.length) {
-        labelTagsEdit.innerHTML ="";
-    }else{ 
-        labelTagsEdit.innerHTML ="";
-        chosenTagsEdit.forEach(tagSelected=> {
-            console.log(tagSelected);
-            labelTagsEdit.innerHTML+= `
+        labelTagsEdit.innerHTML = "";
+    } else {
+        labelTagsEdit.innerHTML = "";
+        chosenTagsEdit.forEach(tagSelected => {
+            labelTagsEdit.innerHTML += `
             <label for="description">${tagSelected} </label>
             <a onClick="deletedTagEdit('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
