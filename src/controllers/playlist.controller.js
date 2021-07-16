@@ -19,7 +19,7 @@ ipcMain.on('user', (e, token, info) => {
 //Request to get all the user's playlists
 ipcMain.on('playList', (e) => {
 
-    let apiPlayList = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet&mine=true&key="
+    let apiPlayList = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=20&mine=true&key="
     let playList = [];
     Axios.get(apiPlayList + YOUTUBE_API_KEY, {
         headers: {

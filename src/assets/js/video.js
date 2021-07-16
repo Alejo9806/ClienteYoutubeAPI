@@ -8,6 +8,10 @@ let commentList = document.getElementById("commentsList");
 
 document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('getVideo');
+    ipcRenderer.on('userInfo',(e,userInfo)=>{
+        document.getElementById("imgProfileComment").setAttribute("src", userInfo.picture )
+    })
+    
 });
 
 ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDetails, channelSubscription, subscriptionId, dataComments) => {
@@ -90,6 +94,8 @@ ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDeta
     date = video.publishedAt;
     videoTime = video.duration;
 });
+
+
 
 
 document.getElementById("commentForm").addEventListener('submit', e => {

@@ -7,7 +7,12 @@ document.addEventListener('DOMContentLoaded', (e) => {
 })
 
 ipcRenderer.on('video-playlist-modal', (e, id) => {
+    idElement.forEach(element=>{
+        document.getElementById(element.box).checked = 0;
+    })
+    idElement = [];
     idVideo = id;
+
 });
 
 
