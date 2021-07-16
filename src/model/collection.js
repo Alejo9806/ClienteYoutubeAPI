@@ -22,7 +22,7 @@ const collectionSchema = new Schema ({
     title : {
         type:String,
         required:false,
-        unique: true
+        unique: false
     },
     id_user:{
         type:String,

@@ -1,4 +1,4 @@
-
+//* global variables 
 const newCollection = document.getElementById("newCollection");
 const editCollection = document.getElementById("editCollection");
 const tagInput = document.getElementById("tag");
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded',(e)=>{
 
 })
 
-//* Mostrar la informacion en una tabla de las colleciones.
+//* Display the information in a table of the collections.
 
 ipcRenderer.on('collection',(e,collections)=>{
     console.log(collections);
@@ -41,7 +41,7 @@ ipcRenderer.on('collection',(e,collections)=>{
     });
 });
 
-//* Nueva collecion funciones 
+//* New collection functions 
 
 newCollection.addEventListener('submit',(e)=>{
     const collection = {
@@ -53,13 +53,14 @@ newCollection.addEventListener('submit',(e)=>{
 });
 
 
-
+//* A search for the tag is performed each time a key is pressed in the input.
 function keyPressValue(){
     const searchTag = tagInput.value;
     console.log(searchTag);
     ipcRenderer.send('search-tag',searchTag);
 }
 
+//* The tag is sent to be saved in the database and verified if it is a valid tag to be entered.
 saveTag.addEventListener('click',(e)=>{
     const tags = tagInput.value;
     if(tags != ""){
@@ -76,6 +77,7 @@ saveTag.addEventListener('click',(e)=>{
     }
 });
 
+//*  The response is obtained from the back in and the tag is set to select if it was in the database.
 ipcRenderer.on('search-tag',(e,tags)=>{
     console.log(tags);
     slectTag.innerHTML='';
@@ -90,6 +92,7 @@ ipcRenderer.on('search-tag',(e,tags)=>{
     });
 });
 
+//* The tag is added to an array to be stored in the collection. 
 function selectionTag(tag) {
 
     let someTag = chosenTags.filter(choseTag => { return choseTag == tag});
@@ -108,6 +111,7 @@ function selectionTag(tag) {
     });
 }
 
+//* The tag is deleted from the array if the tag is not wanted.
 function deletedTag(tag) {
     chosenTags.map((value,i)=>{
         if (value === tag)  {
@@ -130,7 +134,7 @@ function deletedTag(tag) {
     }
 }
 
-//* Acceder a la collecion selecionada 
+//* Access to the selected collection
 function getCollection(title) {
     console.log(title);
     ipcRenderer.send('get-collection',title);
@@ -138,7 +142,7 @@ function getCollection(title) {
 }
 
 
-//* Funciones para editar una collecion.
+//* Functions to edit a collection.
 function getEditCollection(title) {
     console.log(title);
     ipcRenderer.send('get-collection',title);
@@ -164,6 +168,7 @@ function getEditCollection(title) {
     })
 }
 
+//* Form to edit the metadata of a collection
 editCollection.addEventListener('submit',(e)=>{
     const collection = {
         title: document.getElementById("titleCollectionEdit").value,
@@ -173,6 +178,7 @@ editCollection.addEventListener('submit',(e)=>{
     editCollection.reset();
 })
 
+//* The tag is added to an array to be stored in the collection edit. 
 function selectionTagEdit(tag) {
 
     let someTag = chosenTagsEdit.filter(choseTag => { return choseTag == tag});
@@ -191,12 +197,13 @@ function selectionTagEdit(tag) {
     });
 }
 
+//* A search for the tag is performed each time a key is pressed in the input collection edit.
 function keyPressValueEdit(){
     const searchTag = tagInputEdit.value;
     console.log(searchTag);
     ipcRenderer.send('search-tag',searchTag);
 }
-
+//* The tag is sent to be saved in the database and verified if it is a valid tag to be entered collection edit.
 saveTagEdit.addEventListener('click',(e)=>{
     const tags = tagInputEdit.value;
     if(tags != ""){
@@ -213,7 +220,7 @@ saveTagEdit.addEventListener('click',(e)=>{
     }
 });
 
-
+//* The tag is deleted from the array if the tag is not wanted collection edit.
 function deletedTagEdit(tag) {
     console.log(chosenTagsEdit)
     chosenTagsEdit.map((value,i)=>{

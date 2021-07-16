@@ -1,7 +1,9 @@
+//* Load playListItems page and make a call to retrieve the channel information.
 document.addEventListener('DOMContentLoaded',(e)=>{
     ipcRenderer.send('playListItems');
 })
 
+//* Retrieving information from the playListItems and painting it on the screen
 ipcRenderer.on('playListItems',(e,playListItems)=>{
     let listOfPlaylistItems = document.getElementById("playListItems"); 
     listOfPlaylistItems.innerHTML=''
@@ -20,7 +22,7 @@ ipcRenderer.on('playListItems',(e,playListItems)=>{
     }
 })
 
-
+//* Get video
 function video(string) {
     console.log("hola");
     ipcRenderer.send('video',string,null, null);
@@ -36,6 +38,8 @@ function getChannel(channelId) {
     window.location.href = "./channel.ejs";
 }
 
+
+//* When opening the modal to add to the collection, the video id and creation date are sent.
 function videoCollectionModal(id,date) {
     ipcRenderer.send('video-details',id);
     ipcRenderer.on('video-details',(e,videoDetails)=>{
@@ -43,12 +47,13 @@ function videoCollectionModal(id,date) {
     })
     
 }
-
+//* Delete from playlist 
 function deleteVideofromPlaylist(idElement) {
     ipcRenderer.send('delete-video-from-playlist', idElement)
     location.reload();
 }
 
+//*A message is displayed if a successful deletion or error occurred.
 ipcRenderer.on('delete-video-from-playlist',(e,mss)=>{
     document.getElementById("mssDelete").innerHTML = mss;
 })

@@ -1,3 +1,4 @@
+//* global variables 
 const newPlayListCollection = document.getElementById("newPlayListCollection");
 const tagInput = document.getElementById("tag");
 const saveTag = document.getElementById("saveTag");
@@ -9,12 +10,13 @@ let chosenTags =[];
 let playListId;
 let playListDate;
 
-
+//* Load channel page and make a call to retrieve the playlist information.
 document.addEventListener('DOMContentLoaded',(e)=>{
     ipcRenderer.send('playList');
     ipcRenderer.send('collection');
 })
 
+//* Retrieving information from the playlist and painting it on the screen
 ipcRenderer.on('playList',(e,playList)=>{
     let listOfPlaylist=document.getElementById("playList"); 
     listOfPlaylist.innerHTML=''
@@ -34,6 +36,7 @@ ipcRenderer.on('playList',(e,playList)=>{
     }
 });
 
+//* Get items
 function getItems(string) {
     console.log("hola");
     ipcRenderer.send('playlisId',string);
@@ -47,10 +50,12 @@ function getChannel(channelId) {
     window.location.href = "./channel.ejs";
 }
 
+//* Data are sent for the modal of the playlist collection
 function playListCollectionModal(id,date) {
     ipcRenderer.send('playList-collection-modal',id,date);
 }
 
+//* Retrieve information from the collections to create a list to choose from.
 ipcRenderer.on('collection',(e,collections)=>{
     console.log(collections);
     let selectedCollection = document.getElementById("selectedCollectionPlaylist");
@@ -62,13 +67,14 @@ ipcRenderer.on('collection',(e,collections)=>{
     });
 });
 
+//* Playlist data is obtained to add to the collection.
 ipcRenderer.on('playList-collection-modal',(e,id,date)=>{
     console.log(id,date)
     playListId = id;
     playListDate = date;
 });
 
-
+//* The data of the form to add the playlist to the collection are registered and the data are sent to enter the database.
 newPlayListCollection.addEventListener('submit',(e)=>{
     let collection = document.getElementById("selectedCollectionPlaylist").value;
     const playList= {
@@ -82,12 +88,14 @@ newPlayListCollection.addEventListener('submit',(e)=>{
     newPlayListCollection.reset();
 });
 
+//* A search for the tag is performed each time a key is pressed in the input.
 function keyPressValue(){
     const searchTag = tagInput.value;
     console.log(searchTag);
     ipcRenderer.send('search-tag',searchTag);
 }
 
+//* The tag is sent to be saved in the database and verified if it is a valid tag to be entered.
 saveTag.addEventListener('click',(e)=>{
     const tags = tagInput.value;
     if(tags != ""){
@@ -104,6 +112,7 @@ saveTag.addEventListener('click',(e)=>{
     }
 });
 
+//*  The response is obtained from the back in and the tag is set to select if it was in the database.
 ipcRenderer.on('search-tag',(e,tags)=>{
     console.log(tags);
     slectTag.innerHTML='';
@@ -114,6 +123,7 @@ ipcRenderer.on('search-tag',(e,tags)=>{
     });
 });
 
+//* The tag is added to an array to be stored in the collection. 
 function selectionTag(tag) {
 
     let someTag = chosenTags.filter(choseTag => { return choseTag == tag});
@@ -132,6 +142,7 @@ function selectionTag(tag) {
     });
 }
 
+//* The tag is deleted from the array if the tag is not wanted.
 function deletedTag(tag) {
     chosenTags.map((value,i)=>{
         if (value === tag)  {

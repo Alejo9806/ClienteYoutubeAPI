@@ -79,7 +79,8 @@ ipcMain.on('new-video-collection',async (e,video,collectionTitle,chosenTags)=>{
     console.log(video);
     console.log(collectionTitle);
     let mss;
-    let collection = await Collection.findOne({title:collectionTitle});  
+    const user = await  User.findOne({ email: userInfo.email });
+    let collection = await Collection.findOne({title:collectionTitle,id_user:user._id});  
     collection.resource.push({ 
         type:video.type,
         snippet:{ 
@@ -108,8 +109,9 @@ ipcMain.on('new-video-collection',async (e,video,collectionTitle,chosenTags)=>{
 ipcMain.on('new-channel-collection',async (e,channel,collectionTitle,chosenTags)=>{
     console.log(channel);
     console.log(collectionTitle);
-    let mss;
-    let collection = await Collection.findOne({title:collectionTitle});  
+    let mss
+    const user = await  User.findOne({ email: userInfo.email });
+    let collection = await Collection.findOne({title:collectionTitle,id_user:user._id});   
     collection.resource.push({ 
         type:channel.type,
         snippet:{ 
@@ -136,7 +138,8 @@ ipcMain.on('new-playList-collection', async (e,playList,collectionTitle,chosenTa
     console.log(playList);
     console.log(collectionTitle);
     let mss;
-    let collection = await Collection.findOne({title:collectionTitle}); 
+    const user = await  User.findOne({ email: userInfo.email });
+    let collection = await Collection.findOne({title:collectionTitle,id_user:user._id});  
     collection.resource.push({ 
         type:playList.type,
         snippet:{ 
@@ -161,7 +164,8 @@ ipcMain.on('new-playList-collection', async (e,playList,collectionTitle,chosenTa
 
 
 ipcMain.on('get-edit-collection', async (e,title)=>{
-    const getCollection = await Collection.findOne({title: title},{'title':1,'tags':1,'description':1,'_id':1}); 
+    const user = await  User.findOne({ email: userInfo.email });
+    const getCollection = await Collection.findOne({title: title,id_user:user._id},{'title':1,'tags':1,'description':1,'_id':1}); 
     console.log(getCollection);
     e.reply('get-edit-collection',getCollection);
 })
@@ -173,7 +177,8 @@ ipcMain.on('get-collection', (e,title)=>{
 
 ipcMain.on('edit-collection',async (e,editCollection,chosenTagsEdit)=>{
     console.log(editCollection,chosenTagsEdit)
-    let collection = await Collection.findOne({title: titleCollection});
+    const user = await  User.findOne({ email: userInfo.email });
+    let collection = await Collection.findOne({title: titleCollection,id_user:user._id});
     collection.title = editCollection.title;
     collection.description = editCollection.description;
     collection.tags = chosenTagsEdit;
@@ -195,7 +200,8 @@ ipcMain.on('get-collection-select', async (e) =>{
     let chainPlaylist = "";
     let chainChannel = "";
     console.log(titleCollection);
-    const getCollection = await Collection.findOne({title: titleCollection}); 
+    const user = await  User.findOne({ email: userInfo.email });
+    const getCollection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
     getCollection.resource.forEach((element,i) =>{
         if (element.type == 'VIDEO') {
             elementsVideo.push({
@@ -223,7 +229,7 @@ ipcMain.on('get-collection-select', async (e) =>{
         }
     })
     //* Search for collections to recommend based on similar tags.
-    const collections = await Collection.find({tags: {$in: getCollection.tags}});
+    const collections = await Collection.find({tags: {$in: getCollection.tags},id_user:user._id});
     let relatedCollections= [];
     console.log(collections);
     collections.forEach((element,index) =>{
@@ -331,7 +337,8 @@ ipcMain.on('get-collection-select', async (e) =>{
 })
 
 ipcMain.on('delete-video-playList-channel',async (e,id)=>{
-    const collection = await Collection.findOne({title: titleCollection}); 
+    const user = await  User.findOne({ email: userInfo.email });
+    const collection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
     console.log(collection.resource[0].snippet);
     collection.resource.map((element,i) => { 
         if(element.snippet.id == id ){
@@ -344,7 +351,8 @@ ipcMain.on('delete-video-playList-channel',async (e,id)=>{
 
 ipcMain.on('edit-video-collection', async (e,id,VideoCollection,chosenTags)=>{
     console.log(chosenTags);
-    const collection = await Collection.findOne({title: titleCollection}); 
+    const user = await  User.findOne({ email: userInfo.email });
+    const collection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
     collection.resource.map((element,i) => { 
         if(element.snippet.id == id ){
             collection.resource[i].snippet.comment = VideoCollection.comment;
@@ -365,7 +373,8 @@ ipcMain.on('edit-video-collection', async (e,id,VideoCollection,chosenTags)=>{
 
 ipcMain.on('edit-playlist-collection', async (e,id,playListCollection,chosenTagsEditPlaylist)=>{
     console.log(chosenTagsEditPlaylist);
-    const collection = await Collection.findOne({title: titleCollection}); 
+    const user = await  User.findOne({ email: userInfo.email });
+    const collection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
     collection.resource.map((element,i) => { 
         if(element.snippet.id == id ){
             collection.resource[i].snippet.comment = playListCollection.comment;
@@ -379,7 +388,8 @@ ipcMain.on('edit-playlist-collection', async (e,id,playListCollection,chosenTags
 })
 
 ipcMain.on('edit-channel-collection', async (e,id,channelCollection,chosenTagsEditChannel) =>{
-    const collection = await Collection.findOne({title: titleCollection}); 
+    const user = await  User.findOne({ email: userInfo.email });
+    const collection = await Collection.findOne({title: titleCollection,id_user:user._id}); 
     collection.resource.map((element,i) => { 
         if(element.snippet.id == id ){
             collection.resource[i].snippet.comment = channelCollection.comment;

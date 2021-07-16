@@ -1,8 +1,9 @@
-
+//* Load search page and make a call to retrieve the channel information.
 document.addEventListener('DOMContentLoaded',(e)=>{
     ipcRenderer.send('search');
 })
 
+//* Retrieving information from the search and painting it on the screen
 ipcRenderer.on('search',(e,results)=>{
     let listResult=document.getElementById("result"); 
     listResult.innerHTML='';
@@ -23,6 +24,7 @@ ipcRenderer.on('search',(e,results)=>{
     }
 });
 
+//* Get video
 function video(string) {
     console.log("hola");
     ipcRenderer.send('video',string, null, null);
@@ -37,7 +39,7 @@ function getChannel(channelId) {
     window.location.href = "./channel.ejs";
 }
 
-
+//* When opening the modal to add to the collection, the video id and creation date are sent.
 function videoCollectionModal(id,date) {
     ipcRenderer.send('video-details',id);
     ipcRenderer.on('video-details',(e,videoDetails)=>{
@@ -45,6 +47,7 @@ function videoCollectionModal(id,date) {
     })
 }
 
+//* When opening the modal to add to the playlist, the video id and creation date are sent.
 function videoPlaylistModal(id) {
     ipcRenderer.send('video-playlist-modal',id);
 }

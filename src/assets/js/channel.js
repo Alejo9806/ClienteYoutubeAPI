@@ -1,4 +1,4 @@
-
+//* global variables 
 let channel = document.getElementById("channel");
 let newChannelCollection = document.getElementById("newChannelCollection");
 const tagInput = document.getElementById("tag");
@@ -13,15 +13,16 @@ let dateChannel;
 let idSubscription;
 
 
-
+//* Load channel page and make a call to retrieve the channel information.
 document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('getChannel');
     ipcRenderer.send('collection');
 });
 
-
+//* Retrieving information from the channel and painting it on the screen
 ipcRenderer.on('getChannel',(e,channelDetails,channelSubscription,subscriptionId,videoTrailer)=>{
     console.log(channelDetails,channelSubscription,subscriptionId,videoTrailer);
+    //* If the user is a subscriber to the channel entered, it will paint one way otherwise it will paint another way.
     if(channelSubscription){
         channel.innerHTML =  ` 
         <p id="unsubscribedMss"></p>
@@ -57,6 +58,7 @@ ipcRenderer.on('getChannel',(e,channelDetails,channelSubscription,subscriptionId
         </div>
         ` 
     }
+    //* Video trailer of the channel not all channels have a trailer that's why you are wondering if you have one.
     if(videoTrailer){
         document.getElementById("trailer").innerHTML = ` 
                 <div class="row" onClick="video('${videoTrailer.videoId}')">
@@ -75,6 +77,7 @@ ipcRenderer.on('getChannel',(e,channelDetails,channelSubscription,subscriptionId
     }
 });
 
+//* Send id of selected video and load video window.
 function video(string) {
     console.log("hola");
     ipcRenderer.send('video',string, null, null);
@@ -82,11 +85,12 @@ function video(string) {
   
 }
 
+//* When opening the modal to add to the collection, the channel id and creation date are sent.
 function channelCollectionModal(id,date) {
     idChannel= id;
     dateChannel= date;
 }
-
+//* Function to subscribe to the channel also changes the view to update the button per subscriber.
 function subscription(id,publishedAt) {
     console.log(id)
 
@@ -103,6 +107,16 @@ function subscription(id,publishedAt) {
     })
 }
 
+//* Channel information is sent in order to use the unsubscribe function.
+function sendId(id,date,idchannels) {
+    console.log(id)
+    idSubscription = id;
+    dateChannel = date;
+    idChannel = idchannels;
+}
+
+
+//* Function to unsubscribe to the channel and also change the view to update the subscribe button.
 function unsubscribe() {
     console.log(idSubscription)
     ipcRenderer.send('unsubscribed',idSubscription);
@@ -117,13 +131,7 @@ function unsubscribe() {
     })
 }
 
-function sendId(id,date,idchannels) {
-    console.log(id)
-    idSubscription = id;
-    dateChannel = date;
-    idChannel = idchannels;
-}
-
+//* Retrieve information from the collections to create a list to choose from.
 ipcRenderer.on('collection',(e,collections)=>{
     console.log(collections);
     let selectedCollection = document.getElementById("selectedCollectionChannel");
@@ -136,6 +144,7 @@ ipcRenderer.on('collection',(e,collections)=>{
 });
 
 
+//* The data of the form to add the channel to the collection are registered and the data are sent to enter the database.
 newChannelCollection.addEventListener('submit',(e)=>{
     let collection = document.getElementById("selectedCollectionChannel").value;
     const channel= {
@@ -149,12 +158,14 @@ newChannelCollection.addEventListener('submit',(e)=>{
     newChannelCollection.reset();
 });
 
+//* A search for the tag is performed each time a key is pressed in the input.
 function keyPressValue(){
     const searchTag = tagInput.value;
     console.log(searchTag);
     ipcRenderer.send('search-tag',searchTag);
 }
 
+//* The tag is sent to be saved in the database and verified if it is a valid tag to be entered.
 saveTag.addEventListener('click',(e)=>{
     const tags = tagInput.value;
     if(tags != ""){
@@ -171,6 +182,7 @@ saveTag.addEventListener('click',(e)=>{
     }
 });
 
+//*  The response is obtained from the back in and the tag is set to select if it was in the database.
 ipcRenderer.on('search-tag',(e,tags)=>{
     console.log(tags);
     slectTag.innerHTML='';
@@ -181,6 +193,8 @@ ipcRenderer.on('search-tag',(e,tags)=>{
     });
 });
 
+
+//* The tag is added to an array to be stored in the collection. 
 function selectionTag(tag) {
 
     let someTag = chosenTags.filter(choseTag => { return choseTag == tag});
@@ -199,6 +213,7 @@ function selectionTag(tag) {
     });
 }
 
+//* The tag is deleted from the array if the tag is not wanted.
 function deletedTag(tag) {
     chosenTags.map((value,i)=>{
         if (value === tag)  {

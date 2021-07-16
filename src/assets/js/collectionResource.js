@@ -34,11 +34,12 @@ let idChannel;
 
 
 
-
+//* Make a call to the back end when loading the collections resource window. 
 document.addEventListener('DOMContentLoaded', (e)=>{
     ipcRenderer.send('get-collection-select');
 })
 
+//* Collection data is obtained and displayed on the screen, divided into four video channels playlists and recommended collections.
 ipcRenderer.on('get-collection-select', (e,videos,playList,channel,relatedCollections)=>{
     const videosCollection = document.getElementById('videosCollection');
     const playListCollection = document.getElementById('playListCollection');
@@ -123,17 +124,27 @@ function getItems(string) {
   
 }
 
+//* Access to the selected collection
+function getCollection(title) {
+    console.log(title);
+    ipcRenderer.send('get-collection',title);
+    window.location.href = './collectionResource.ejs';
+}
+
+
 //* Delete video or playlist
 function deleteVideoOrPlayListOrChannel(id) {
     ipcRenderer.send('delete-video-playList-channel',id);
 }
 
+//* Listens when a video, playlist or channel is deleted and refreshes the window for updating
 ipcRenderer.on('delete-video-playList-channel',(e)=>{
     location.reload();
 })
 
-//* funcitions edit video
 
+//* funcitions edit video
+//*The data of the video selected for editing are obtained and the form is filled in with the video data.
 function editVideo(id,comment,startAt,endAt,tags,timeDuration) {
     let duration = timeDuration.split("");
     let timeS= '';
@@ -188,6 +199,7 @@ function editVideo(id,comment,startAt,endAt,tags,timeDuration) {
 }
 
 
+//* The data of the form to add the channel to the collection are registered and the data are sent to enter the database edit video.
 editVideoCollection.addEventListener('submit',(e)=>{
     const VideoCollection = {
         startAt: document.getElementById("startAt").value,
@@ -199,13 +211,14 @@ editVideoCollection.addEventListener('submit',(e)=>{
 });
 
 
-
+//* A search for the tag is performed each time a key is pressed in the input edit video.
 function keyPressValue(){
     const searchTag = tagInput.value;
     console.log(searchTag);
     ipcRenderer.send('search-tag',searchTag);
 }
 
+//* The tag is sent to be saved in the database and verified if it is a valid tag to be entered edit video.
 saveTag.addEventListener('click',(e)=>{
     const tags = tagInput.value;
     if(tags != ""){
@@ -222,6 +235,7 @@ saveTag.addEventListener('click',(e)=>{
     }
 });
 
+//*  The response is obtained from the back in and the tag is set to select if it was in the database.
 ipcRenderer.on('search-tag',(e,tags)=>{
     console.log(tags);
     slectTag.innerHTML='';
@@ -235,11 +249,12 @@ ipcRenderer.on('search-tag',(e,tags)=>{
         <a class="btn btn-danger" onClick="selectionTagEditPlaylist('${tag_user._doc.tag}')">${tag_user._doc.tag}</a>
         `;
         slectTagEditChannel.innerHTML+= `
-        <a class="btn btn-danger" onClick="selectionTagEditPlaylist('${tag_user._doc.tag}')">${tag_user._doc.tag}</a>
+        <a class="btn btn-danger" onClick="selectionTagEditChannel('${tag_user._doc.tag}')">${tag_user._doc.tag}</a>
         `;
     });
 });
 
+//* The tag is added to an array to be stored in the edit video. 
 function selectionTag(tag) {
 
     let someTag = chosenTags.filter(choseTag => { return choseTag == tag});
@@ -258,6 +273,7 @@ function selectionTag(tag) {
     });
 }
 
+//* The tag is deleted from the array if the tag is not wanted.
 function deletedTag(tag) {
     chosenTags.map((value,i)=>{
         if (value === tag)  {
@@ -299,6 +315,7 @@ function editPlaylist(id,comment,tags) {
     })
 }
 
+//* The data of the form to add the channel to the collection are registered and the data are sent to enter the database edit playlist.
 editPlayListCollection.addEventListener('submit',(e)=>{
     const playListCollection = {
         comment: document.getElementById("commentPlaylist").value,
@@ -307,8 +324,8 @@ editPlayListCollection.addEventListener('submit',(e)=>{
     editPlayListCollection.reset();
 })
 
+//* The tag is added to an array to be stored in the playlist edit.
 function selectionTagEditPlaylist(tag) {
-
     let someTag = chosenTagsEditPlaylist.filter(choseTag => { return choseTag == tag});
     if (someTag.length ===0) {
         chosenTagsEditPlaylist.push(tag);
@@ -325,12 +342,14 @@ function selectionTagEditPlaylist(tag) {
     });
 }
 
+//* A search for the tag is performed each time a key is pressed in the input edit playlist.
 function keyPressValueEditPlaylist(){
     const searchTag = tagInputEditPlaylist.value;
     console.log(searchTag);
     ipcRenderer.send('search-tag',searchTag);
 }
 
+//* The tag is sent to be saved in the database and verified if it is a valid tag to be entered edit playlist.
 saveTagEditPlaylist.addEventListener('click',(e)=>{
     const tags = tagInputEditPlaylist.value;
     if(tags != ""){
@@ -348,6 +367,7 @@ saveTagEditPlaylist.addEventListener('click',(e)=>{
 });
 
 
+//* The tag is deleted from the array if the tag is not wanted.
 function deletedTagEditPlaylist(tag) {
     console.log(chosenTagsEditPlaylist)
     chosenTagsEditPlaylist.map((value,i)=>{
@@ -384,13 +404,14 @@ function editChannel(id,comment,tags) {
         chosenTagsEditChannel.push(tag);
         labelTagsEditChannel.innerHTML+= `
         <label for="description">${tag} </label>
-        <a onClick="deletedTagEditPlaylist('${tag}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+        <a onClick="deletedTagEditChannel('${tag}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
         </svg></a>
     `;
     })
 }
 
+//* The data of the form to add the channel to the collection are registered and the data are sent to enter the database.
 editChannelCollection.addEventListener('submit',(e)=>{
     const channelCollection = {
         comment: document.getElementById("commentChannel").value,
@@ -399,8 +420,8 @@ editChannelCollection.addEventListener('submit',(e)=>{
     editChannelCollection.reset();
 })
 
-function selectionTagEditPlaylist(tag) {
-
+//* The tag is added to an array to be stored in the channel edit.
+function selectionTagEditChannel(tag) {
     let someTag = chosenTagsEditChannel.filter(choseTag => { return choseTag == tag});
     if (someTag.length ===0) {
         chosenTagsEditChannel.push(tag);
@@ -410,19 +431,21 @@ function selectionTagEditPlaylist(tag) {
     chosenTagsEditChannel.forEach(tagSelected=> {
         labelTagsEditChannel.innerHTML+= `
         <label for="description">${tagSelected} </label>
-        <a onClick="deletedTagEditPlaylist('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+        <a onClick="deletedTagEditChannel('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
       </svg></a>
         `
     });
 }
 
+//* A search for the tag is performed each time a key is pressed in the input channel edit.
 function keyPressValueEditChannel(){
     const searchTag = tagEditChannel.value;
     console.log(searchTag);
     ipcRenderer.send('search-tag',searchTag);
 }
 
+//* The tag is sent to be saved in the database and verified if it is a valid tag to be entered channel edit.
 saveTagEditChannel.addEventListener('click',(e)=>{
     const tags = tagEditChannel.value;
     if(tags != ""){
@@ -430,7 +453,7 @@ saveTagEditChannel.addEventListener('click',(e)=>{
         ipcRenderer.on('new-tag',(e,mss)=>{
             saveEditChannel.innerHTML = mss;
             tagEditChannel.value = ""; 
-            selectionTagEditPlaylist(tags);
+            selectionTagEditChannel(tags);
         });      
     }else{
         noSaveEditChannel.innerHTML = "Ingrese un tag para guardar"; 
@@ -439,8 +462,8 @@ saveTagEditChannel.addEventListener('click',(e)=>{
     }
 });
 
-
-function deletedTagEditPlaylist(tag) {
+//* The tag is deleted from the array if the tag is not wanted.
+function deletedTagEditChannel(tag) {
     console.log(chosenTagsEditChannel)
     chosenTagsEditChannel.map((value,i)=>{
         if (value === tag)  {
@@ -450,12 +473,12 @@ function deletedTagEditPlaylist(tag) {
     if (!chosenTagsEditChannel.length) {
         labelTagsEditChannel.innerHTML ="";
     }else{ 
-        labelTagsEditChannel.innerHTML ="";
+        labelTagsEditPlaylist.innerHTML ="";
         chosenTagsEditChannel.forEach(tagSelected=> {
             console.log(tagSelected);
-            labelTagsEditChannel.innerHTML+= `
+            labelTagsEditPlaylist.innerHTML+= `
             <label for="description">${tagSelected} </label>
-            <a onClick="deletedTagEditPlaylist('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+            <a onClick="deletedTagEditChannel('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
             </svg></a>
         `;
@@ -463,6 +486,7 @@ function deletedTagEditPlaylist(tag) {
     }
 }
 
+//* The window is reloaded when editing a collection resource.
 ipcRenderer.on('edit-video-playlist-channel-collection',(e)=>{
     location.reload();
 })

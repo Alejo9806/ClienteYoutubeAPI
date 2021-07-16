@@ -1,7 +1,9 @@
 const {ipcRenderer} = require('electron');
 
+//* global variables 
 let searchVideo= document.getElementById("search-video")
 let searchbutton= document.getElementById("search-button")
+
 
 document.addEventListener('DOMContentLoaded',(e)=>{
     ipcRenderer.send('userInfo');

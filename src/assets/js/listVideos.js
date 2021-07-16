@@ -1,9 +1,10 @@
-
+//* call to the back when the window is loaded
 document.addEventListener('DOMContentLoaded',(e)=>{
     ipcRenderer.send('listVideos');
    
 })
 
+//* data is obtained, a list of videos is displayed on the screen.
 ipcRenderer.on('listVideos',(e,listVideos)=>{
     //lista videos 
     console.log(listVideos);
@@ -26,21 +27,25 @@ ipcRenderer.on('listVideos',(e,listVideos)=>{
     }
 });
 
+//* Get video
 function video(string) {
     console.log("hola");
     ipcRenderer.send('video',string,null, null);
     window.location.href = "./video.ejs";
   
 }
+
+//* Data are sent for the modal of the video collection
 function videoCollectionModal(id,date,time) {
     ipcRenderer.send('video-collection-modal',id,date,time);
 }
 
+//* Data are sent for the modal of the video playlist 
 function videoPlaylistModal(id) {
     ipcRenderer.send('video-playlist-modal',id);
 }
 
-
+//* Get channel
 function getChannel(channelId) {
     console.log("hola");
     ipcRenderer.send('channel',channelId);
