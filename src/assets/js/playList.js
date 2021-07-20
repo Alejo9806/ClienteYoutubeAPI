@@ -1,22 +1,19 @@
-//* global variables 
+//* Importación de metodos para los tags
+const {keyPressValue,selectionTag,deletedTag} = require('../../src/libs/tags');
+
+//* variables globales 
 const newPlayListCollection = document.getElementById("newPlayListCollection");
-const tagInput = document.getElementById("tag");
-const saveTag = document.getElementById("saveTag");
-const save = document.getElementById("save");
-const noSave = document.getElementById("noSave");
-const labelTags = document.getElementById("labelTags");
-const slectTag = document.getElementById("slectTag");
 let chosenTags = [];
 let playListId;
 let playListDate;
 
-//* Load channel page and make a call to retrieve the playlist information.
+//* Cargar la página del playlist y hacer una llamada para recuperar la información de la lista de reproducción.
 document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('playList');
     ipcRenderer.send('collection');
 })
 
-//* Retrieving information from the playlist and painting it on the screen
+//* Recuperar información de la lista de reproducción y pintarla en la pantalla
 ipcRenderer.on('playList', (e, playList) => {
     let listOfPlaylist = document.getElementById("playList");
     listOfPlaylist.innerHTML = ''
@@ -36,27 +33,27 @@ ipcRenderer.on('playList', (e, playList) => {
     }
 });
 
-//* Get items
+//* Envía la id del playlist seleccionado y carga la ventana de los items del playlist.
 function getItems(string) {
     ipcRenderer.send('playlisId', string);
     window.location.href = "./playListItems.ejs";
 
 }
-//* Get channel
+//* Envía la id del canal seleccionado y carga la ventana del canal.
 function getChannel(channelId) {
     ipcRenderer.send('channel', channelId);
     window.location.href = "./channel.ejs";
 }
 
-//* Data are sent for the modal of the playlist collection
+//*  Al abrir el modal para añadir a la colección, se envía el id del playlist y la fecha de creación.
 function playListCollectionModal(id, date) {
     ipcRenderer.send('playList-collection-modal', id, date);
 }
 
-//* Retrieve information from the collections to create a list to choose from.
+//* Recuperar información de las colecciones para crear una lista de la que elegir.
 ipcRenderer.on('collection', (e, collections) => {
     let selectedCollection = document.getElementById("selectedCollectionPlaylist");
-    selectedCollection.innerHTML = '<option selected>Open this select menu</option>';
+    selectedCollection.innerHTML = '<option selected value="">Open this select menu</option>';
     collections.forEach((collection) => {
         selectedCollection.innerHTML += `
         <option value="${collection.title}">${collection.title}</option>
@@ -64,13 +61,13 @@ ipcRenderer.on('collection', (e, collections) => {
     });
 });
 
-//* Playlist data is obtained to add to the collection.
+//* Se obtienen datos de la lista de reproducción para añadirlos a la colección.
 ipcRenderer.on('playList-collection-modal', (e, id, date) => {
     playListId = id;
     playListDate = date;
 });
 
-//* The data of the form to add the playlist to the collection are registered and the data are sent to enter the database.
+//* Se obtienen los datos del formulario para añadir la lista de reproducción a la colección se registran y los datos se envían para entrar en la base de datos.
 newPlayListCollection.addEventListener('submit', (e) => {
     let collection = document.getElementById("selectedCollectionPlaylist").value;
     const playList = {
@@ -83,81 +80,39 @@ newPlayListCollection.addEventListener('submit', (e) => {
     newPlayListCollection.reset();
 });
 
-//* A search for the tag is performed each time a key is pressed in the input.
-function keyPressValue() {
-    const searchTag = tagInput.value;
-    ipcRenderer.send('search-tag', searchTag);
-}
 
-//* The tag is sent to be saved in the database and verified if it is a valid tag to be entered.
-saveTag.addEventListener('click', (e) => {
-    const tags = tagInput.value;
-    if (tags != "") {
-        ipcRenderer.send('new-tag', tags);
-        ipcRenderer.on('new-tag', (e, mss) => {
-            save.innerHTML = mss;
-            tagInput.value = "";
-            selectionTag(tags);
-        });
-    } else {
-        noSave.innerHTML = "Ingrese un tag para guardar";
-        save.innerHTML = "";
-        tagInput.value = "";
-    }
-});
-
-//*  The response is obtained from the back in and the tag is set to select if it was in the database.
-ipcRenderer.on('search-tag', (e, tags) => {
-    slectTag.innerHTML = '';
+//*  La respuesta se obtiene del back end y los tag que se obtienen se mostraran al cliente en una lista.
+ipcRenderer.on('search-tag', (e, tags,selectTag) => {
+    document.getElementById(selectTag).innerHTML = '';
     tags.forEach(tag_user => {
-        slectTag.innerHTML += `
-        <a class="btn btn-danger" onClick="selectionTag('${tag_user._doc.tag}')">${tag_user._doc.tag}</a>
+        document.getElementById(selectTag).innerHTML += `
+        <a class="btn btn-danger" onClick="sendDataSelectTag('${tag_user._doc.tag}','labelTags')">${tag_user._doc.tag}</a>
         `
     });
 });
 
-//* The tag is added to an array to be stored in the collection. 
-function selectionTag(tag) {
-
-    let someTag = chosenTags.filter(choseTag => { return choseTag == tag });
-    if (someTag.length === 0) {
-        chosenTags.push(tag);
-    }
-
-    labelTags.innerHTML = "";
-    chosenTags.forEach(tagSelected => {
-        labelTags.innerHTML += `
-        <label for="description">${tagSelected} </label>
-        <a onClick="deletedTag('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-      </svg></a>
-        `
-    });
-}
-
-//* The tag is deleted from the array if the tag is not wanted.
-function deletedTag(tag) {
-    chosenTags.map((value, i) => {
-        if (value === tag) {
-            chosenTags.splice(i, 1);
-        }
-    })
-    if (!chosenTags.length) {
-        labelTags.innerHTML = "";
-    } else {
-        labelTags.innerHTML = "";
-        chosenTags.forEach(tagSelected => {
-            labelTags.innerHTML += `
-            <label for="description">${tagSelected} </label>
-            <a onClick="deletedTag('${tagSelected}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
-            </svg></a>
-        `;
-        });
+//* Fución para enviar datos a la función saveTag de la libreria del tag. 
+function SelectSaveTag(tagInput,noSave,save) {
+    if (tagInput == 'tag') {
+        chosenTags = saveTag(tagInput,noSave,save,'labelTags',chosenTags);
     }
 }
 
-//* New playList 
+//* Fución para enviar datos a la función selectionTag de la libreria del tag. 
+function sendDataSelectTag(tag,labelTags) {
+    if (labelTags == 'labelTags') {
+        chosenTags = selectionTag(tag,labelTags,chosenTags);
+    }
+}
+
+//* Fución para enviar datos a la función deletedTag de la libreria del tag. 
+function sendDataDeletedTag(tag,labelTags) {
+    if (labelTags == 'labelTags') {
+        chosenTags = deletedTag(tag,labelTags,chosenTags);
+    }
+}
+
+//* Se envian los datos a la api que se ingresaron en el formulario para crear una nueva playlist.
 
 document.getElementById("newPlayList").addEventListener('submit', (e) => {
     let newPlayList = {
@@ -169,13 +124,13 @@ document.getElementById("newPlayList").addEventListener('submit', (e) => {
     location.reload();
 })
 
-//* Delete playlist 
-
+//* Se envia el id de la playlist seleccionada para borrarla
 function deletePlaylist(id) {
     ipcRenderer.send('delete-playList', id);
     location.reload();
 }
 
+//* Se escucha un evento de que se elimino una playlist y se pone un mss en pantalla de que se elimino la playlist.
 ipcRenderer.on('delete-playList', (e, mss) => {
     document.getElementById("mssDeletePlaylist").innerHTML = mss;
 })

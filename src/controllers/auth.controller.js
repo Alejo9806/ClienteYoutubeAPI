@@ -1,10 +1,10 @@
-//environment variables
+//Variables de ambiente 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT } = require('../config/keys');
 require('dotenv').config({ path: '.env' });
 'use strict';
 
 
-//requires 
+//importaciones de librerias electron y electron google Oauth2 que son necesarias para hacer el redireccionamiento al login con google.
 const { ipcMain } = require('electron');
 // const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT } = process.env;
 const ElectronGoogleOAuth2 = require('@getstation/electron-google-oauth2').default;
@@ -12,7 +12,7 @@ let account = new ElectronGoogleOAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, [
 const User = require('../model/user');
 const Axios = require('axios');
 
-//Google search and make request to get user data
+//Cuando se realiza el metodo openAuthWindowAndGetTokens se espera una respuesta con los token del usuario este token se introduce en una api de google para obtener los datos del usuario, el token se guarda para ser utlizado durante toda la aplicacion
 ipcMain.on('login', (e) => {
     account.openAuthWindowAndGetTokens()
         .then(token => {

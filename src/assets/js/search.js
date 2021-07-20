@@ -1,9 +1,9 @@
-//* Load search page and make a call to retrieve the channel information.
+//* Cargar la página de búsqueda y hacer una llamada para recuperar la información del canal.
 document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('search');
 })
 
-//* Retrieving information from the search and painting it on the screen
+//* Recuperar la información de la búsqueda y pintarla en la pantalla.
 ipcRenderer.on('search', (e, results) => {
     let listResult = document.getElementById("result");
     listResult.innerHTML = '';
@@ -24,20 +24,20 @@ ipcRenderer.on('search', (e, results) => {
     }
 });
 
-//* Get video
+//* Envía la id del vídeo seleccionado y carga la ventana de vídeo.
 function video(string) {
     ipcRenderer.send('video', string, null, null);
     window.location.href = "./video.ejs";
 
 }
 
-//* Get channel
+//* Envía la id del canal seleccionado y carga la ventana del canal.
 function getChannel(channelId) {
     ipcRenderer.send('channel', channelId);
     window.location.href = "./channel.ejs";
 }
 
-//* When opening the modal to add to the collection, the video id and creation date are sent.
+//*Al abrir el modal para añadir a la colección, se envía el id del video y la fecha de creación.
 function videoCollectionModal(id, date) {
     ipcRenderer.send('video-details', id);
     ipcRenderer.on('video-details', (e, videoDetails) => {
@@ -45,7 +45,7 @@ function videoCollectionModal(id, date) {
     })
 }
 
-//* When opening the modal to add to the playlist, the video id and creation date are sent.
+//* Los datos se envían al modal de la lista de reproducción de vídeo para poder agregar el video a una o varias listas de reproducción. 
 function videoPlaylistModal(id) {
     ipcRenderer.send('video-playlist-modal', id);
 }

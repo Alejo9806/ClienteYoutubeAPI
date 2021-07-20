@@ -1,28 +1,28 @@
-//environment variables
+//Variables de ambiente
 const { YOUTUBE_API_KEY  } = require('../config/keys');
 require('dotenv').config({ path: '.env' });
 'use strict';
 
-//requires 
+//importaciones de librerias electron
 const { ipcMain } = require('electron');
 // const { YOUTUBE_API_KEY } = process.env;
 const Axios = require('axios');
 
-//global variables
+//variables globales
 let userToken;
 let search;
 
-//get user information and token
+//Se obtiene el token y la informacion del usuario y se guarda.
 ipcMain.on('user', (e, token, info) => {
     userToken = token;
 });
 
-//Get search information
+//Obtener información de búsqueda
 ipcMain.on('searchVideo', (e, data) => {
     search = data;
 });
 
-//Make a search request
+//Hacer una solicitud de búsqueda en la api de youtube
 ipcMain.on('search', (e) => {
     let apiSearch = 'https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&order=relevance&q=' + search + '&key='
     let results = [];

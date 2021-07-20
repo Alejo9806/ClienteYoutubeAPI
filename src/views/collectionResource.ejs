@@ -67,11 +67,11 @@
             </div>
             <div class="form-group">
               <label for="description">Selecciona o agrega nuevos tags a tu video</label>
-              <input type="text" class="form-control" id="tag" placeholder="Escriba tag" onInput="keyPressValue()">
-              <a class="btn btn-primary" id="saveTag">Guardar nuevo tag</a>
+              <input type="text" class="form-control" id="tag" placeholder="Escriba tag" onInput="keyPressValue('tag','selectTag')">
+              <a class="btn btn-primary" id="saveTag" onclick="SelectSaveTag('tag','noSave','save')">Guardar nuevo tag</a>
               <h6 class="text-danger" id="noSave"></h6>
               <h6 class="text-success" id="save"></h6>
-              <section id="slectTag" class="form-group">
+              <section id="selectTag" class="form-group">
 
               </section>
               <div id="labelTags">
@@ -107,11 +107,11 @@
             </div>
             <div class="form-group">
               <label for="description">Selecciona o agrega nuevos tags a tu  playList</label>
-              <input type="text" class="form-control" id="tagEditPlaylist" placeholder="Escriba tag" onInput="keyPressValueEditPlaylist()">
-              <a class="btn btn-primary" id="saveTagEditPlaylist">Guardar nuevo tag</a>
+              <input type="text" class="form-control" id="tagEditPlaylist" placeholder="Escriba tag" onInput="keyPressValue('tagEditPlaylist','selectTagEditPlaylist')">
+              <a class="btn btn-primary" id="saveTagEditPlaylist" onclick="SelectSaveTag('tagEditPlaylist','noSaveEditPlaylist','saveEditPlaylist')">Guardar nuevo tag</a>
               <h6 class="text-danger" id="noSaveEditPlaylist"></h6>
               <h6 class="text-success" id="saveEditPlaylist"></h6>
-              <section id="slectTagEditPlaylist" class="form-group">
+              <section id="selectTagEditPlaylist" class="form-group">
   
               </section>
               <div id="labelTagsEditPlaylist">
@@ -146,11 +146,11 @@
           </div>
           <div class="form-group">
             <label for="description">Selecciona o agrega nuevos tags a tu  playList</label>
-            <input type="text" class="form-control" id="tagEditChannel" placeholder="Escriba tag" onInput="keyPressValueEditChannel()">
-            <a class="btn btn-primary" id="saveTagEditChannel">Guardar nuevo tag</a>
+            <input type="text" class="form-control" id="tagEditChannel" placeholder="Escriba tag" onInput="keyPressValue('tagEditChannel','selectTagEditChannel')">
+            <a class="btn btn-primary" id="saveTagEditChannel" onclick="SelectSaveTag('tagEditChannel','noSaveEditChannel','saveEditChannel')">Guardar nuevo tag</a>
             <h6 class="text-danger" id="noSaveEditChannel"></h6>
             <h6 class="text-success" id="saveEditChannel"></h6>
-            <section id="slectTagEditChannel" class="form-group">
+            <section id="selectTagEditChannel" class="form-group">
 
             </section>
             <div id="labelTagsEditChannel">

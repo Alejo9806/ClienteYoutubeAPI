@@ -1,26 +1,26 @@
-//environment variables
+//Variables de ambiente
 const { YOUTUBE_API_KEY  } = require('../config/keys');
 require('dotenv').config({ path: '.env' });
 'use strict';
 
-//requires 
+//importaciones de librerias electron
 const { ipcMain } = require('electron');
 // const { YOUTUBE_API_KEY } = process.env;
 const Axios = require('axios');
 
-//global variables
+//variables globales
 let idVideo;
 let starAtVideo;
 let endAtVideo;
 let userToken;
 
-//get user information and token
+//Se obtiene el token  del usuario y se guarda.
 ipcMain.on('user', (e, token, info) => {
     userToken = token;
 });
 
 
-//Use api to get list of most popular videos
+//Utilizar la api para obtener la lista de vídeos más populares
 ipcMain.on('listVideos', (e) => {
     let apicall = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus&chart=mostPopular&maxResults=20&regionCode=CO&key="
     let listVideos = [];
@@ -47,16 +47,16 @@ ipcMain.on('listVideos', (e) => {
 });
 
 
-//Get id of the specific video
+//Obtener el id del video específico
 ipcMain.on('video', (e, id, starAt, endAt) => {
     idVideo = id;
     starAtVideo = starAt;
     endAtVideo = endAt;
 });
 
-//Send the id of the specific video to the customer
+//Se hace una peticion a la api para obtener los datos del video seleccionado y a partir de ese video se hacen mas peticiones a la api para obtener videos relacionados comentarios y informacion del canal.
 ipcMain.on('getVideo', (e) => {
-    apiCallVideo = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus&id=" + idVideo + "&maxResults=1&key=";
+    apiCallVideo = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus&id=" + idVideo + "&key=";
     let relatedVideos = [];
     let video;
     let channelDetails;
@@ -85,7 +85,7 @@ ipcMain.on('getVideo', (e) => {
                 dislikeCount: data.statistics.dislikeCount,
                 commentCount: data.statistics.commentCount
             }
-            //* Related video
+        //* Vídeos relacionado
         apiRelatedVideo = "https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&order=viewCount&relatedToVideoId=" + video.id + "&type=video&key=";
         Axios.get(apiRelatedVideo + YOUTUBE_API_KEY, {
             headers: {
@@ -108,7 +108,7 @@ ipcMain.on('getVideo', (e) => {
                     }
                 }
             }
-            //* Information channel
+            //* Informacion de canal
             let apicallChannel = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics%2CbrandingSettings&id=" + video.channelId + "&key=";
             let apicallsubscription = "https://youtube.googleapis.com/youtube/v3/subscriptions?part=snippet%2CcontentDetails&forChannelId=" + video.channelId + "&mine=true&key=";
             Axios.get(apicallChannel + YOUTUBE_API_KEY, {
@@ -142,6 +142,7 @@ ipcMain.on('getVideo', (e) => {
                     } else {
                         idSubscription = dataSubscription[0].id
                     }
+                    //* Comentarios del video
                     let apiCallComments = "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&order=relevance&textFormat=html&videoId=" + video.id + "&key="
                     Axios.get(apiCallComments + YOUTUBE_API_KEY).then((res) => {
                         let dataComments = res.data.items;
@@ -163,6 +164,8 @@ ipcMain.on('getVideo', (e) => {
                             }
                         }
                         e.reply('getVideo', video, starAtVideo, endAtVideo, relatedVideos, channelDetails, channelSubscription, idSubscription, comments);
+                    }).catch((error) => {
+                        e.reply('getVideo', video, starAtVideo, endAtVideo, relatedVideos, channelDetails, channelSubscription, idSubscription);
                     })
 
                 })
@@ -172,7 +175,7 @@ ipcMain.on('getVideo', (e) => {
 
 });
 
-
+//* Se escucha un evento del cliente para hacer una peticion a la api y enviar un comentario nuevo, se obtiene los datos que se van a enviar a la api y se hace la peticion. 
 ipcMain.on('sendComment', (e, id, comment) => {
     let apiCallAddComment = "https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet&key=";
     let resourceComment = {
@@ -215,7 +218,7 @@ ipcMain.on('sendComment', (e, id, comment) => {
     })
 })
 
-//*Details of the video to obtain necessary data.
+//* Detalles de un vídeo en especifico para obtener los datos necesarios.
 ipcMain.on('video-details', (e, id) => {
     apiCallVideo = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus&id=" + id + "&maxResults=1&key=";
     let video;

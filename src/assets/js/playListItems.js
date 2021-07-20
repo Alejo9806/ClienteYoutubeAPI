@@ -1,9 +1,9 @@
-//* Load playListItems page and make a call to retrieve the channel information.
+//* Cargar la página playListItems y hacer una llamada para recuperar la información del canal.
 document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('playListItems');
 })
 
-//* Retrieving information from the playListItems and painting it on the screen
+//* Recuperar la información de la playListItems y pintarla en la pantalla
 ipcRenderer.on('playListItems', (e, playListItems) => {
     let listOfPlaylistItems = document.getElementById("playListItems");
     listOfPlaylistItems.innerHTML = ''
@@ -22,7 +22,7 @@ ipcRenderer.on('playListItems', (e, playListItems) => {
     }
 })
 
-//* Get video
+//* Envía la id del vídeo seleccionado y carga la ventana de vídeo.
 function video(string) {
     ipcRenderer.send('video', string, null, null);
     window.location.href = "./video.ejs";
@@ -30,14 +30,14 @@ function video(string) {
 }
 
 
-//* Get channel
+//* Envía la id del canal seleccionado y carga la ventana del canal.
 function getChannel(channelId) {
     ipcRenderer.send('channel', channelId);
     window.location.href = "./channel.ejs";
 }
 
 
-//* When opening the modal to add to the collection, the video id and creation date are sent.
+//* Al abrir el modal para añadir a la colección, se envía el id del video y la fecha de creación.
 function videoCollectionModal(id, date) {
     ipcRenderer.send('video-details', id);
     ipcRenderer.on('video-details', (e, videoDetails) => {
@@ -45,13 +45,13 @@ function videoCollectionModal(id, date) {
     })
 
 }
-//* Delete from playlist 
+//* Se envia el id del item de la playlist para borrarlo.
 function deleteVideofromPlaylist(idElement) {
     ipcRenderer.send('delete-video-from-playlist', idElement)
     location.reload();
 }
 
-//*A message is displayed if a successful deletion or error occurred.
+//*Se muestra un mensaje si se ha producido un borrado correcto o un error.
 ipcRenderer.on('delete-video-from-playlist', (e, mss) => {
     document.getElementById("mssDelete").innerHTML = mss;
 })

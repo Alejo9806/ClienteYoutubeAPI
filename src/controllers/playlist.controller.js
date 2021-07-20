@@ -1,23 +1,23 @@
-//environment variables
+//Variables de ambiente
 const { YOUTUBE_API_KEY  } = require('../config/keys');
 require('dotenv').config({ path: '.env' });
 'use strict';
 
-//requires 
+//importaciones de librerias electron
 const { ipcMain } = require('electron');
 // const { YOUTUBE_API_KEY } = process.env;
 const Axios = require('axios');
 
-//global variables
+//variables globales
 let userToken;
 let idPlaylist;
 
-//get user information and token
+//Se obtiene el token y la informacion del usuario y se guarda.
 ipcMain.on('user', (e, token, info) => {
     userToken = token;
 });
 
-//Request to get all the user's playlists
+//Solicitud para obtener todas las listas de reproducción del usuario
 ipcMain.on('playList', (e) => {
 
     let apiPlayList = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=20&mine=true&key="
@@ -44,13 +44,13 @@ ipcMain.on('playList', (e) => {
     });
 });
 
-//Get specific playlist id
+//Obtener el id de la lista de reproducción
 ipcMain.on('playlisId', (e, id) => {
     idPlaylist = id;
     e.reply('playlisId', id);
 });
 
-//Consume api to get all items in the playlist
+//Consumir api para obtener todos los elementos de la lista de reproducción
 ipcMain.on('playListItems', (e, id) => {
     let apiPLaylistItems = 'https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&part=contentDetails&playlistId=' + idPlaylist + '&key='
     let playListItems = [];
@@ -80,7 +80,7 @@ ipcMain.on('playListItems', (e, id) => {
     });
 });
 
-//* New playlist
+//* Nueva lista de reproducción
 ipcMain.on('new-playList', (e, newPlaylist) => {
     let apiCallAddPlaylist = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2C%20status&key="
     let resource = {
@@ -107,7 +107,7 @@ ipcMain.on('new-playList', (e, newPlaylist) => {
     })
 })
 
-//*Delete playlist
+//* Eliminar la lista de reproducción
 
 ipcMain.on('delete-playList', (e, id) => {
     let apiCallDeletePlaylist = "https://youtube.googleapis.com/youtube/v3/playlists?id=" + id + "&key="
@@ -126,7 +126,7 @@ ipcMain.on('delete-playList', (e, id) => {
     })
 })
 
-//*Information to add video to playlist
+//* Información para añadir un vídeo a la lista de reproducción
 
 ipcMain.on('video-playlist-modal', (e, id, date) => {
     e.reply('video-playlist-modal', id, date);
@@ -145,7 +145,7 @@ ipcMain.on('new-playlist-with-video', (e, newPlaylist, id) => {
         }
     };
 
-    //* Create playlist and add video
+    //* Crear una lista de reproducción y añadir un vídeo
     Axios.post(apiCallAddPlaylist + YOUTUBE_API_KEY, resource, {
         headers: {
             Host: 'www.googleapis.com',
@@ -182,7 +182,7 @@ ipcMain.on('new-playlist-with-video', (e, newPlaylist, id) => {
     })
 })
 
-//* add video to playlist 
+//* añadir vídeo a la lista de reproducción 
 
 ipcMain.on('add-video-to-playlist', (e, id, idVideo, box) => {
     let apiCallAddVideo = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet&key=";
@@ -212,7 +212,7 @@ ipcMain.on('add-video-to-playlist', (e, id, idVideo, box) => {
     })
 })
 
-//* delete video from playlist
+//* eliminar el vídeo de la lista de reproducción
 
 ipcMain.on('delete-video-from-playlist', (e, id) => {
     let apiCallDeleteVideoplayList = "https://youtube.googleapis.com/youtube/v3/playlistItems?id=" + id + "&key="

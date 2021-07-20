@@ -1,7 +1,7 @@
-//environment variables
+//Variables de ambiente
 const { YOUTUBE_API_KEY  } = require('../config/keys');
 
-//requires 
+//importaciones de librerias electron y de los modelos de la base de datos mongo.
 const Collection = require('../model/collection');
 const Tag = require('../model/tag');
 const User = require('../model/user');
@@ -10,24 +10,25 @@ const { ipcMain } = require('electron');
 const Axios = require('axios');
 
 
-//global variables
+//variables globales
 let titleCollection;
 let userInfo;
 let userToken;
 
-//get user information and token
+//Se obtiene el token y la informacion del usuario y se guarda.
 ipcMain.on('user', (e, token, info) => {
     userToken = token;
     userInfo = info;
 });
 
-
+//* Se escucha un evento para devolver las colecciones del usuario logeado se hace una peticion a la base de datos para que devuelva los datos que se necesitan devolver al cliente.
 ipcMain.on('collection', async(e) => {
     const user = await User.findOne({ email: userInfo.email });
     const collection = await Collection.aggregate([{ $match: { id_user: "" + user._id } }, { $project: { 'title': 1, 'description': 1 } }])
     e.reply('collection', collection);
 });
 
+//* Se escucha un evento donde se envia datos para crear una nueva coleccion y guardarla en la base datos.
 ipcMain.on('new-collection', async(e, newCollection, chosenTags) => {
     let collection = new Collection();
     const user = await User.findOne({ email: userInfo.email });
@@ -40,6 +41,7 @@ ipcMain.on('new-collection', async(e, newCollection, chosenTags) => {
     collection = await collection.save();
 });
 
+//* Se guarda en la base de datos un nuevo tag cuando se escucha el evento con el tag enviado desde el cliente 
 ipcMain.on('new-tag', async(e, newTag) => {
     let mss;
     let tag = new Tag();
@@ -57,22 +59,26 @@ ipcMain.on('new-tag', async(e, newTag) => {
     }
 });
 
-ipcMain.on('search-tag', async(e, searchTag) => {
+//* Se hace una busqueda en la base datos a partir de una expresion regular para devolver tags relacionados con el string.
+ipcMain.on('search-tag', async(e, searchTag,selectTag) => {
+    console.log(selectTag)
     const regularExpr = new RegExp(searchTag);
     const user = await User.findOne({ email: userInfo.email });
     const tags = await Tag.find({ tag: { $regex: regularExpr, $options: 'i' }, id_user: user._id }).limit(5);
-    e.reply('search-tag', tags);
+    e.reply('search-tag', tags,selectTag);
 });
 
+//* Se obtienen datos de un recurso y estos son devueltos al cliente.
 ipcMain.on('video-collection-modal', (e, id, date, time) => {
     e.reply('video-collection-modal', id, date, time);
 })
 
+//* Se obtienen datos de un recurso y estos son devueltos al cliente.
 ipcMain.on('playList-collection-modal', (e, id, date) => {
     e.reply('playList-collection-modal', id, date);
 })
 
-
+//* Se escucha el evento para agregar un nuevo video en la coleccion, se busca la coleccion en la que se quiere guardar el video y se envian los nuevos datos a la base de datos.
 ipcMain.on('new-video-collection', async(e, video, collectionTitle, chosenTags) => {
     let mss;
     const user = await User.findOne({ email: userInfo.email });
@@ -99,7 +105,7 @@ ipcMain.on('new-video-collection', async(e, video, collectionTitle, chosenTags) 
     }
 })
 
-
+//* Se escucha el evento para agregar un nuevo canal en la coleccion, se busca la coleccion en la que se quiere guardar el canal y se envian los nuevos datos a la base de datos.
 ipcMain.on('new-channel-collection', async(e, channel, collectionTitle, chosenTags) => {
     let mss
     const user = await User.findOne({ email: userInfo.email });
@@ -124,6 +130,7 @@ ipcMain.on('new-channel-collection', async(e, channel, collectionTitle, chosenTa
     }
 })
 
+//* Se escucha el evento para agregar una nueva playlist en la coleccion, se busca la coleccion en la que se quiere guardar la playlist y se envian los nuevos datos a la base de datos.
 ipcMain.on('new-playList-collection', async(e, playList, collectionTitle, chosenTags) => {
     let mss;
     const user = await User.findOne({ email: userInfo.email });
@@ -148,18 +155,20 @@ ipcMain.on('new-playList-collection', async(e, playList, collectionTitle, chosen
 
 })
 
-
+//* Se buscan los datos de la coleccion que se envio desde cliente para editar y se envian los datos de la coleccion al cliente.
 ipcMain.on('get-edit-collection', async(e, title) => {
     const user = await User.findOne({ email: userInfo.email });
     const getCollection = await Collection.findOne({ title: title, id_user: user._id }, { 'title': 1, 'tags': 1, 'description': 1, '_id': 1 });
     e.reply('get-edit-collection', getCollection);
 })
 
+//* Se obtiene el titulo de una coleccion seleccionada y se guarda.
 ipcMain.on('get-collection', (e, title) => {
     titleCollection = title;
 
 });
 
+//* Se obtienen los nuevos datos que se quieren actualizar en la coleccion y se guardan en la base de datos reemplazando los anteriores.
 ipcMain.on('edit-collection', async(e, editCollection, chosenTagsEdit) => {
     const user = await User.findOne({ email: userInfo.email });
     let collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
@@ -171,6 +180,7 @@ ipcMain.on('edit-collection', async(e, editCollection, chosenTagsEdit) => {
     } catch (error) {}
 });
 
+//* Se escucha el evento y se devuelven los recursos que hay en la coleccion para esto se usa la api para devolver todos los datos del recurso ya que en la base de datos solo se guarda el id para luego obtenerlo de la api.
 ipcMain.on('get-collection-select', async(e) => {
     let videos = [];
     let playList = [];
@@ -183,6 +193,7 @@ ipcMain.on('get-collection-select', async(e) => {
     let chainChannel = "";
     const user = await User.findOne({ email: userInfo.email });
     const getCollection = await Collection.findOne({ title: titleCollection, id_user: user._id });
+    //*Se obtienen los datos de la base de datos y se crea un string con todos los id de cada recurso para poner esa cadena de ids en la api.
     getCollection.resource.forEach((element, i) => {
             if (element.type == 'VIDEO') {
                 elementsVideo.push({
@@ -209,7 +220,7 @@ ipcMain.on('get-collection-select', async(e) => {
                 chainChannel += '&id=' + element.snippet.id;
             }
         })
-        //* Search for collections to recommend based on similar tags.
+    //* Busqueda de colecciones para recomendar en función de etiquetas similares.
     const collections = await Collection.find({ tags: { $in: getCollection.tags }, id_user: user._id });
     let relatedCollections = [];
     collections.forEach((element, index) => {
@@ -221,6 +232,7 @@ ipcMain.on('get-collection-select', async(e) => {
         }
     })
 
+    //*Se hace el llamado a la api con el string de los ids de los videos concatenados
     let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus' + chainVideo + '&key=';
     Axios.get(apiCallVideo + YOUTUBE_API_KEY, {
         headers: {
@@ -257,6 +269,7 @@ ipcMain.on('get-collection-select', async(e) => {
             e.reply('get-collection-select', videos, playList, channel, relatedCollections)
         }
     }).catch((error) => {});
+    //*Se hace el llamado a la api con el string de los ids de los canales concatenados
     let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet' + chainPlaylist + '&key='
     Axios.get(apiCallPlayList + YOUTUBE_API_KEY, {
         headers: {
@@ -285,6 +298,7 @@ ipcMain.on('get-collection-select', async(e) => {
         }
         e.reply('get-collection-select', videos, playList, channel, relatedCollections)
     }).catch((error) => {});
+    //*Se hace el llamado a la api con el string de los ids de las playlist concatenados
     let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet' + chainChannel + '&key='
     Axios.get(apiCallChannel + YOUTUBE_API_KEY, {
         headers: {
@@ -313,6 +327,7 @@ ipcMain.on('get-collection-select', async(e) => {
     }).catch((error) => {})
 })
 
+//* Se escucha el envento borrar desde el cliente se busca en la base de datos el id del recurso que se quiere eliminar, se extrae y luego se actualiza la base de datos.
 ipcMain.on('delete-video-playList-channel', async(e, id) => {
     const user = await User.findOne({ email: userInfo.email });
     const collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
@@ -325,6 +340,7 @@ ipcMain.on('delete-video-playList-channel', async(e, id) => {
     e.reply('delete-video-playList-channel');
 })
 
+//* Se escucha el evento de editar el recurso del video se obtienen los datos que se quieren actualizar y se modifica la base de datos.
 ipcMain.on('edit-video-collection', async(e, id, VideoCollection, chosenTags) => {
     const user = await User.findOne({ email: userInfo.email });
     const collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
@@ -345,6 +361,7 @@ ipcMain.on('edit-video-collection', async(e, id, VideoCollection, chosenTags) =>
     e.reply('edit-video-playlist-channel-collection');
 })
 
+//* Se escucha el evento de editar el recurso del playlist se obtienen los datos que se quieren actualizar y se modifica la base de datos.
 ipcMain.on('edit-playlist-collection', async(e, id, playListCollection, chosenTagsEditPlaylist) => {
     const user = await User.findOne({ email: userInfo.email });
     const collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
@@ -359,6 +376,7 @@ ipcMain.on('edit-playlist-collection', async(e, id, playListCollection, chosenTa
     e.reply('edit-video-playlist-channel-collection');
 })
 
+//* Se escucha el evento de editar el recurso del canal se obtienen los datos que se quieren actualizar y se modifica la base de datos.
 ipcMain.on('edit-channel-collection', async(e, id, channelCollection, chosenTagsEditChannel) => {
     const user = await User.findOne({ email: userInfo.email });
     const collection = await Collection.findOne({ title: titleCollection, id_user: user._id });

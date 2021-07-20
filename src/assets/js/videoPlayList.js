@@ -1,11 +1,14 @@
+//* variables globales 
 let idVideo;
 let idElement = [];
 
+//* Cargar el modal y hacer una llamada para recuperar la información de las playlist.
 document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('playList');
 
 })
 
+//* Cuando escucha el evento para abrir el modal se reinicia unos datos que se utilizan para agregar un video a una playlist.
 ipcRenderer.on('video-playlist-modal', (e, id) => {
     idElement.forEach(element=>{
         document.getElementById(element.box).checked = 0;
@@ -15,7 +18,7 @@ ipcRenderer.on('video-playlist-modal', (e, id) => {
 
 });
 
-
+//* Recuperar la información de las playlist y hace una lista con las playlist.
 ipcRenderer.on('playList', (e, playList) => {
     let listOfPlaylist = document.getElementById("myPlayLists");
     listOfPlaylist.innerHTML = "";
@@ -32,6 +35,7 @@ ipcRenderer.on('playList', (e, playList) => {
     }
 });
 
+//* Cuando el estado del input cambia a seleccionado se agrega el video a la playlit del input seleccionado cuando cambia el estado se elimina el video de la playlist.
 function addPlayList(id, box) {
 
     if (document.getElementById(box).checked) {
@@ -47,7 +51,8 @@ function addPlayList(id, box) {
 
     }
 }
-
+ 
+//*  Se obtienen los datos del formulario para crear la playlist y se añade el video con la creacion de la playlist.
 document.getElementById("newPlayList").addEventListener('submit', (e) => {
     let newPlayList = {
         title: document.getElementById("titlePlaylist").value,
@@ -58,15 +63,18 @@ document.getElementById("newPlayList").addEventListener('submit', (e) => {
     location.reload();
 })
 
+//* Cuando se escucha el envento se muestra en pantalla un mensaje con la respuesta del back end
 ipcRenderer.on('add-video-to-playlist', (e, mss, idElementPlaylist, box) => {
     document.getElementById("mssPlaylist").innerHTML = mss;
     idElement.push({ idElementPlaylist: idElementPlaylist, box: box });
 })
 
+//* Cuando se escucha el envento se muestra en pantalla un mensaje con la respuesta del back end
 ipcRenderer.on('delete-video-from-playlist', (e, mss) => {
     document.getElementById("mssPlaylist").innerHTML = mss;
 })
 
+//* Estilos para esconder o mostrar el formulario de crear playlist.
 document.getElementById("newPlaylistVideo").addEventListener('click', (e) => {
     $('.hide').css({
         "overflow": "visible",
@@ -74,6 +82,8 @@ document.getElementById("newPlaylistVideo").addEventListener('click', (e) => {
     })
 
 })
+
+//* Estilos para esconder o mostrar el formulario de crear playlist.
 document.getElementById("hidePlaylist").addEventListener('click', (e) => {
     $('.hide').css({
         "overflow": "hidden",

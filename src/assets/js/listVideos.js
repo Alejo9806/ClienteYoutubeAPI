@@ -1,12 +1,12 @@
-//* call to the back when the window is loaded
+//* llamada a la parte trasera cuando se carga la ventana.
 document.addEventListener('DOMContentLoaded', (e) => {
     ipcRenderer.send('listVideos');
 
 })
 
-//* data is obtained, a list of videos is displayed on the screen.
+//* se obtienen datos, se muestra una lista de vídeos en la pantalla.
 ipcRenderer.on('listVideos', (e, listVideos) => {
-    //lista videos 
+    //lista de videos 
     let listOfVideos = document.getElementById("list-of-videos");
     listOfVideos.innerHTML = ''
     for (let i = 0; i < listVideos.length; i++) {
@@ -26,24 +26,24 @@ ipcRenderer.on('listVideos', (e, listVideos) => {
     }
 });
 
-//* Get video
+//* Envía la id del vídeo seleccionado y carga la ventana de vídeo.
 function video(string) {
     ipcRenderer.send('video', string, null, null);
     window.location.href = "./video.ejs";
 
 }
 
-//* Data are sent for the modal of the video collection
+//* Al abrir el modal para añadir a la colección, se envía el id del video y la fecha de creación.
 function videoCollectionModal(id, date, time) {
     ipcRenderer.send('video-collection-modal', id, date, time);
 }
 
-//* Data are sent for the modal of the video playlist 
+//* Los datos se envían al modal de la lista de reproducción de vídeo para poder agregar el video a una o varias listas de reproducción. 
 function videoPlaylistModal(id) {
     ipcRenderer.send('video-playlist-modal', id);
 }
 
-//* Get channel
+//* Envía la id del canal seleccionado y carga la ventana del canal.
 function getChannel(channelId) {
     ipcRenderer.send('channel', channelId);
     window.location.href = "./channel.ejs";
