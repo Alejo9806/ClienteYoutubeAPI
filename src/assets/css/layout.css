@@ -3,3 +3,48 @@
 	display: none;
 	overflow: hidden;
 }
+
+.vertical-menu {
+	width: 100%; /* Set a width if you like */
+  }
+  
+  .vertical-menu a {
+	background-color: #eee; /* Grey background color */
+	color: black; /* Black text color */
+	display: block; /* Make the links appear below each other */
+	padding: 12px; /* Add some padding */
+	text-decoration: none; /* Remove underline from links */
+  }
+  
+  .vertical-menu a:hover {
+	background-color: #ccc; /* Dark grey background on mouse-over */
+  }
+  
+
+  .modal-content-menu{
+	  width: 40vh !important;
+	  min-height: 100vh !important;
+	  padding: 0%;
+	  margin: 0%;
+	  background-color: #eee;
+  }
+
+  .modal-dialog-menu{
+	  margin: 0%;
+	  background-color: #eee;
+  }
+  .modal-menu{
+	  padding: 0%;
+	  margin: 0%;
+	  
+  }
+.collapse:not(.show) {
+    display: inline;
+}
+
+.navbar {
+	padding: 0%;
+}
+.card-channel{
+	overflow: visible;
+}

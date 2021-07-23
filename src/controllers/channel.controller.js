@@ -19,6 +19,7 @@ ipcMain.on('user', (e, token, info) => {
     userInfo = info;
 });
 
+
 //Se obtiene el id del canal y se guarda para luego utlizarlo en las api.
 ipcMain.on('channel', (e, id) => {
     idChannel = id;

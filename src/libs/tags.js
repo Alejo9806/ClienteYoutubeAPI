@@ -7,7 +7,7 @@ function keyPressValue(tagInput,selectTag) {
 
 //* Cuando se selecciona un tag se verfica si el tag no ha sido seleccionado anteriormente se agrega al array y se pinta en pantalla ademas se devuelve el array con los nuevos datos.
 function selectionTag(tag,labelTags,chosenTags) {
-    console.log(chosenTags)
+    console.log(chosenTags,tag,labelTags)
     let someTag = chosenTags.filter(choseTag => { return choseTag == tag });
     if (someTag.length === 0) {
         chosenTags.push(tag);

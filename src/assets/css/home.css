@@ -1,10 +1,12 @@
+
+
 .bg-card {
     background-color: transparent !important;
     cursor: pointer;
 }
 
 .channel-color {
-    color: #AAAAAA;
+    color: #727272;
 }
 
 .overflow {
@@ -13,4 +15,160 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.video-icon{
+    color: #010005;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+.icon-coleccion {
+    overflow: hidden;
+    display: none;
+    background-color: #010005;
+    position: absolute;
+    top: 1%;
+    right: 5%;
+    outline: none;
+    text-decoration: none !important;
+}
+.icon-playlist{
+    overflow: hidden;
+    background-color: #010005;
+    position: absolute;
+    top: 15%;
+    right: 5%;
+    outline: none;
+    text-decoration: none !important;
+}
+
+.icon-coleccion-search {
+    overflow: hidden;
+    display: none;
+    background-color: #010005;
+    position: absolute;
+    top: 1%;
+    right: 5%;
+    outline: none;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+.icon-playlist-search{
+    background-color: #010005;
+    position: absolute;
+    top: 17%;
+    right: 5%;
+    outline: none;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.text-coleccion{
+    overflow: hidden;
+    display: none;
+    color: #F9F9F9;
+    transition:all 1s;
+    margin-left: 100%;
+}
+.icon{
+    display: none;
+    outline: none;
+    text-decoration: none;
+    color: #F9F9F9;
+}
+.text-playlist{
+    overflow: hidden;
+    display: none;
+    color: #F9F9F9;
+    transition:all 1s;
+    margin-left: 100%;
+}
+.icon-coleccion:hover .text-coleccion{
+    position: relative;
+    overflow: hidden;
+    display: inline;
+    transition:all 1s;
+    margin-left: 0%;
+}
+
+.icon-playlist:hover .text-playlist{
+    position: relative;
+    overflow: hidden;
+    display: inline;
+    transition:all 1s;
+    margin-left: 0%;
+}
+
+.icon-coleccion-search:hover .text-coleccion{
+    position: relative;
+    overflow: hidden;
+    display: inline;
+    transition:all 1s;
+    margin-left: 0%;
+}
+
+.icon-playlist-search:hover .text-playlist{
+    position: relative;
+    overflow: hidden;
+    display: inline;
+    transition:all 1s;
+    margin-left: 0%;
+}
+
+.channel:hover{
+    color: #000;
+}
+.card-icons:hover .icon{
+    display: inline;
+}
+
+.image-icons:hover .icon{
+    display: inline;
+}
+
+.description {
+    display: -webkit-box;
+    -webkit-line-clamp:initial;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.less{
+    display: none;
+}
+
+.icon-playlist-collection{
+    text-decoration: none;
+    color: #F9F9F9;
+    opacity: none;
+
+}
+
+.icon-playlist-p{
+    background-color: rgba(00,00,0,0.7);
+    position: absolute;
+    top: 0%;
+    right: 16px;
+    text-decoration: none !important;
+    cursor: pointer;
+    width: 45%;
+    height: 100vh;
+} 
+
+.separator{
+    border-right: solid #010005;
+}
+
+.icon-playlist-playlist{
+    background-color: rgba(00,00,0,0.7);
+    position: absolute;
+    top: 0%;
+    right: 16px;
+    text-decoration: none !important;
+    cursor: pointer;
+    width: 50%;
+}
+.card-channel{
+   cursor: default;
 }

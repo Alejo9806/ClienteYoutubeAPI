@@ -1,14 +1,14 @@
-//environment variables
+//Variables de ambiente
 require('dotenv').config({ path: '.env' });
 'use strict';
 
-//requires 
+//importaciones de librerias electron
 const { app, BrowserWindow, ipcMain } = require('electron');
 const url = require('url');
 const path = require('path');
 require('ejs-electron');
 
-//global variables
+//variables globales
 let userInfo;
 let mainWindow;
 
@@ -20,12 +20,12 @@ if (process.env.NODE_ENV != "production") {
 //Init 
 require('./database');
 //controllers
-require('./controllers/auth.controller');//Authenticate
-require('./controllers/search.controller');//Search Videos
-require('./controllers/playlist.controller');//PlayList and items of each of the playlists
-require('./controllers/video.controller');//Home video list and specific video for the reporter window
-require('./controllers/collection.controller');//
-require('./controllers/channel.controller')//
+require('./controllers/auth.controller');//Autentificar
+require('./controllers/search.controller');//Buscar vídeos
+require('./controllers/playlist.controller');//Lista de reproducción y elementos de cada una de las listas de reproducción
+require('./controllers/video.controller');//Lista de vídeos de inicio y vídeo específico.
+require('./controllers/collection.controller');//Manejo de las colecciones y sus recursos
+require('./controllers/channel.controller')//Recuperar informacion de un canal
 
 //Init mainWindow 
 app.on('ready', () => {
@@ -50,18 +50,19 @@ app.on('ready', () => {
     })
 });
 
-//get user information and token
+//obtener la información del usuario y el token
 ipcMain.on('user',(e,token,info)=>{
     userInfo = info;
  
 });
 
-//Send userInfo to the client
+//Enviar userInfo al cliente
 ipcMain.on('userInfo', (e) => {
     e.reply('userInfo', userInfo);
 });
 
-//Close all windows and terminate the application
+
+//Cerrar todas las ventanas y terminar la aplicación
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit()

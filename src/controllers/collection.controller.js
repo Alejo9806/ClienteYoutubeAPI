@@ -231,7 +231,7 @@ ipcMain.on('get-collection-select', async(e) => {
             })
         }
     })
-
+    
     //*Se hace el llamado a la api con el string de los ids de los videos concatenados
     let apiCallVideo = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cstatus' + chainVideo + '&key=';
     Axios.get(apiCallVideo + YOUTUBE_API_KEY, {
@@ -265,67 +265,187 @@ ipcMain.on('get-collection-select', async(e) => {
                     })
                 }
             });
-
-            e.reply('get-collection-select', videos, playList, channel, relatedCollections)
         }
-    }).catch((error) => {});
-    //*Se hace el llamado a la api con el string de los ids de los canales concatenados
-    let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet' + chainPlaylist + '&key='
-    Axios.get(apiCallPlayList + YOUTUBE_API_KEY, {
-        headers: {
-            Host: 'www.googleapis.com',
-            Authorization: 'Bearer ' + userToken.access_token,
-            Accept: 'application/json'
-        }
-    }).then((res) => {
-        let data = res.data.items;
-        for (let i = 0; i < data.length; i++) {
-            elementsPlaylist.forEach(element => {
-                if (element.id == data[i].id) {
-                    playList.push({
-                        tags: element.tags,
-                        comment: element.comment,
-                        title: data[i].snippet.title,
-                        image: data[i].snippet.thumbnails.medium,
-                        channelTitle: data[i].snippet.channelTitle,
-                        channelId: data[i].snippet.channelId,
-                        id: data[i].id,
-                        date: data[i].snippet.publishedAt,
-                    })
+        //*Se hace el llamado a la api con el string de los ids de las playlists concatenados
+        let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails' + chainPlaylist + '&key='
+        Axios.get(apiCallPlayList + YOUTUBE_API_KEY, {
+            headers: {
+                Host: 'www.googleapis.com',
+                Authorization: 'Bearer ' + userToken.access_token,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            let data = res.data.items;
+            for (let i = 0; i < data.length; i++) {
+                elementsPlaylist.forEach(element => {
+                    if (element.id == data[i].id) {
+                        playList.push({
+                            tags: element.tags,
+                            comment: element.comment,
+                            title: data[i].snippet.title,
+                            image: data[i].snippet.thumbnails.medium,
+                            channelTitle: data[i].snippet.channelTitle,
+                            channelId: data[i].snippet.channelId,
+                            id: data[i].id,
+                            date: data[i].snippet.publishedAt,
+                            itemsCount : data[i].contentDetails.itemCount
+                        })
+                    }
+                });   
+            }
+            //*Se hace el llamado a la api con el string de los ids de los canales concatenados
+            let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet' + chainChannel + '&key='
+            Axios.get(apiCallChannel + YOUTUBE_API_KEY, {
+                headers: {
+                    Host: 'www.googleapis.com',
+                    Authorization: 'Bearer ' + userToken.access_token,
+                    Accept: 'application/json'
                 }
-            });
+            }).then((res) => {
+                let data = res.data.items;
+                for (let i = 0; i < data.length; i++) {
+                    elementsChannel.forEach(element => {
+                        if (element.id == data[i].id) {
+                            channel.push({
+                                id: element.id,
+                                tags: element.tags,
+                                comment: element.comment,
+                                title: data[i].snippet.title,
+                                image: data[i].snippet.thumbnails.default.url,
+                                date: data[i].snippet.publishedAt,
+                            })
+                        }
+                    });
 
-        }
-        e.reply('get-collection-select', videos, playList, channel, relatedCollections)
-    }).catch((error) => {});
-    //*Se hace el llamado a la api con el string de los ids de las playlist concatenados
-    let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet' + chainChannel + '&key='
-    Axios.get(apiCallChannel + YOUTUBE_API_KEY, {
-        headers: {
-            Host: 'www.googleapis.com',
-            Authorization: 'Bearer ' + userToken.access_token,
-            Accept: 'application/json'
-        }
-    }).then((res) => {
-        let data = res.data.items;
-        for (let i = 0; i < data.length; i++) {
-            elementsChannel.forEach(element => {
-                if (element.id == data[i].id) {
-                    channel.push({
-                        id: element.id,
-                        tags: element.tags,
-                        comment: element.comment,
-                        title: data[i].snippet.title,
-                        image: data[i].snippet.thumbnails.default.url,
-                        date: data[i].snippet.publishedAt,
-                    })
                 }
+                e.reply('get-collection-select', videos, playList, channel, relatedCollections)
+            }).catch(error =>{
+                e.reply('get-collection-select', videos, playList, channel, relatedCollections)
             });
+        }).catch(error =>{
+            //*Se hace el llamado a la api con el string de los ids de los canales concatenados
+            let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet' + chainChannel + '&key='
+            Axios.get(apiCallChannel + YOUTUBE_API_KEY, {
+                headers: {
+                    Host: 'www.googleapis.com',
+                    Authorization: 'Bearer ' + userToken.access_token,
+                    Accept: 'application/json'
+                }
+            }).then((res) => {
+                let data = res.data.items;
+                for (let i = 0; i < data.length; i++) {
+                    elementsChannel.forEach(element => {
+                        if (element.id == data[i].id) {
+                            channel.push({
+                                id: element.id,
+                                tags: element.tags,
+                                comment: element.comment,
+                                title: data[i].snippet.title,
+                                image: data[i].snippet.thumbnails.default.url,
+                                date: data[i].snippet.publishedAt,
+                            })
+                        }
+                    });
 
-        }
-        e.reply('get-collection-select', videos, playList, channel, relatedCollections)
-    }).catch((error) => {})
+                }
+                e.reply('get-collection-select', videos, playList, channel, relatedCollections)
+            }).catch(error =>{
+                e.reply('get-collection-select', videos, playList, channel, relatedCollections)
+            });
+        });
+    }).catch(error =>{
+        //*Se hace el llamado a la api con el string de los ids de las playlists concatenados
+        let apiCallPlayList = 'https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails' + chainPlaylist + '&key='
+        Axios.get(apiCallPlayList + YOUTUBE_API_KEY, {
+            headers: {
+                Host: 'www.googleapis.com',
+                Authorization: 'Bearer ' + userToken.access_token,
+                Accept: 'application/json'
+            }
+        }).then((res) => {
+            let data = res.data.items;
+            for (let i = 0; i < data.length; i++) {
+                elementsPlaylist.forEach(element => {
+                    if (element.id == data[i].id) {
+                        playList.push({
+                            tags: element.tags,
+                            comment: element.comment,
+                            title: data[i].snippet.title,
+                            image: data[i].snippet.thumbnails.medium,
+                            channelTitle: data[i].snippet.channelTitle,
+                            channelId: data[i].snippet.channelId,
+                            id: data[i].id,
+                            date: data[i].snippet.publishedAt,
+                            itemsCount : data[i].contentDetails.itemCount
+                        })
+                    }
+                });
+
+            }
+            //*Se hace el llamado a la api con el string de los ids de los canales concatenados
+            let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet' + chainChannel + '&key='
+            Axios.get(apiCallChannel + YOUTUBE_API_KEY, {
+                headers: {
+                    Host: 'www.googleapis.com',
+                    Authorization: 'Bearer ' + userToken.access_token,
+                    Accept: 'application/json'
+                }
+            }).then((res) => {
+                let data = res.data.items;
+                for (let i = 0; i < data.length; i++) {
+                    elementsChannel.forEach(element => {
+                        if (element.id == data[i].id) {
+                            channel.push({
+                                id: element.id,
+                                tags: element.tags,
+                                comment: element.comment,
+                                title: data[i].snippet.title,
+                                image: data[i].snippet.thumbnails.default.url,
+                                date: data[i].snippet.publishedAt,
+                            })
+                        }
+                    });
+
+                }
+                console.log(videos, playList, channel, relatedCollections)
+                e.reply('get-collection-select', videos, playList, channel, relatedCollections)
+            }).catch(error =>{
+                e.reply('get-collection-select', videos, playList, channel, relatedCollections)
+            });
+        }).catch(error =>{
+            let apiCallChannel = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet' + chainChannel + '&key='
+            Axios.get(apiCallChannel + YOUTUBE_API_KEY, {
+                headers: {
+                    Host: 'www.googleapis.com',
+                    Authorization: 'Bearer ' + userToken.access_token,
+                    Accept: 'application/json'
+                }
+            }).then((res) => {
+                let data = res.data.items;
+                for (let i = 0; i < data.length; i++) {
+                    elementsChannel.forEach(element => {
+                        if (element.id == data[i].id) {
+                            channel.push({
+                                id: element.id,
+                                tags: element.tags,
+                                comment: element.comment,
+                                title: data[i].snippet.title,
+                                image: data[i].snippet.thumbnails.default.url,
+                                date: data[i].snippet.publishedAt,
+                            })
+                        }
+                    });
+
+                }
+                e.reply('get-collection-select', videos, playList, channel, relatedCollections)
+            }).catch(error =>{
+                e.reply('get-collection-select', videos, playList, channel, relatedCollections)
+            });
+        });
+    });
 })
+
+
 
 //* Se escucha el envento borrar desde el cliente se busca en la base de datos el id del recurso que se quiere eliminar, se extrae y luego se actualiza la base de datos.
 ipcMain.on('delete-video-playList-channel', async(e, id) => {

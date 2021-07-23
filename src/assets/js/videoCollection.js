@@ -23,7 +23,6 @@ ipcRenderer.on('collection', (e, collections) => {
         <option value="${collection.title}">${collection.title}</option>
         `
     });
-
 });
 
 //* Se obtiene la informacion del video que se quiere agregar a una colección con el tiempo para cambiar la barra del tiempo.
@@ -58,32 +57,59 @@ newVideoCollection.addEventListener('submit', (e) => {
 //*  La respuesta se obtiene del back end y los tag que se obtienen se mostraran al cliente en una lista.
 ipcRenderer.on('search-tag', (e, tags,selectTag) => {
     document.getElementById(selectTag).innerHTML = '';
-    tags.forEach(tag_user => {
-        document.getElementById(selectTag).innerHTML += `
-        <a class="btn btn-danger" onClick="sendDataSelectTag('${tag_user._doc.tag}','labelTags')">${tag_user._doc.tag}</a>
-        `
-    });
+    if(selectTag == 'selectTag'){
+        tags.forEach(tag_user => {
+            document.getElementById(selectTag).innerHTML += `
+            <a class="btn btn-danger" onClick="sendDataSelectTag('${tag_user._doc.tag}','labelTags')">${tag_user._doc.tag}</a>
+            `;
+        });
+    }else if(selectTag == 'selectTag-playlist'){
+        tags.forEach(tag_user => {
+            document.getElementById(selectTag).innerHTML += `
+            <a class="btn btn-danger" onClick="sendDataSelectTag('${tag_user._doc.tag}','labelTags-playlist')">${tag_user._doc.tag}</a>
+            `;
+        });
+    }else {
+        tags.forEach(tag_user => {
+            document.getElementById(selectTag).innerHTML += `
+            <a class="btn btn-danger" onClick="sendDataSelectTag('${tag_user._doc.tag}','labelTags-channel')">${tag_user._doc.tag}</a>
+            `;
+        });
+    }
+    
 });
 
 //* Fución para enviar datos a la función saveTag de la libreria del tag. 
 function SelectSaveTag(tagInput,noSave,save) {
     if (tagInput == 'tag') {
         chosenTags = saveTag(tagInput,noSave,save,'labelTags',chosenTags);
-    }
+    }else if ( tagInput == 'tag-channel'){
+        chosenTagsChannel = saveTag(tagInput,noSave,save,'labelTags-channel',chosenTagsChannel);
+    }else{
+        chosenTagsPlaylist = saveTag(tagInput,noSave,save,'labelTags-playlist',chosenTagsPlaylist);
+    } 
 }
 
 //* Fución para enviar datos a la función selectionTag de la libreria del tag.
 function sendDataSelectTag(tag,labelTags) {
     if (labelTags == 'labelTags') {
         chosenTags = selectionTag(tag,labelTags,chosenTags);
-    }
+    }else if (labelTags == 'labelTags-channel') {
+        chosenTagsChannel = selectionTag(tag,labelTags,chosenTagsChannel);
+    }else{
+        chosenTagsPlaylist = selectionTag(tag,labelTags,chosenTagsPlaylist);
+    } 
 }
 
 //* Fución para enviar datos a la función deletedTag de la libreria del tag. 
 function sendDataDeletedTag(tag,labelTags) {
     if (labelTags == 'labelTags') {
         chosenTags = deletedTag(tag,labelTags,chosenTags);
-    }
+    }else if (labelTags == 'labelTags-channel') {
+        chosenTagsChannel = deletedTag(tag,labelTags,chosenTagsChannel);
+    }else{
+        chosenTagsPlaylist = deletedTag(tag,labelTags,chosenTagsPlaylist);
+    } 
 }
 
 

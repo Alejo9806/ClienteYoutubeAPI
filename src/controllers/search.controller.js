@@ -36,10 +36,10 @@ ipcMain.on('search', (e) => {
         let data = res.data.items;
         for (let i = 0; i < data.length; i++) {
             results[i] = {
+                id: data[i].id,
                 title: data[i].snippet.title,
-                image: data[i].snippet.thumbnails.medium,
+                image: data[i].snippet.thumbnails.high,
                 channelTitle: data[i].snippet.channelTitle,
-                videoId: data[i].id.videoId,
                 date: data[i].snippet.publishedAt,
                 description: data[i].snippet.description,
                 channelId: data[i].snippet.channelId,

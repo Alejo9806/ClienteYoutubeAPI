@@ -4,12 +4,99 @@
 <%-include('./layouts/modalPlaylist.ejs')%>
 
 <body style="background-color: #F9F9F9;" >
-    <div class="container mt-5">
+    <div class="container-fluid mt-5">
         <div class="row" id="result">
-           
+            
         </div>
-
     </div>
+
+  <!-- Modal Collection canal-->
+<div class="modal fade" id="modalCollectionChannel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Guardar canal en coleccion</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="newChannelCollection">
+          <div class="modal-body">
+            <div class="form-group">
+              <select class="browser-default custom-select custom-select-lg mb-3" id="selectedCollectionChannel" required>
+              </select>        
+            </div>      
+            <div class="form-group">
+              <label for="comment">Agrega un comentario al canal</label>
+              <input type="text" class="form-control" id="comment-channel" placeholder="Deja un comentario sobre el canal" required>
+            </div>
+            <div class="form-group">
+              <label for="description">Selecciona o agrega nuevos tags al canal</label>
+              <input type="text" class="form-control" id="tag-channel" placeholder="Escriba tag" onInput="keyPressValue('tag-channel','selectTag-channel')">
+              <a class="btn btn-primary" id="saveTag-channel" onclick="SelectSaveTag('tag-channel','noSave-channel','save-channel')">Guardar nuevo tag</a>
+              <h6 class="text-danger" id="noSave-channel"></h6>
+              <h6 class="text-success" id="save-channel"></h6>
+              <section id="selectTag-channel" class="form-group">
+  
+              </section>
+              <div id="labelTags-channel">
+  
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-dark">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  
+
+<!-- Modal Collection playList-->
+<div class="modal fade" id="modalCollectionPlaylist" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Guardar playList en coleccion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="newPlayListCollection">
+        <div class="modal-body">
+          <div class="form-group">
+            <select class="browser-default custom-select custom-select-lg mb-3" id="selectedCollectionPlaylist" required>
+            </select>        
+          </div>      
+          <div class="form-group">
+            <label for="comment">Comentario para la playList</label>
+            <input type="text" class="form-control" id="comment-playlist" placeholder="Deja un comentario sobre el video" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Selecciona o agrega nuevos tags a tu video</label>
+            <input type="text" class="form-control" id="tag-playlist" placeholder="Escriba tag" onInput="keyPressValue('tag-playlist','selectTag-playlist')">
+            <a class="btn btn-primary" id="saveTag-playlist" onclick="SelectSaveTag('tag-playlist','noSave-playlist','save-playlist')">Guardar nuevo tag</a>
+            <h6 class="text-danger" id="noSave-playlist"></h6>
+            <h6 class="text-success" id="save-playlist"></h6>
+            <section id="selectTag-playlist" class="form-group">
+
+            </section>
+            <div id="labelTags-playlist">
+
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-dark">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 </body>
 <script src="../assets/js/search.js"></script>

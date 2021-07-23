@@ -18,11 +18,10 @@ document.addEventListener('DOMContentLoaded', (e) => {
 
 //* Recuperar la información del video en la que se incluye informacion del canal que subio el video videos relacionados y comentarios para pintarla en la pantalla..
 ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDetails, channelSubscription, subscriptionId, dataComments) => {
-    document.getElementById("video").setAttribute("src", "https://www.youtube.com/embed/" + video.id + '?autoplay=1&start=' + startAt + '&end=' + endAt);
+    document.getElementById("video").setAttribute("src", "https://www.youtube.com/embed/" + video.id + '?&start=' + startAt + '&end=' + endAt);
     document.getElementById("title").innerHTML = video.title;
     document.getElementById("likes").innerHTML = video.likeCount;
-    document.getElementById("viewCount").innerHTML = video.viewCount;
-    document.getElementById("date").innerHTML = video.publishedAt.slice(0, 10);
+    document.getElementById("viewCount").innerHTML = video.viewCount + " de vistas • Fecha de creación: " +video.publishedAt.slice(0, 10);
     document.getElementById("dislikes").innerHTML = video.dislikeCount;
     document.getElementById("description").innerHTML = video.description;
     document.getElementById("commentCount").innerHTML = video.commentCount + " comentarios";
@@ -34,18 +33,22 @@ ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDeta
     for (let i = 0; i < relatedVideos.length; i++) {
         if (relatedVideos[i]) {
             videosRelated.innerHTML += `
-            <div>
-                <img class="card-img-top img-fluid border border-secondary" src="${relatedVideos[i].image.url}" alt="Card image cap" onClick="video('${relatedVideos[i].videoId}')">
-                <div class="card-body border  border-secondary"> 
+            <div class="card col-lg-12 col-md-12 col-sm-12 col-12 bg-card border-0 mt-4 card-icons" >
+                <img class="card-img-top img-fluid" src="${relatedVideos[i].image.url}" alt="Card image cap" onClick="video('${relatedVideos[i].videoId}')">
+                <div class="card-body"> 
                     <h6 class="card-title text-dark overflow" title="${relatedVideos[i].title}" onClick="video('${relatedVideos[i].videoId}')">${relatedVideos[i].title}</h6> 
-                    <p class="channel-color" onClick="getChannel('${relatedVideos[i].channelId}')">${relatedVideos[i].channelTitle}</p>
-                    <p class="channel-color">Publicacion: ${relatedVideos[i].date.slice(0,10)}</p>           
+                    <p class="channel-color channel" onClick="getChannel('${relatedVideos[i].channelId}')">${relatedVideos[i].channelTitle}</p>
+                    <p class="channel-color">Fecha de creación: ${relatedVideos[i].date.slice(0,10)}</p>           
                 </div>  
-                <div class="card-footer border  border-secondary">
-                <button type="button" class="btn btn-dark mb-1 w-100" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${relatedVideos[i].videoId}','${relatedVideos[i].date}')">Agregar a colección</button>
-                <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalPlaylist" onClick="videoPlaylistModal('${relatedVideos[i].videoId}')">Agregar a playlist </button>
-                </div>
-            </div>  `
+                <a class="d-block m-1 icon-coleccion " data-toggle="modal"  data-target="#modalCollection" onClick="videoCollectionModal('${relatedVideos[i].videoId}','${relatedVideos[i].date}')"><span class="m-2 text-coleccion">AGREGAR A COLECCIÓN</span><svg class="m-2 icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-bookmark-check-fill" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zm8.854-9.646a.5.5 0 0 0-.708-.708L7.5 7.793 6.354 6.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+                </svg>
+            </a>
+            <a class="d-block m-1 icon-playlist" data-toggle="modal" data-target="#modalPlaylist" onClick="videoPlaylistModal('${relatedVideos[i].videoId}')"><span class="m-2 text-playlist">LISTA DE REPRODUCCIÓN</span><svg class="m-2 icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-collection-play-fill" viewBox="0 0 16 16">
+                <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm6.258-6.437a.5.5 0 0 1 .507.013l4 2.5a.5.5 0 0 1 0 .848l-4 2.5A.5.5 0 0 1 6 12V7a.5.5 0 0 1 .258-.437z"/>
+                </svg>
+            </a>
+            </div>`
         }
     }
     //* Se pintan la informacion del canal si el usuario esta suscrito al canal se pinta de una si no se pinta de otra manera.
@@ -67,13 +70,18 @@ ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDeta
         informationChannel.innerHTML = ` 
         <p id="unsubscribedMss"></p>
         <div class="container">
-            <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
-            <div class="d-inline">
-                <h3 class="text-dark ml-2 d-inline">${channelDetails.title}</h3>
-                <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
-            </div>
-            <div class="float-right" id="subscribed">
-                <a class="btn btn-dark" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${channelDetails.id}','${channelDetails.publishedAt}')">SUSCRIBIRSE</a>
+           <div class="row">
+                <div class="d-inline col-2">
+                    <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
+                </div>
+                <div class="d-inline col-3">
+                    <h3 class="text-dark d-inline">${channelDetails.title}</h3> <br>
+                    <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
+                </div>
+           
+                <div class="col-6 " id="subscribed">
+                    <a class="btn btn-dark float-right" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${channelDetails.id}','${channelDetails.publishedAt}')">SUSCRIBIRSE</a>
+                </div>
             </div>
         </div>
         `
@@ -209,4 +217,13 @@ ipcRenderer.on('sendComment', (e, mss, comment) => {
     } else {
         document.getElementById("commentFail").innerHTML = mss;
     }
+})
+
+//* Estilos para la descripcion del video
+
+document.getElementById("more").addEventListener('click', (e) => {
+    document.getElementById("description").css({
+        "overflow": "hidden",
+        "display": "none"
+    })
 })
