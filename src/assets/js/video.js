@@ -37,6 +37,7 @@ ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDeta
                 <img class="card-img-top img-fluid" src="${relatedVideos[i].image.url}" alt="Card image cap" onClick="video('${relatedVideos[i].videoId}')">
                 <div class="card-body"> 
                     <h6 class="card-title text-dark overflow" title="${relatedVideos[i].title}" onClick="video('${relatedVideos[i].videoId}')">${relatedVideos[i].title}</h6> 
+                    <br>
                     <p class="channel-color channel" onClick="getChannel('${relatedVideos[i].channelId}')">${relatedVideos[i].channelTitle}</p>
                     <p class="channel-color">Fecha de creación: ${relatedVideos[i].date.slice(0,10)}</p>           
                 </div>  
@@ -56,15 +57,20 @@ ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDeta
         informationChannel.innerHTML = ` 
         <p id="unsubscribedMss"></p>
         <div class="container">
-            <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
-            <div class="d-inline">
-                <h3 class="text-dark ml-2 d-inline">${channelDetails.title}</h3>
-                <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
+        <div class="row">
+             <div class="d-inline col-2">
+                <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
             </div>
-            <div class="float-right">
+            <div class="d-inline col-6">
+                <h5 class="text-dark ml-2 d-inline">${channelDetails.title}</h5>
+                <br>
+                <p class="text-muted  ml-2  font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
+            </div>
+            <div class="col-3">
                 <a class="btn btn-dark" data-toggle="modal" data-target="#unsubscriptionModal" onClick="sendId('${subscriptionId}','${channelDetails.publishedAt}','${channelDetails.id}')"">SUSCRITO</a>
             </div>
         </div>
+
         `
     } else {
         informationChannel.innerHTML = ` 
@@ -74,13 +80,13 @@ ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDeta
                 <div class="d-inline col-2">
                     <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
                 </div>
-                <div class="d-inline col-3">
+                <div class="d-inline col-6">
                     <h3 class="text-dark d-inline">${channelDetails.title}</h3> <br>
                     <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
                 </div>
            
-                <div class="col-6 " id="subscribed">
-                    <a class="btn btn-dark float-right" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${channelDetails.id}','${channelDetails.publishedAt}')">SUSCRIBIRSE</a>
+                <div class="col-3 " id="subscribed">
+                    <a class="btn btn-danger float-right" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${channelDetails.id}','${channelDetails.publishedAt}')">SUSCRIBIRSE</a>
                 </div>
             </div>
         </div>
@@ -202,6 +208,8 @@ ipcRenderer.on('sendComment', (e, mss, comment) => {
 
     if (comment) {
         commentList.innerHTML += ` 
+        <br>
+        <br>
         <img src="${comment.authorProfileImageUrl}" alt="${comment.authorDisplayName}" class="img-circle border rounded-circle d-inline " height="40px">
         <h6 class="d-inline ml-3">${comment.authorDisplayName}  ${comment.publishedAt}</h6>
         <br>
@@ -222,8 +230,37 @@ ipcRenderer.on('sendComment', (e, mss, comment) => {
 //* Estilos para la descripcion del video
 
 document.getElementById("more").addEventListener('click', (e) => {
-    document.getElementById("description").css({
+    $('#description').css({
+        "display": "-webkit-box",
+        "-webkit-line-clamp": "20",
+        "-webkit-box-orient": "vertical",
+        "overflow": "visible",
+    });
+    $('#more').css({
         "overflow": "hidden",
         "display": "none"
-    })
+    });
+    $('#less').css({
+        "display": "block",
+        "cursor": "pointer"
+    });
+  
+})
+
+document.getElementById("less").addEventListener('click',(e)=>{
+    $('#description').css({
+        "display": "-webkit-box",
+        "-webkit-line-clamp": "2",
+        "-webkit-box-orient": "vertical",
+        "overflow": "hidden",
+       " text-overflow": "ellipsis"
+    });
+    $('#less').css({
+        "overflow": "hidden",
+        "display": "none"
+    });
+    $('#more').css({
+        "display": "block",
+        "text-decoration": "none !important"
+    });
 })

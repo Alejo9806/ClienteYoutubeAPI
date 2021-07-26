@@ -23,7 +23,7 @@ ipcRenderer.on('search', (e, results) => {
             <hr> 
                 <div class="row">
                     <div class="col-lg-4 col-md-4 col-sm-4 col-12">
-                        <img class="img-circle rounded-circle ml-5 w-50" src="${results[i].image.url}" alt="Card image cap"  style="cursor:pointer; onClick="getChannel('${results[i].channelId}')">
+                        <img class="img-circle rounded-circle ml-5 w-50" src="${results[i].image.url}" style="cursor:pointer;" alt="Card image cap"  style="cursor:pointer; onClick="getChannel('${results[i].channelId}')">
                     </div>
                     <div class="col-lg-4 col-md-4 col-sm-4 col-12 mt-5"> 
                         <h6 class="card-title text-dark overflow" title="${results[i].title}" style="cursor:pointer;" onClick="getChannel('${results[i].channelId}')">${results[i].title}</h6> 
@@ -43,7 +43,7 @@ ipcRenderer.on('search', (e, results) => {
             <div class="col-lg-12 col-md-12 col-sm-12 col-12 mt-3" > 
                 <div class="row">
                  <div class="col-lg-4 col-md-4 col-sm-4 col-4 image-icons">
-                     <img class="img-fluid w-100" src="${results[i].image.url}" alt="Card image cap" onClick="getItems('${results[i].id.playlistId}')">
+                     <img class="img-fluid w-100 " src="${results[i].image.url}" style="cursor:pointer;" alt="Card image cap" onClick="getItems('${results[i].id.playlistId}')">
                      <section class="icon-playlist-playlist h-100 text-center" >
                      <h5 class="text-white text-center text-uppercase mt-5">Lista <br> de reproducción</h5>
                      </section>                  
@@ -53,9 +53,9 @@ ipcRenderer.on('search', (e, results) => {
                         </a>
                  </div>
                  <div class="col-lg-7 col-md-7 col-sm-7 col-7"> 
-                     <h6 class="card-title text-dark overflow" title="${results[i].title}"  onClick="getItems('${results[i].id.playlistId}')">${results[i].title}</h6> 
+                     <h6 class="card-title text-dark overflow" title="${results[i].title}" style="cursor:pointer;" onClick="getItems('${results[i].id.playlistId}')">${results[i].title}</h6> 
                      <p class="channel-color">Fecha de publicación: ${results[i].date.slice(0,10)}</p>
-                     <p class="channel-color channel" title =${results[i].channelTitle}" onClick="getChannel('${results[i].channelId}')">${results[i].channelTitle}</p>
+                     <p class="channel-color channel" title =${results[i].channelTitle}" style="cursor:pointer;" onClick="getChannel('${results[i].channelId}')">${results[i].channelTitle}</p>
                      <p class="channel-color">${results[i].description}</p>                      
                  </div>  
                 </div> 
@@ -66,7 +66,7 @@ ipcRenderer.on('search', (e, results) => {
             <div class="col-lg-12 col-md-12 col-sm-12 col-12 mt-3" > 
                 <div class="row">
                  <div class="col-lg-4 col-md-4 col-sm-4 col-4 image-icons">
-                     <img class="img-fluid w-100" src="${results[i].image.url}" alt="Card image cap" onClick="video('${results[i].id.videoId}')">
+                     <img class="img-fluid w-100" src="${results[i].image.url}" style="cursor:pointer;" alt="Card image cap" onClick="video('${results[i].id.videoId}')">
                      <a class="d-block m-1 icon-coleccion-search  border border-white" data-toggle="modal" data-target="#modalCollection" onClick="videoCollectionModal('${results[i].id.videoId}','${results[i].date}')"><span class="m-2 text-coleccion">AGREGAR A COLECCIÓN</span><svg class="m-2 icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-bookmark-check-fill" viewBox="0 0 16 16">
                          <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zm8.854-9.646a.5.5 0 0 0-.708-.708L7.5 7.793 6.354 6.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
                          </svg>
@@ -77,9 +77,9 @@ ipcRenderer.on('search', (e, results) => {
                      </a>
                  </div>
                  <div class="col-lg-7 col-md-7 col-sm-7 col-7"> 
-                     <h6 class="card-title text-dark overflow" title="${results[i].title}"  onClick="video('${results[i].id.videoId}')">${results[i].title}</h6> 
+                     <h6 class="card-title text-dark overflow" title="${results[i].title}" style="cursor:pointer;" onClick="video('${results[i].id.videoId}')">${results[i].title}</h6> 
                      <p class="channel-color">Fecha de publicación: ${results[i].date.slice(0,10)}</p>
-                     <p class="channel-color channel" title =${results[i].channelTitle}" onClick="getChannel('${results[i].channelId}')">${results[i].channelTitle}</p>
+                     <p class="channel-color channel" title =${results[i].channelTitle}" style="cursor:pointer;" onClick="getChannel('${results[i].channelId}')">${results[i].channelTitle}</p>
                      <p class="channel-color">${results[i].description}</p>                      
                  </div>  
                 </div> 

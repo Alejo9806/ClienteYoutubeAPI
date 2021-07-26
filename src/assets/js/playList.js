@@ -18,18 +18,35 @@ ipcRenderer.on('playList', (e, playList) => {
     let listOfPlaylist = document.getElementById("playList");
     listOfPlaylist.innerHTML = ''
     for (let i = 0; i < playList.length; i++) {
-        listOfPlaylist.innerHTML += `<div class="card col-lg-3 col-md-4 col-sm-6 col-6 bg-card border-0 mt-4"> 
-        <img class="card-img-top img-fluid border border-secondary" src="${playList[i].image.url}" alt="Card image cap" onClick="getItems('${playList[i].id}')">
-        <div class="card-body border  border-secondary"  > 
-            <h6 class="card-title text-dark overflow" title="${playList[i].title}" onClick="getItems('${playList[i].id}')">${playList[i].title}</h6> 
-            <p class="channel-color" onClick="getChannel('${playList[i].channelId}')">${playList[i].channelTitle}</p>
-           
-        </div>  
-        <div class="card-footer border  border-secondary">
-            <button type="button" class="btn btn-dark w-100" data-toggle="modal" data-target="#modalCollectionPlaylist" onClick="playListCollectionModal('${playList[i].id}','${playList[i].date}')">Agregar a coleccion</button>
-            <button type="button" class="btn btn-dark w-100" onClick="deletePlaylist('${playList[i].id}')">Borrar playlist</button>
-        </div>  
-    </div>`
+        listOfPlaylist.innerHTML += `
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 mt-3" > 
+                <div class="row">
+                 <div class="col-lg-4 col-md-4 col-sm-4 col-4 image-icons">
+                     <img class="img-fluid w-100 h-100" src="${playList[i].image.url}" style="cursor:pointer;" alt="Card image cap" onClick="getItems('${playList[i].id}')">
+                     <section class="icon-playlist-playlist h-100 text-center " onClick="getItems('${playList[i].id}')">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25"  fill="currentColor" class="bi bi-collection-play-fill m-2 icon-playlist-collection mt-5" viewBox="0 0 16 16">
+                         <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm6.258-6.437a.5.5 0 0 1 .507.013l4 2.5a.5.5 0 0 1 0 .848l-4 2.5A.5.5 0 0 1 6 12V7a.5.5 0 0 1 .258-.437z"/>
+                     </svg> <br>
+                     <h6 class="text-white text-center">${playList[i].itemCount}</h6>
+                    </section>                 
+                     <a class="d-block m-1 icon-coleccion-search  border border-white" data-toggle="modal" data-target="#modalCollectionPlaylist" onClick="playListCollectionModal('${playList[i].id}','${playList[i].date}')"><span class="m-2 text-coleccion">AGREGAR A COLECCIÓN</span><svg class="m-2 icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-bookmark-check-fill" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zm8.854-9.646a.5.5 0 0 0-.708-.708L7.5 7.793 6.354 6.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+                            </svg>
+                        </a>
+                 </div>
+                 <div class="col-lg-7 col-md-7 col-sm-7 col-7"> 
+                     <h6 class="card-title text-dark overflow" title="${playList[i].title}" style="cursor:pointer;" onClick="getItems('${playList[i].id}')">${playList[i].title}</h6> 
+                     <p class="channel-color">Fecha de publicación: ${playList[i].date.slice(0,10)}</p>
+                     <p class="channel-color channel" title =${playList[i].channelTitle}" style="cursor:pointer;" onClick="getChannel('${playList[i].channelId}')">${playList[i].channelTitle}</p>
+                     <p class="channel-color">${playList[i].description}</p>     
+                     <a class="btn btn-danger" title="Borrar playlist" onClick="deletePlaylist('${playList[i].id}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg><a/> 
+                 </div>  
+                </div> 
+            </div>
+    `
     }
 });
 

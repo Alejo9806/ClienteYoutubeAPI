@@ -51,7 +51,7 @@ ipcRenderer.on('getChannel', (e, channelDetails, channelSubscription, subscripti
                 <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
             </div>
             <div class="float-right" id="subscribed">
-                <a class="btn btn-dark" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${channelDetails.id}','${channelDetails.publishedAt}')">SUSCRIBIRSE</a>
+                <a class="btn btn-danger" data-toggle="modal" data-target="#subscriptionModal" onClick="subscription('${channelDetails.id}','${channelDetails.publishedAt}')">SUSCRIBIRSE</a>
                 <a class="btn btn-dark" data-toggle="modal" data-target="#modalCollectionChannel" onClick="channelCollectionModal('${channelDetails.id}','${channelDetails.publishedAt}')">COLECCIÓN</a>
             </div>
         </div>
@@ -60,20 +60,58 @@ ipcRenderer.on('getChannel', (e, channelDetails, channelSubscription, subscripti
     //* Video trailer del canal no todos los canales tienen un trailer por eso se oregunta si tienes uno.
     if (videoTrailer) {
         document.getElementById("trailer").innerHTML = ` 
-                <div class="row" onClick="video('${videoTrailer.videoId}')">
+                <div class="row" >
                 <div class = "col-6">
-                    <img src="${videoTrailer.image.url}" alt="">
+                    <img src="${videoTrailer.image.url}" onClick="video('${videoTrailer.videoId}')"alt="">
                 </div>
                 <div class="col-6">
-                    <h5>${videoTrailer.title}</h5>
+                    <h5 onClick="video('${videoTrailer.videoId}')">${videoTrailer.title}</h5>
                     <h6>Publicacion: ${videoTrailer.date.slice(0,10)}</h6>
-                    <p>
-                    ${videoTrailer.description}
-                    </p>
+                    <p id="descriptionC" class="description">${videoTrailer.description} </p>
+                    <a class="more text-dark" id="moreC">MOSTRAR MÁS</a>
+                    <a class="less text-dark" id="lessC">MOSTRAR MENOS</a>
                 </div>
                 </div>
                 `
+        //* Estilos para la descripcion del video
+
+        document.getElementById("moreC").addEventListener('click', (e) => {
+            $('#descriptionC').css({
+                "display": "-webkit-box",
+                "-webkit-line-clamp": "60",
+                "-webkit-box-orient": "vertical",
+                "overflow": "visible",
+            });
+            $('#moreC').css({
+                "overflow": "hidden",
+                "display": "none"
+            });
+            $('#lessC').css({
+                "display": "block",
+                "cursor": "pointer"
+            });
+        
+        })
+
+        document.getElementById("lessC").addEventListener('click',(e)=>{
+            $('#descriptionC').css({
+                "display": "-webkit-box",
+                "-webkit-line-clamp": "2",
+                "-webkit-box-orient": "vertical",
+                "overflow": "hidden",
+            " text-overflow": "ellipsis"
+            });
+            $('#lessC').css({
+                "overflow": "hidden",
+                "display": "none"
+            });
+            $('#moreC').css({
+                "display": "block",
+                "text-decoration": "none !important"
+            });
+        })
     }
+
 });
 
 //* Envía la id del vídeo seleccionado y carga la ventana de vídeo.
@@ -183,5 +221,6 @@ function sendDataDeletedTag(tag,labelTags) {
         chosenTags = deletedTag(tag,labelTags,chosenTags);
     }
 }
+
 
 

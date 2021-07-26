@@ -20,7 +20,7 @@ ipcMain.on('user', (e, token, info) => {
 //Solicitud para obtener todas las listas de reproducción del usuario
 ipcMain.on('playList', (e) => {
 
-    let apiPlayList = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=20&mine=true&key="
+    let apiPlayList = "https://youtube.googleapis.com/youtube/v3/playlists?part=snippet%2CcontentDetails&maxResults=20&mine=true&key="
     let playList = [];
     Axios.get(apiPlayList + YOUTUBE_API_KEY, {
         headers: {
@@ -37,7 +37,9 @@ ipcMain.on('playList', (e) => {
                 id: data[i].id,
                 channelId: data[i].snippet.channelId,
                 channelTitle: data[i].snippet.channelTitle,
-                date: data[i].snippet.publishedAt
+                date: data[i].snippet.publishedAt,
+                description: data[i].snippet.description,
+                itemCount: data[i].contentDetails.itemCount
             }
         }
         e.reply('playList', playList);
