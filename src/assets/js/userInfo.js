@@ -33,7 +33,7 @@ searchbutton.addEventListener('click',(e)=>{
 //*Cuando se le da click o se oprime la tecla enter se envia el string y se hace la busca con la api.
 function search(e){
     if (e.key === 'Enter' || e.keyCode === 13 || e.type=='click' ){
-        console.log(searchVideo.value)
+
         ipcRenderer.send('searchVideo',searchVideo.value);
         window.location.href = "./search.ejs";
     }

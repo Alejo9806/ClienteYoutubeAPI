@@ -59,10 +59,10 @@ ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDeta
         <div class="container">
         <div class="row">
              <div class="d-inline col-2">
-                <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
+                <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}"  onClick="getChannel('${channelDetails.id}')" style="cursor:pointer;" class="img-circle border rounded-circle d-inline">
             </div>
             <div class="d-inline col-6">
-                <h5 class="text-dark ml-2 d-inline">${channelDetails.title}</h5>
+                <h5 class="text-dark ml-2 d-inline" onClick="getChannel('${channelDetails.id}')" style="cursor:pointer;">${channelDetails.title}</h5>
                 <br>
                 <p class="text-muted  ml-2  font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
             </div>
@@ -78,10 +78,10 @@ ipcRenderer.on('getVideo', (e, video, startAt, endAt, relatedVideos, channelDeta
         <div class="container">
            <div class="row">
                 <div class="d-inline col-2">
-                    <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" class="img-circle border rounded-circle d-inline">
+                    <img src="${channelDetails.thumbnails}" alt="${channelDetails.title}" onClick="getChannel('${channelDetails.id}')" style="cursor:pointer;" class="img-circle border rounded-circle d-inline">
                 </div>
                 <div class="d-inline col-6">
-                    <h3 class="text-dark d-inline">${channelDetails.title}</h3> <br>
+                    <h3 class="text-dark d-inline" onClick="getChannel('${channelDetails.id}')" style="cursor:pointer;" >${channelDetails.title}</h3> <br>
                     <p class="text-muted font-weight-normal h6 d-inline">${channelDetails.subscriberCount} de suscriptores</p>
                 </div>
            

@@ -2,7 +2,7 @@
 <%-include('./layouts/nav-bar.ejs')%>
 <div class="container">
     <h2 class="d-inline mb-5">Tus colecciones</h2>
-    <button class="btn btn-dark float-right mb-5" data-toggle="modal" data-target="#modalNewCollection">Crear nueva coleccion</button>
+    <button class="btn btn-dark float-right mb-5" data-toggle="modal" data-target="#modalNewCollection" onclick="deleteMss()">Crear nueva coleccion</button>
     <table class="table">
         <thead>
           <tr>
@@ -10,6 +10,7 @@
             <th scope="col">Titulo</th>
             <th scope="col">Descripción</th>
             <th scope="col">Editar</th>
+            <th scope="col">Borrar</th>
           </tr>
         </thead>
         <tbody id="tableCollection">
@@ -52,6 +53,7 @@
               </div>
             </div>
           </div>
+          <h5 id="mssError" class="text-center"></h5>
           <div class="modal-footer">
             <button type="submit" class="btn btn-dark">Guardar</button>
           </div>
@@ -95,6 +97,7 @@
               </div>
             </div>
           </div>
+          <h5 id="mssErrorEdit" class="text-center"></h5>
           <div class="modal-footer">
             <button type="submit" class="btn btn-dark">Guardar</button>
           </div>

@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', (e) => {
 
 //* Los datos de la colección se obtienen y se muestran en la pantalla, divididos en listas de reproducción, canales, vídeos y colecciones recomendadas.
 ipcRenderer.on('get-collection-select', (e, videos, playList, channel, relatedCollections) => {
-    console.log(relatedCollections)
     const collectionRelated = document.getElementById('collectionRelated');
     const carousel = document.getElementById('carousel');
     const active = document.getElementById('carousel-item');
@@ -82,9 +81,7 @@ ipcRenderer.on('get-collection-select', (e, videos, playList, channel, relatedCo
                     </div>  
                 </div>`           
         }
-        console.log(index)
         if (index == (aux*3)) {
-            console.log((aux*3))
             aux2++;
             carousel.innerHTML += `<div class="carousel-item">
             <div class="row" id= "carousel-item-${aux2}">
@@ -144,9 +141,9 @@ ipcRenderer.on('get-collection-select', (e, videos, playList, channel, relatedCo
                 </div>
             `         
         }
-        console.log(index)
+
         if (index == (aux*2)) {
-            console.log((aux*2))
+        
             aux2++;
             carouselPlaylist.innerHTML += `<div class="carousel-item">
             <div class="row" id= "carousel-item-playlist-${aux2}">
@@ -207,9 +204,8 @@ ipcRenderer.on('get-collection-select', (e, videos, playList, channel, relatedCo
             </div>
         `       
         }
-        console.log(index)
         if (index == (aux*2)) {
-            console.log((aux*3))
+        
             aux2++;
             carouselChannel.innerHTML += `<div class="carousel-item">
             <div class="row" id= "carousel-item-channel-${aux2}">
@@ -406,7 +402,6 @@ editChannelCollection.addEventListener('submit', (e) => {
 
 //*  La respuesta se obtiene del back end y los tag que se obtienen se mostraran al cliente en una lista.
 ipcRenderer.on('search-tag', (e, tags,selectTag) => {
-    console.log(selectTag)
     document.getElementById(selectTag).innerHTML = '';
     if(selectTag == 'selectTag'){
         tags.forEach(tag_user => {

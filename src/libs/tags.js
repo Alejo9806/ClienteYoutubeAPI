@@ -1,13 +1,11 @@
 //* Cuando se presiona una tecla en el input se hace un llamado a la base de datos para obtener resultados similares.
 function keyPressValue(tagInput,selectTag) {
     const searchTag = document.getElementById(tagInput).value;
-    console.log(searchTag)
     ipcRenderer.send('search-tag', searchTag,selectTag);
 }
 
 //* Cuando se selecciona un tag se verfica si el tag no ha sido seleccionado anteriormente se agrega al array y se pinta en pantalla ademas se devuelve el array con los nuevos datos.
 function selectionTag(tag,labelTags,chosenTags) {
-    console.log(chosenTags,tag,labelTags)
     let someTag = chosenTags.filter(choseTag => { return choseTag == tag });
     if (someTag.length === 0) {
         chosenTags.push(tag);
@@ -27,7 +25,6 @@ function selectionTag(tag,labelTags,chosenTags) {
 
 //* La etiqueta se envía para ser guardada en la base de datos y se verifica si es una etiqueta válida para ser introducida se agrega el tag al array y se devuelve el array nuevo.
 function saveTag(tagInput,noSave,save,labelTags,chosenTags) {
-    console.log(tagInput,noSave,save,labelTags,chosenTags)
     const tags = document.getElementById(tagInput).value;
     if (tags != "") {
         ipcRenderer.send('new-tag', tags);
@@ -46,7 +43,6 @@ function saveTag(tagInput,noSave,save,labelTags,chosenTags) {
 
 //* Se elimina el tag seleccionado del array se pinta en pantalla el nuevo array y se devuelve el array.
 function deletedTag(tag,labelTags,chosenTags) {
-    console.log(chosenTags)
     chosenTags.map((value, i) => {
         if (value === tag) {
             chosenTags.splice(i, 1);

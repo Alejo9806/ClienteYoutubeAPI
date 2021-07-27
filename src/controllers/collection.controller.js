@@ -29,16 +29,24 @@ ipcMain.on('collection', async(e) => {
 });
 
 //* Se escucha un evento donde se envia datos para crear una nueva coleccion y guardarla en la base datos.
-ipcMain.on('new-collection', async(e, newCollection, chosenTags) => {
-    let collection = new Collection();
+ipcMain.on('new-collection', async(e, newCollection, chosenTags) => { 
     const user = await User.findOne({ email: userInfo.email });
-    collection.title = newCollection.title;
-    collection.description = newCollection.description;
-    collection.id_user = user._id;
-    chosenTags.forEach(chosenTag => {
-        collection.tags.push(chosenTag);
-    });
-    collection = await collection.save();
+    const collectionExist = await Collection.findOne({title:newCollection.title,id_user: user._id })
+    if (collectionExist) {
+        const mss = "la nombre de la coleccion ya existe, por favor intenta poner un nombre nuevo"
+        e.reply('new-collection',mss)
+    } else {
+        let collection = new Collection();
+        collection.title = newCollection.title;
+        collection.description = newCollection.description;
+        collection.id_user = user._id;
+        chosenTags.forEach(chosenTag => {
+            collection.tags.push(chosenTag);
+        });
+        collection = await collection.save();
+        e.reply('new-collection')
+    }
+   
 });
 
 //* Se guarda en la base de datos un nuevo tag cuando se escucha el evento con el tag enviado desde el cliente 
@@ -61,7 +69,6 @@ ipcMain.on('new-tag', async(e, newTag) => {
 
 //* Se hace una busqueda en la base datos a partir de una expresion regular para devolver tags relacionados con el string.
 ipcMain.on('search-tag', async(e, searchTag,selectTag) => {
-    console.log(selectTag)
     const regularExpr = new RegExp(searchTag);
     const user = await User.findOne({ email: userInfo.email });
     const tags = await Tag.find({ tag: { $regex: regularExpr, $options: 'i' }, id_user: user._id }).limit(5);
@@ -162,6 +169,13 @@ ipcMain.on('get-edit-collection', async(e, title) => {
     e.reply('get-edit-collection', getCollection);
 })
 
+//* Se buscan los datos de la coleccion que se envio desde cliente para borrar de la base de datos.
+ipcMain.on('delete-collection',async (e,title)=>{
+    const user = await User.findOne({ email: userInfo.email });
+    await Collection.findOneAndDelete({ title: title, id_user: user._id });
+    e.reply('delete-collection');
+})
+
 //* Se obtiene el titulo de una coleccion seleccionada y se guarda.
 ipcMain.on('get-collection', (e, title) => {
     titleCollection = title;
@@ -171,13 +185,22 @@ ipcMain.on('get-collection', (e, title) => {
 //* Se obtienen los nuevos datos que se quieren actualizar en la coleccion y se guardan en la base de datos reemplazando los anteriores.
 ipcMain.on('edit-collection', async(e, editCollection, chosenTagsEdit) => {
     const user = await User.findOne({ email: userInfo.email });
-    let collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
-    collection.title = editCollection.title;
-    collection.description = editCollection.description;
-    collection.tags = chosenTagsEdit;
-    try {
-        collection = await collection.save();
-    } catch (error) {}
+    const collectionExist = await Collection.findOne({title: editCollection.title, id_user: user._id })
+    if (collectionExist) {
+        const mss = "la nombre de la coleccion ya existe, por favor intenta poner un nombre nuevo"
+        e.reply('edit-collection',mss)
+    } else {
+        let collection = await Collection.findOne({ title: titleCollection, id_user: user._id });
+        collection.title = editCollection.title;
+        collection.description = editCollection.description;
+        collection.tags = chosenTagsEdit;
+        try {
+            collection = await collection.save();
+            e.reply('edit-collection')
+        } catch (error) {}
+        
+    }
+    
 });
 
 //* Se escucha el evento y se devuelven los recursos que hay en la coleccion para esto se usa la api para devolver todos los datos del recurso ya que en la base de datos solo se guarda el id para luego obtenerlo de la api.
@@ -407,7 +430,6 @@ ipcMain.on('get-collection-select', async(e) => {
                     });
 
                 }
-                console.log(videos, playList, channel, relatedCollections)
                 e.reply('get-collection-select', videos, playList, channel, relatedCollections)
             }).catch(error =>{
                 e.reply('get-collection-select', videos, playList, channel, relatedCollections)

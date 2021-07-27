@@ -176,3 +176,16 @@
 .card-channel{
    cursor: default;
 }
+.titleCollection{
+    color: #000;
+    transition: all 0.5s;
+    text-decoration: none !important;
+    display: inline-block
+}
+
+.titleCollection:hover{
+    color: dodgerblue;
+    transform: scale(1.2);
+    cursor: pointer;
+   
+}
